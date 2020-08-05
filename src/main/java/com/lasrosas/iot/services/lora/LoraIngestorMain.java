@@ -10,5 +10,4 @@ public class LoraIngestorMain {
 			throw new RuntimeException(e);
 		}
 	}
-
 }
