@@ -1,8 +1,0 @@
-spring:
-  main:
-    log-startup-info: false
-
-  jackson:
-    property-naming-strategy: UPPER_CAMEL_CASE
-    serialization:
-      indent-output: true
