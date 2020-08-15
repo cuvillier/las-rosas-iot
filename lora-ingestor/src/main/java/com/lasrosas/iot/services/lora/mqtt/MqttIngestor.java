@@ -1,4 +1,4 @@
-package com.lasrosas.iot.services.mqtt;
+package com.lasrosas.iot.services.lora.mqtt;
 
 import java.util.function.Consumer;
 

@@ -13,6 +13,7 @@ import com.lasrosas.iot.services.lora.mqtt.MqttIngestor;
 import com.lasrosas.iot.services.lora.sensors.LoraSensors;
 import com.lasrosas.iot.services.lora.server.LoraServer;
 import com.lasrosas.iot.services.mqtt.MqttReader;
+import com.lasrosas.iot.services.thingAPI.ThingAPI;
 
 public class LoraIngestor implements Consumer<Mqtt5Publish> {
 	public static Logger log = LoggerFactory.getLogger(MqttIngestor.class);
@@ -21,6 +22,7 @@ public class LoraIngestor implements Consumer<Mqtt5Publish> {
 	private LoraServer loraServer;
 	private LoraSensors loraSensors;
 	private String topic;
+	private ThingAPI thingAPI;
 
 	public LoraIngestor(MqttReader mqtt, LoraServer loraServer, LoraSensors loraSensors, String topic) {
 
@@ -40,10 +42,10 @@ public class LoraIngestor implements Consumer<Mqtt5Publish> {
 		log.info("Receive payload " + payload);
 
 		JsonObject loraMessage = loraServer.normalize(payload);
-		var deveui = loraMessage.get("deveui");
-		var provider = loraMessage.get("provider");
+		var deveui = loraMessage.get("deveui").getAsString();
+		var provider = loraMessage.get("provider").getAsString();
 
-		Thing thing = thingAPI.getThingByDevEUI(deveui);
+		Thing thing = thingAPI.getThingByDevEUI(deveui, provider);
 
 		List<JsonObject> decodedMessages = loraSensors.decode(loraMessage);
 		List<JsonObject> normalizedMessages = loraSensors.normalize(decodedMessages);
