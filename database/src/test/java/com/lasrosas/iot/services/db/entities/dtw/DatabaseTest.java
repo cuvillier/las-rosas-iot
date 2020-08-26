@@ -1,27 +1,32 @@
 package com.lasrosas.iot.services.db.entities.dtw;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.ContextConfiguration;
 
-@ExtendWith(SpringExtension.class)
-@DataJpaTest
-@ActiveProfiles("test")
-@EnableAutoConfiguration
+@DataJpaTest()
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@ContextConfiguration(classes={DatabaseTestConfig.class})
+@EnableJpaRepositories(basePackages = {"com.lasrosas.iot.services.db.repo"})
+@EntityScan("com.lasrosas.iot.services.db.entities")
 public class DatabaseTest {
 
-	@Autowired private DataSource dataSource;
-	// @Autowired private EntityManager entityManager;
+	@PersistenceContext
+	EntityManager em;
+
 
 	  @Test
 	  void connectToTheDatabase() throws Exception {
-		  try(var ctx = dataSource.getConnection()) {
+
+		  try {
+			  var ctx = em.createQuery("SELECT thg FROM Thing thg");
 			  
 		  } catch(Exception e) {
 			  throw e;

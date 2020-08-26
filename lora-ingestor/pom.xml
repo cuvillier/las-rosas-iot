@@ -22,5 +22,9 @@
 				<groupId>com.lasrosas.iot</groupId>
 				<artifactId>mqtt</artifactId>
         	</dependency>
-	</dependencies>
+			<dependency>
+				<groupId>com.lasrosas.iot</groupId>
+				<artifactId>things</artifactId>
+			</dependency>
+				</dependencies>
 </project>
