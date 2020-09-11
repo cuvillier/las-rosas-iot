@@ -1,54 +1,98 @@
 package com.lasrosas.iot.services.lora;
 
-import java.util.List;
-import java.util.function.Consumer;
+import java.nio.charset.StandardCharsets;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
-import com.lasrosas.iot.services.db.entities.thg.Thing;
-import com.lasrosas.iot.services.lora.mqtt.MqttIngestor;
+import com.lasrosas.iot.services.db.repo.GatewayRepo;
+import com.lasrosas.iot.services.db.repo.ThingRepo;
+import com.lasrosas.iot.services.db.repo.TimeSerieRepo;
 import com.lasrosas.iot.services.lora.sensors.LoraSensors;
-import com.lasrosas.iot.services.lora.server.LoraServer;
-import com.lasrosas.iot.services.mqtt.MqttReader;
 import com.lasrosas.iot.services.thingAPI.ThingAPI;
 
-public class LoraIngestor implements Consumer<Mqtt5Publish> {
-	public static Logger log = LoggerFactory.getLogger(MqttIngestor.class);
+public class LoraIngestor {
+	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
-	private MqttReader mqtt;
-	private LoraServer loraServer;
-	private LoraSensors loraSensors;
-	private String topic;
-	private ThingAPI thingAPI;
+	private LoraServerRAK7249 rak7249;
+	private LoraSensors sensors;
+	private IMqttClient mqtt;
+	private String mqttServer = "localhost";
+	private int mqttPort = 1883;
+	private boolean automaticReconnect = true;
+	private boolean cleanSession = true;
+	private int connectionTimeout = 10;
+	private String publisherId = "loraIngestor";
+	private Gson gson;
+	private GatewayRepo gtwRepo;
+	private ThingRepo thgRepo;
+	private TimeSerieRepo tsrRepo;
 
-	public LoraIngestor(MqttReader mqtt, LoraServer loraServer, LoraSensors loraSensors, String topic) {
+	public LoraIngestor(LoraServerRAK7249 rak7249, LoraSensors sensors, ThingRepo thgRepo, TimeSerieRepo tsrRepo, GatewayRepo gtwRepo, Gson gson) {
+		this.gson = gson;
+		this.gtwRepo = gtwRepo;
+		this.rak7249 = rak7249;
+		this.sensors = sensors;
+	}
 
-		this.loraServer = loraServer;
-		this.loraSensors = loraSensors;
-		this.mqtt = mqtt;
-		this.topic = topic;
+	public void start() throws Exception {
+		this.mqtt = new MqttClient("tcp://" + mqttServer + ":" + mqttPort, publisherId);
+
+		MqttConnectOptions options = new MqttConnectOptions();
+		options.setAutomaticReconnect(this.automaticReconnect);
+		options.setCleanSession(this.cleanSession);
+		options.setConnectionTimeout(this.connectionTimeout);
+		this.mqtt.connect(options);
 
 		mqtt.connect();
-		this.mqtt.subscribe(this.topic, this);
+
+		this.rak7249.start(c -> {
+			handleMessage(rak7249, c);
+		});
 	}
 
-	@Override
-	public void accept(Mqtt5Publish t) {
+	private void handleMessage(LoraServer loraServer, JsonObject inMessage) {
 
-		String payload = new String(t.getPayloadAsBytes());
-		log.info("Receive payload " + payload);
+		try {
 
-		JsonObject loraMessage = loraServer.normalize(payload);
-		var deveui = loraMessage.get("deveui").getAsString();
-		var provider = loraMessage.get("provider").getAsString();
+			var gatewayId = loraServer.getGatewayId();
+			var gateway = gtwRepo.findByNaturalId(gatewayId);
 
-		Thing thing = thingAPI.getThingByDevEUI(deveui, provider);
+			var loraMessage = loraServer.normalize(inMessage);
+			loraMessage.addProperty("gatewayId", gatewayId);
 
-		List<JsonObject> decodedMessages = loraSensors.decode(loraMessage);
-		List<JsonObject> normalizedMessages = loraSensors.normalize(decodedMessages);
+			var deveui = loraMessage.get("deveui").getAsString();
+
+			var thing = thgRepo.getByGatewayAndDeveui(gateway, deveui);
+			inMessage.addProperty("thignId", thing.getTechid());
+
+			var thingType = thing.getType();
+
+			var sensor = sensors.getSensor(thingType.getManufacturer(), thingType.getModel());
+			var decodedMessages = sensor.decode(inMessage);
+			for (var decodedMessage : decodedMessages) {
+				var normalizedMessages = sensor.normalize(decodedMessage);
+
+				for (var normalizedMessage : normalizedMessages) {
+					String schema = normalizedMessage.get("schema").getAsString();
+					String json = gson.toJson(normalizedMessage);
+					String topic = "message/" + gatewayId + "/" + deveui + "/" + schema;
+
+					var outMessage = new MqttMessage(json.getBytes(StandardCharsets.UTF_8));
+
+					mqtt.publish(topic, outMessage);
+				}
+			}
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
-
 }

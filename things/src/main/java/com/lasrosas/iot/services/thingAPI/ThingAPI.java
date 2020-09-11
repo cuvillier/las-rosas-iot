@@ -4,6 +4,6 @@ import com.lasrosas.iot.services.db.entities.thg.Thing;
 
 public interface ThingAPI {
 
-	Thing getThingByDevEUI(String deveui, String provider);
+	Thing getThingByDevEUI(String provider, String deveui);
 
 }

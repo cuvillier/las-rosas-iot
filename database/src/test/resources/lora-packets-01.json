@@ -1,0 +1,147 @@
+[
+{
+  "applicationID": "3",
+  "applicationName": "las-rosas-iot",
+  "devEUI": "0018b2200000093c",
+  "deviceName": "Adenuis ARF8180BA/0018B2200000093C",
+  "timestamp": 1599731110,
+  "fCnt": 1,
+  "fPort": 1,
+  "data": "EACQBgADAAMBAgo=",
+  "data_encode": "base64",
+  "adr": true,
+  "rxInfo": [
+    {
+      "gatewayID": "60c5a8fffe76f8b2",
+      "loRaSNR": 4.8,
+      "rssi": -63,
+      "location": {
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0
+      },
+      "time": "2020-09-10T09:45:09.783674Z"
+    }
+  ],
+  "txInfo": {
+    "frequency": 868100000,
+    "dr": 0
+  }
+},
+{
+  "applicationID": "3",
+  "applicationName": "las-rosas-iot",
+  "devEUI": "0018b2200000093c",
+  "deviceName": "Adenuis ARF8180BA/0018B2200000093C",
+  "timestamp": 1599731137,
+  "fCnt": 2,
+  "fPort": 1,
+  "data": "ESABLBQAyB4F",
+  "data_encode": "base64",
+  "adr": true,
+  "rxInfo": [
+    {
+      "gatewayID": "60c5a8fffe76f8b2",
+      "loRaSNR": 7.3,
+      "rssi": -65,
+      "location": {
+        "latitude": 36.82522,
+        "longitude": -5.57902,
+        "altitude": 373
+      },
+      "time": "2020-09-10T09:45:36.851707Z"
+    }
+  ],
+  "txInfo": {
+    "frequency": 867500000,
+    "dr": 0
+  }
+},
+{
+  "applicationID": "3",
+  "applicationName": "las-rosas-iot",
+  "devEUI": "0018b2200000093c",
+  "deviceName": "Adenuis ARF8180BA/0018B2200000093C",
+  "timestamp": 1599731164,
+  "fCnt": 3,
+  "fPort": 1,
+  "data": "EkABXjIAMhQ=",
+  "data_encode": "base64",
+  "adr": true,
+  "rxInfo": [
+    {
+      "gatewayID": "60c5a8fffe76f8b2",
+      "loRaSNR": 6.8,
+      "rssi": -61,
+      "location": {
+        "latitude": 36.82522,
+        "longitude": -5.57901,
+        "altitude": 372
+      },
+      "time": "2020-09-10T09:46:04.060884Z"
+    }
+  ],
+  "txInfo": {
+    "frequency": 867500000,
+    "dr": 0
+  }
+},
+{
+  "applicationID": "3",
+  "applicationName": "las-rosas-iot",
+  "devEUI": "0018b2200000093c",
+  "deviceName": "Adenuis ARF8180BA/0018B2200000093C",
+  "timestamp": 1599731196,
+  "fCnt": 4,
+  "fPort": 1,
+  "data": "IGABAQ==",
+  "data_encode": "base64",
+  "adr": true,
+  "rxInfo": [
+    {
+      "gatewayID": "60c5a8fffe76f8b2",
+      "loRaSNR": 8.5,
+      "rssi": -65,
+      "location": {
+        "latitude": 36.82522,
+        "longitude": -5.57901,
+        "altitude": 372
+      },
+      "time": "2020-09-10T09:46:36.049641Z"
+    }
+  ],
+  "txInfo": {
+    "frequency": 867100000,
+    "dr": 0
+  }
+},
+{
+  "applicationID": "3",
+  "applicationName": "las-rosas-iot",
+  "devEUI": "0018b2200000093c",
+  "deviceName": "Adenuis ARF8180BA/0018B2200000093C",
+  "timestamp": 1599731222,
+  "fCnt": 5,
+  "fPort": 1,
+  "data": "Q4ABAQcCAPw=",
+  "data_encode": "base64",
+  "adr": true,
+  "rxInfo": [
+    {
+      "gatewayID": "60c5a8fffe76f8b2",
+      "loRaSNR": 8,
+      "rssi": -59,
+      "location": {
+        "latitude": 36.82522,
+        "longitude": -5.57902,
+        "altitude": 372
+      },
+      "time": "2020-09-10T09:47:02.060311Z"
+    }
+  ],
+  "txInfo": {
+    "frequency": 867300000,
+    "dr": 0
+  }
+}
+]

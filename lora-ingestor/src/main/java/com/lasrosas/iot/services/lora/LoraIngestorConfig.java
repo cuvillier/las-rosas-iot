@@ -5,19 +5,21 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.lasrosas.iot.services.db.repo.GatewayRepo;
+import com.lasrosas.iot.services.db.repo.ThingRepo;
+import com.lasrosas.iot.services.db.repo.TimeSerieRepo;
 import com.lasrosas.iot.services.lora.sensors.LoraSensors;
-import com.lasrosas.iot.services.lora.server.LoraServer;
-import com.lasrosas.iot.services.lora.server.LoraServerRAK4279;
-import com.lasrosas.iot.services.mqtt.MqttReader;
 
 @Configuration
 @EnableConfigurationProperties(LoraIngestorConfig.class)
 public class LoraIngestorConfig {
 
 	@Bean
-	@ConfigurationProperties(prefix = "RAK7249Ingestor")
-	public LoraIngestor RAK7249Ingestor() {
-		return new LoraIngestor(mqttRAK4279(), loraServerRAK4972(), LoraSensors(), "lora/+/+");
+	@ConfigurationProperties(prefix = "LoraIngestor")
+	public LoraIngestor LoraIngestor(LoraServerRAK7249 rak7249, LoraSensors sensors, ThingRepo thgRepo, TimeSerieRepo tsrRepo, GatewayRepo gtwRepo, Gson gson) {
+		return new LoraIngestor(rak7249, sensors, thgRepo, tsrRepo, gtwRepo, gson);
 	}
 
 	@Bean
@@ -27,14 +29,14 @@ public class LoraIngestorConfig {
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "loraServerRAK4972")
-	public LoraServer loraServerRAK4972() {
-		return new LoraServerRAK4279();
+	public Gson gson() {
+		return new GsonBuilder()
+				.setPrettyPrinting()
+				.create();
 	}
-
 	@Bean
-	@ConfigurationProperties(prefix = "mqttRAK4279")
-	public MqttReader mqttRAK4279() {
-		return new MqttReader("mqttRAK4279");
+	@ConfigurationProperties(prefix = "loraServerRAK7249")
+	public LoraServer loraServerRAK4972(Gson gson) {
+		return new LoraServerRAK7249(gson);
 	}
 }

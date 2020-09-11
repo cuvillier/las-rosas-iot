@@ -7,13 +7,20 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(ThingLora.DISCRIMINATOR)
 public class ThingLora extends Thing {
-	public static final String PREFIX = "TLO_";
+	public static final String PREFIX = "LOR_";
 	public static final String DISCRIMINATOR = "LOR";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_DEVEUI = PREFIX + "DEVEUI";
+	public static final String COL_DEVEUI = PREFIX + "DEV_EUI";
 
-	@Column(name=COL_DEVEUI)
+	ThingLora() {
+	}
+
+	public ThingLora(ThingGateway gateway, ThingType type, String deveui) {
+		super(gateway, type);
+		this.deveui = deveui;
+	}
+
+	@Column(name = COL_DEVEUI)
 	private String deveui;
 
 	public String getDeveui() {
@@ -23,5 +30,4 @@ public class ThingLora extends Thing {
 	public void setDeveui(String deveui) {
 		this.deveui = deveui;
 	}
-
 }
