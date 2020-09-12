@@ -1,0 +1,41 @@
+[
+	{
+		"topic": "application/3/device/0018b2200000093c/join",
+		"payload": {
+			"applicationID": "3",
+			"applicationName": "las-rosas-iot",
+			"deviceName": "Adenuis/ARF8180BA/0018B2200000093C",
+			"devEUI": "0018b2200000093c",
+			"devAddr": "02000001"
+		}
+	},
+	{
+		"applicationID": "3",
+		"applicationName": "las-rosas-iot",
+		"devEUI": "0018b2200000093c",
+		"deviceName": "Adenuis/ARF8180BA/0018B2200000093C",
+		"timestamp": 1599920852,
+		"fCnt": 5,
+		"fPort": 1,
+		"data": "Q4ABAQgCAQk=",
+		"data_encode": "base64",
+		"adr": true,
+		"rxInfo": [
+			{
+				"gatewayID": "60c5a8fffe76f8b2",
+				"loRaSNR": 9.0,
+				"rssi": -52,
+				"location": {
+					"latitude": 36.824970,
+					"longitude": -5.578820,
+					"altitude": 506
+				},
+				"time": "2020-09-12T14:27:32.024023Z"
+			}
+		],
+		"txInfo": {
+			"frequency": 868500000,
+			"dr": 0
+		}
+	}
+]

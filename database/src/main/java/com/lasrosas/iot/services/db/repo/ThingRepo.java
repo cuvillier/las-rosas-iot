@@ -1,10 +1,10 @@
 package com.lasrosas.iot.services.db.repo;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.lasrosas.iot.services.db.entities.thg.Thing;
-import com.lasrosas.iot.services.db.entities.thg.ThingGateway;
 
-public interface ThingRepo extends JpaRepository<Thing, Long>, ThingRepoCustom {
-	Thing getByGatewayAndDeveui(ThingGateway gateway, String deveui);
+@Repository
+public interface ThingRepo extends ThingRepoBase<Thing> {
+
 }

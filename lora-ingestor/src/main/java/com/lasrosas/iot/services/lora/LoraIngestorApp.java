@@ -2,9 +2,17 @@ package com.lasrosas.iot.services.lora;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 
+import com.lasrosas.iot.services.db.IOTDatabaseConfig;
+
+@SpringBootApplication(scanBasePackages="com.lasrosas.iot")
+@PropertySource("classpath:LoraIngestorApp.properties")
+@Import(IOTDatabaseConfig.class)
 public class LoraIngestorApp {
 
 	public static class LoraIngestorLineRunner implements CommandLineRunner {

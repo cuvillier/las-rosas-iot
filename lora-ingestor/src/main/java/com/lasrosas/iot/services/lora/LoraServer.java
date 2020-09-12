@@ -3,14 +3,14 @@ package com.lasrosas.iot.services.lora;
 import com.google.gson.JsonObject;
 
 public abstract class LoraServer {
-	private String gatewayId;
+	private final String gatewayId;
+
+	public LoraServer(String gatewayId) {
+		this.gatewayId = gatewayId;
+	}
 
 	public String getGatewayId() {
 		return gatewayId;
-	}
-
-	public void setGatewayId(String gatewayId) {
-		this.gatewayId = gatewayId;
 	}
 
 	public String getgetType() {

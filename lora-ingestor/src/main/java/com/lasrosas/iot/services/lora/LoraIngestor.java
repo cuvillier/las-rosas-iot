@@ -3,19 +3,18 @@ package com.lasrosas.iot.services.lora;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.services.db.repo.GatewayRepo;
-import com.lasrosas.iot.services.db.repo.ThingRepo;
+import com.lasrosas.iot.services.db.repo.ThingLoraRepo;
 import com.lasrosas.iot.services.db.repo.TimeSerieRepo;
 import com.lasrosas.iot.services.lora.sensors.LoraSensors;
-import com.lasrosas.iot.services.thingAPI.ThingAPI;
+import com.lasrosas.iot.services.utils.NotFoundException;
 
 public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
@@ -23,68 +22,55 @@ public class LoraIngestor {
 	private LoraServerRAK7249 rak7249;
 	private LoraSensors sensors;
 	private IMqttClient mqtt;
-	private String mqttServer = "localhost";
-	private int mqttPort = 1883;
-	private boolean automaticReconnect = true;
-	private boolean cleanSession = true;
-	private int connectionTimeout = 10;
-	private String publisherId = "loraIngestor";
+
+	@Autowired
 	private Gson gson;
-	private GatewayRepo gtwRepo;
-	private ThingRepo thgRepo;
+	
+	@Autowired
+	private ThingLoraRepo thgLoraRepo;
+	
+	@Autowired
 	private TimeSerieRepo tsrRepo;
 
-	public LoraIngestor(LoraServerRAK7249 rak7249, LoraSensors sensors, ThingRepo thgRepo, TimeSerieRepo tsrRepo, GatewayRepo gtwRepo, Gson gson) {
-		this.gson = gson;
-		this.gtwRepo = gtwRepo;
+	public LoraIngestor(LoraServerRAK7249 rak7249, LoraSensors sensors) {
 		this.rak7249 = rak7249;
 		this.sensors = sensors;
 	}
 
 	public void start() throws Exception {
-		this.mqtt = new MqttClient("tcp://" + mqttServer + ":" + mqttPort, publisherId);
-
-		MqttConnectOptions options = new MqttConnectOptions();
-		options.setAutomaticReconnect(this.automaticReconnect);
-		options.setCleanSession(this.cleanSession);
-		options.setConnectionTimeout(this.connectionTimeout);
-		this.mqtt.connect(options);
-
-		mqtt.connect();
 
 		this.rak7249.start(c -> {
 			handleMessage(rak7249, c);
 		});
 	}
 
-	private void handleMessage(LoraServer loraServer, JsonObject inMessage) {
+	@Transactional
+	private void handleMessage(LoraServer loraServer, JsonObject loraMessage) {
 
 		try {
-
-			var gatewayId = loraServer.getGatewayId();
-			var gateway = gtwRepo.findByNaturalId(gatewayId);
-
-			var loraMessage = loraServer.normalize(inMessage);
-			loraMessage.addProperty("gatewayId", gatewayId);
-
 			var deveui = loraMessage.get("deveui").getAsString();
+			if(deveui == null) throw new NotFoundException("deveui in loraMessage");
 
-			var thing = thgRepo.getByGatewayAndDeveui(gateway, deveui);
-			inMessage.addProperty("thignId", thing.getTechid());
+			var thing = thgLoraRepo.getByDeveui(deveui);
+			loraMessage.addProperty("thingId", thing.getTechid());
 
 			var thingType = thing.getType();
 
 			var sensor = sensors.getSensor(thingType.getManufacturer(), thingType.getModel());
-			var decodedMessages = sensor.decode(inMessage);
+			if(sensor == null) throw new NotFoundException("Sensor type manufacturer="+thingType.getManufacturer() + ", model="+ thingType.getModel());
+
+			var decodedMessages = sensor.decode(loraMessage);
 			for (var decodedMessage : decodedMessages) {
 				var normalizedMessages = sensor.normalize(decodedMessage);
 
 				for (var normalizedMessage : normalizedMessages) {
 					String schema = normalizedMessage.get("schema").getAsString();
 					String json = gson.toJson(normalizedMessage);
-					String topic = "message/" + gatewayId + "/" + deveui + "/" + schema;
+					String topic = "things/lora/" + deveui + "/" + schema;
 
 					var outMessage = new MqttMessage(json.getBytes(StandardCharsets.UTF_8));
+					outMessage.setQos(1);
+					outMessage.setRetained(true);
 
 					mqtt.publish(topic, outMessage);
 				}
