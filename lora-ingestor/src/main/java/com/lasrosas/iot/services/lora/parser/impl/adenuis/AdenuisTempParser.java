@@ -50,7 +50,7 @@ public class AdenuisTempParser {
 
 		frame.setStatus(status);
 
-		return new MessageHolder(frame.getClass().getSimpleName(), null, frame);
+		return new MessageHolder("Adenuis.Temp.frame." + getClass().getSimpleName(), null, frame);
 	}
 
 	public Frame0x10 parse0x10(ByteParser parser) {
