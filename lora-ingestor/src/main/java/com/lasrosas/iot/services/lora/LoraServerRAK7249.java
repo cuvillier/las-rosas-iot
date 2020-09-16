@@ -37,15 +37,6 @@ public class LoraServerRAK7249 extends LoraServer {
 	@Autowired
 	private Gson gson;
 
-	private String clientId = "LoraIngestorApp";
-	private String mqttServer = "192.168.1.3";
-	private int mqttPort = 1883;
-
-	private IMqttClient mqtt;
-	private boolean automaticReconnect = true;
-	private boolean cleanSession = false;
-	private int connectionTimeout = 10;
-
 	private enum MessageType {
 		JOIN, UPLOAD
 	}
@@ -54,28 +45,8 @@ public class LoraServerRAK7249 extends LoraServer {
 		super("rak7249");
 	}
 
-	public void start(Consumer<JsonObject> consumer) {
-		try {
-			this.mqtt = new MqttClient("tcp://" + mqttServer + ":" + mqttPort, clientId);
-
-			MqttConnectOptions options = new MqttConnectOptions();
-			options.setAutomaticReconnect(this.automaticReconnect);
-			options.setCleanSession(this.cleanSession);
-			options.setConnectionTimeout(this.connectionTimeout);
-			this.mqtt.connect(options);
-
-			mqtt.subscribe("#", (topic, msg) -> {
-				handleMessage(topic, msg, consumer);
-			});
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	@Transactional
-	private void handleMessage(String topic, MqttMessage msg, Consumer<JsonObject> consumer) {
+	public void handleMessage(String topic, MqttMessage msg, Consumer<JsonObject> consumer) {
 		String payloadJson = null;
 
 		try {
@@ -124,13 +95,15 @@ public class LoraServerRAK7249 extends LoraServer {
 		if (thgLora == null)
 			throw new NotFoundException("Thing Lora deveui=" + deveui);
 
+		thgLora.getGateway().getNaturalId();
+
 		// Map rakMessage to standard loraMessage
 		JsonObject loraMessage = new JsonObject();
 		loraMessage.addProperty("timestamp", rakMessage.get("timestamp").getAsLong());
 		loraMessage.addProperty("gatewayId", getGatewayId());
 		loraMessage.addProperty("deveui", rakMessage.get("devEUI").getAsString());
 		loraMessage.addProperty("data", rakMessage.get("data").getAsString());
-		loraMessage.addProperty("data_encode", rakMessage.get("data_encode").getAsString());
+		loraMessage.addProperty("dataEncoding", rakMessage.get("data_encode").getAsString());
 		loraMessage.addProperty("cnt", rakMessage.get("fCnt").getAsInt());
 		loraMessage.addProperty("port", rakMessage.get("fPort").getAsInt());
 
@@ -168,14 +141,18 @@ public class LoraServerRAK7249 extends LoraServer {
 			}
 
 			String manufacturer = splitedName[0];
-			String model = splitedName[0];
-			deveui = splitedName[0];
+			String model = splitedName[1];
 			var tty = thingTypeRepo.getByManufacturerAndModel(manufacturer, model);
+			if (tty == null)
+				throw new NotFoundException("Thing type for device name=" + deviceName);
 
 			var gateway = gatewayRepo.findByNaturalId(getGatewayId());
 			if (gateway == null)
 				throw new NotFoundException("Gateway " + getGatewayId());
 			thingLora = new ThingLora(gateway, tty, deveui);
+			thgLorRepo.save(thingLora);
+		} else {
+			log.info("Thing found with deveui=" + deveui);
 		}
 	}
 }

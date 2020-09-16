@@ -37,9 +37,9 @@ public class TimeSerieType extends BaseEntity {
 		super();
 	}
 
-	public TimeSerieType(String readable) {
+	public TimeSerieType(String schema) {
 		super();
-		this.readable = readable;
+		this.schema = schema;
 	}
 
 	public List<TimeSerie> getTimeSeries() {

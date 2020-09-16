@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.lasrosas.iot.services.lora.sensors.LoraSensors;
+import com.lasrosas.iot.services.lora.parser.PayloadParsers;
 
 
 @Configuration
@@ -12,8 +12,8 @@ public class LoraIngestorConfig {
 	
 	@Bean
 	@ConfigurationProperties(prefix = "lora-ingestor")
-	public LoraIngestor LoraIngestor(LoraServerRAK7249 rak7249, LoraSensors sensors) {
-		return new LoraIngestor(rak7249, sensors);
+	public LoraIngestor LoraIngestor(LoraServerRAK7249Mqtt rak7249mqtt, PayloadParsers sensors) {
+		return new LoraIngestor(rak7249mqtt, sensors);
 	}
 
 	@Bean LoraServerRAK7249 LoraServerRAK7249() {
@@ -22,13 +22,19 @@ public class LoraIngestorConfig {
 
 	@Bean
 	@ConfigurationProperties(prefix = "lora-sensors")
-	public LoraSensors LoraSensors() {
-		return new LoraSensors();
+	public PayloadParsers LoraSensors() {
+		return new PayloadParsers();
 	}
 
 	@Bean
 	@ConfigurationProperties(prefix = "rak7249")
 	public LoraServer loraServerRAK4972() {
 		return new LoraServerRAK7249();
+	}
+
+	@Bean
+	@ConfigurationProperties(prefix = "rak7249")
+	public LoraServerRAK7249Mqtt loraServerRAK4972Mqtt(LoraServerRAK7249 loraServerRAK7249) {
+		return new LoraServerRAK7249Mqtt(loraServerRAK7249);
 	}
 }

@@ -44,7 +44,7 @@ public class DatabaseTest extends BaseDatabaseTest {
 			var tsType = new TimeSerieType("TestTS");
 			em.persist(tsType);
 
-			var ts = new TimeSerie(thing, tsType);
+			var ts = new TimeSerie(thing, tsType, null);
 			em.persist(ts);
 
 			var time = LocalDateTime.now();

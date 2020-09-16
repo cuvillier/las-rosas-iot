@@ -46,10 +46,11 @@ public class TimeSerie extends BaseEntity {
 		super();
 	}
 
-	public TimeSerie(Thing thing, TimeSerieType type) {
+	public TimeSerie(Thing thing, TimeSerieType type, String sensor) {
 		super();
 		this.thing = thing;
 		this.type = type;
+		this.sensor = sensor;
 	}
 
 	public Thing getThing() {
