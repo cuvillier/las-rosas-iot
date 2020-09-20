@@ -1,6 +1,11 @@
 package com.lasrosas.iot.services.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ByteParser {
+	public static final Logger log = LoggerFactory.getLogger(ByteParser.class);
+
 	private byte[] bytes;
 	private int ibyte = 0;
 	private int ibit = 0;
@@ -92,7 +97,7 @@ public class ByteParser {
 
 		if( sign < 0 ) result--;
 
-		System.out.println(binaryString + " = " + result + " " + new String(binary));
+		log.debug(binaryString + " = " + result + " " + new String(binary));
 		
 		return result;
 	}

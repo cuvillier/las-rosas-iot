@@ -25,6 +25,10 @@ public class LoraIngestorApp {
 		@Override
 		public void run(String... args) throws Exception {
 			ingestor.start();
+			
+			while(true) {
+				Thread.sleep(60*60*1000);
+			}
 		}
 	}
 

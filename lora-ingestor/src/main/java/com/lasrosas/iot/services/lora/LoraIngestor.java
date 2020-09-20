@@ -8,6 +8,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import com.lasrosas.iot.services.db.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.services.db.repo.TimeSerieRepo;
 import com.lasrosas.iot.services.db.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.services.lora.parser.PayloadParsers;
+import com.lasrosas.iot.services.utils.LocalTopic;
 import com.lasrosas.iot.services.utils.NotFoundException;
 
 public class LoraIngestor {
@@ -28,6 +30,7 @@ public class LoraIngestor {
 
 	private LoraServerRAK7249Mqtt rak7249Mqtt;
 	private PayloadParsers sensors;
+	private InfluxdbWriter influxdbWriter;
 
 	@Autowired
 	private Gson gson;
@@ -44,12 +47,18 @@ public class LoraIngestor {
 	@Autowired
 	private TimeSeriePointRepo tspRepo;
 
-	public LoraIngestor(LoraServerRAK7249Mqtt rak7249Mqtt, PayloadParsers sensors) {
+	@Autowired
+	private LocalTopic<TimeSeriePoint> newPointTopic;
+
+	public LoraIngestor(LoraServerRAK7249Mqtt rak7249Mqtt, PayloadParsers sensors, InfluxdbWriter influxdbWriter) {
 		this.rak7249Mqtt = rak7249Mqtt;
 		this.sensors = sensors;
+		this.influxdbWriter = influxdbWriter;
 	}
 
 	public void start() throws Exception {
+
+		newPointTopic.subcribe(influxdbWriter::send);
 
 		this.rak7249Mqtt.start(c -> {
 			handleLoraMessage(rak7249Mqtt.getLoraServerRAK7249(), c);
@@ -84,9 +93,11 @@ public class LoraIngestor {
 			var payloadParser = sensors.getParser(thingType.getManufacturer(), thingType.getModel());
 			if(payloadParser == null) throw new NotFoundException("Sensor type manufacturer="+thingType.getManufacturer() + ", model="+ thingType.getModel());
 
-			String schema = thingType.getManufacturer() +"/" + thingType.getModel() + "/raw";
+			String schema = thingType.getManufacturer() +"." + thingType.getModel() + ".lora";
 			String sensor = null;
-			insertPoint(thing, time, schema, sensor, loraMessage);
+			
+			if(thing.isLogLoraMessages())
+				insertPoint(thing, time, schema, sensor, loraMessage);
 
 			// Convert base64, hex to byte[]
 			var data = decodeData(loraMessage);
@@ -94,7 +105,9 @@ public class LoraIngestor {
 			var decodedMessages = payloadParser.decode(data);
 
 			for (var decodedMessage : decodedMessages) {
-				insertPoint(thing, time, decodedMessage);
+
+				if(thing.isLogDecodedMessages())
+					insertPoint(thing, time, decodedMessage);
 
 				var normalizedMessages = payloadParser.normalize(decodedMessage);
 
@@ -143,5 +156,7 @@ public class LoraIngestor {
 
 		var tsp = new TimeSeriePoint(tsr, time, json);
 		tspRepo.save(tsp);
+
+		newPointTopic.publish(tsp);
 	}
 }

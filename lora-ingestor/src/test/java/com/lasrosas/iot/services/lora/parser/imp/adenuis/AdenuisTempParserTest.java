@@ -1,4 +1,4 @@
-package com.lasrosas.iot.services.lora.sensors.adenuis;
+package com.lasrosas.iot.services.lora.parser.imp.adenuis;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

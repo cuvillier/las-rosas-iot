@@ -111,8 +111,8 @@ public class LoraServerRAK7249 extends LoraServer {
 		var rxInfo = rxInfoArray.get(0).getAsJsonObject();
 
 		if (rxInfo != null) {
-			loraMessage.addProperty("snr", rxInfo.get("loRaSNR").getAsString());
-			loraMessage.addProperty("rssi", rxInfo.get("rssi").getAsString());
+			loraMessage.addProperty("snr", rxInfo.get("loRaSNR").getAsFloat());
+			loraMessage.addProperty("rssi", rxInfo.get("rssi").getAsInt());
 		}
 
 		JsonObject txInfo = rakMessage.getAsJsonObject("txInfo");
@@ -120,6 +120,9 @@ public class LoraServerRAK7249 extends LoraServer {
 		if (txInfo != null) {
 			loraMessage.addProperty("frequency", txInfo.get("frequency").getAsLong());
 		}
+
+		System.out.println("----------------------------------------------------");
+		System.out.println(gson.toJson(loraMessage));
 
 		return loraMessage;
 	}

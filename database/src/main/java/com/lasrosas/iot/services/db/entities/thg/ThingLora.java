@@ -30,4 +30,10 @@ public class ThingLora extends Thing {
 	public void setDeveui(String deveui) {
 		this.deveui = deveui;
 	}
+	public boolean isLogLoraMessages() {
+		return true;
+	}
+	public boolean isLogDecodedMessages() {
+		return true;
+	}
 }
