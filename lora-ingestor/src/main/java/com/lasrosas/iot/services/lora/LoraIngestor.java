@@ -8,12 +8,12 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.services.db.entities.thg.ThingLora;
+import com.lasrosas.iot.services.db.entities.thg.ThingProxy;
 import com.lasrosas.iot.services.db.entities.tsr.TimeSerie;
 import com.lasrosas.iot.services.db.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.services.db.entities.tsr.TimeSerieType;
@@ -22,6 +22,7 @@ import com.lasrosas.iot.services.db.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.services.db.repo.TimeSerieRepo;
 import com.lasrosas.iot.services.db.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.services.lora.parser.PayloadParsers;
+import com.lasrosas.iot.services.utils.GsonUtils;
 import com.lasrosas.iot.services.utils.LocalTopic;
 import com.lasrosas.iot.services.utils.NotFoundException;
 
@@ -29,8 +30,10 @@ public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
 	private LoraServerRAK7249Mqtt rak7249Mqtt;
-	private PayloadParsers sensors;
+
 	private InfluxdbWriter influxdbWriter;
+
+	private PayloadParsers sensors;
 
 	@Autowired
 	private Gson gson;
@@ -46,7 +49,7 @@ public class LoraIngestor {
 
 	@Autowired
 	private TimeSeriePointRepo tspRepo;
-
+	
 	@Autowired
 	private LocalTopic<TimeSeriePoint> newPointTopic;
 
@@ -60,9 +63,19 @@ public class LoraIngestor {
 
 		newPointTopic.subcribe(influxdbWriter::send);
 
+		newPointTopic.subcribe(this::sendToTwin);
+
 		this.rak7249Mqtt.start(c -> {
 			handleLoraMessage(rak7249Mqtt.getLoraServerRAK7249(), c);
 		});
+	}
+
+	private void sendToTwin(TimeSeriePoint point) {
+
+		var thing = point.getTimeSerie().getThing();
+
+		var dtwin = thing.getTwin();
+		if( dtwin != null ) dtwin.onNewPoint(point);
 	}
 
 	private String getAsString(JsonObject json, String memberName, boolean mandatory) {
@@ -73,8 +86,8 @@ public class LoraIngestor {
 				throw new NotFoundException("Member " + memberName + " in json " + gson.toJson(json));
 			return null;
 		}
-		
-		return member.getAsString();			
+
+		return member.getAsString();
 	}
 
 	@Transactional
@@ -107,12 +120,12 @@ public class LoraIngestor {
 			for (var decodedMessage : decodedMessages) {
 
 				if(thing.isLogDecodedMessages())
-					insertPoint(thing, time, decodedMessage);
+					insertPoint(thing, time, decodedMessage, false);
 
 				var normalizedMessages = payloadParser.normalize(decodedMessage);
 
 				for (var normalizedMessage : normalizedMessages) {
-					insertPoint(thing, time, normalizedMessage);
+					insertPoint(thing, time, normalizedMessage, true);
 				}
 			}
 		} catch (Exception e) {
@@ -130,9 +143,44 @@ public class LoraIngestor {
 		return decodedData;
 	}
 
-	private void insertPoint(ThingLora thing, LocalDateTime time, MessageHolder holder) {
+	private void insertPoint(ThingLora thing, LocalDateTime time, MessageHolder holder, boolean proxify) {
 		var json = gson.toJsonTree(holder.getMessage()).getAsJsonObject();
 		insertPoint(thing, time, holder.getSchema(), holder.getSensor(), json);
+
+		if( proxify) {
+			var proxy = thing.getProxy();
+
+			// Create the proxy if needed
+			if( proxy == null ) {
+				proxy = new ThingProxy();
+				proxy.setThing(thing);
+				thing.setProxy(proxy);
+			}
+
+			// Merge the proxy values
+			proxy.setLastSeen(time);
+
+			var proxyJsonValue = proxy.getValues();
+			var proxyValue = gson.fromJson(proxyJsonValue, JsonObject.class);
+			if( proxyValue == null) proxyValue = new JsonObject();
+
+			String subjsonName;
+			if( holder.getSensor() != null )
+				subjsonName = holder.getSensor() + "-" + holder.getSchema();
+			else
+				subjsonName = holder.getSchema();
+
+			JsonObject subjson = proxyValue.getAsJsonObject(subjsonName);
+			if( subjson == null ) {
+				subjson = new JsonObject();
+				proxyValue.add(subjsonName, subjson);
+			}
+
+			var changes = GsonUtils.mergeJsonObjects(json, subjson, time);
+			if(changes != 0) 
+				proxy.setValues(gson.toJson(proxyValue));
+
+		}
 	}
 
 	private void insertPoint(ThingLora thing, LocalDateTime time, String schema, String sensor, JsonObject message) {

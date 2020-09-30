@@ -1,8 +1,13 @@
 package com.lasrosas.iot.services.db.entities.dtw;
 
-import com.lasrosas.iot.services.db.entities.thg.Thing;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
+import com.lasrosas.iot.services.db.entities.thg.ThingLora;
+
+@Entity
+@DiscriminatorValue(ThingTwin.DISCRIMINATOR)
 public class ThingTwin extends DigitalTwin {
-	private Thing thing;
-	private DigitalTwin twin;
+	public static final String PREFIX = "YTW_";
+	public static final String DISCRIMINATOR = "THG";
 }

@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 public class LoraServerRAK7249Mqtt {
 	private LoraServerRAK7249 loraServerRAK7249;
 
-	private String clientId = "LoraIngestorAppProd";
+	private String clientId = "LoraIngestorAppDev";
 	private String mqttServer = "192.168.1.3";
 	private int mqttPort = 1883;
 

@@ -96,8 +96,6 @@ public class ByteParser {
 		var result = Integer.parseUnsignedInt(binaryString, 2) * sign;
 
 		if( sign < 0 ) result--;
-
-		log.debug(binaryString + " = " + result + " " + new String(binary));
 		
 		return result;
 	}

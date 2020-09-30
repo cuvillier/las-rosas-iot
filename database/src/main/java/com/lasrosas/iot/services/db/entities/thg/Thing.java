@@ -2,6 +2,7 @@ package com.lasrosas.iot.services.db.entities.thg;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.lasrosas.iot.services.db.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.services.db.entities.shared.BaseEntity;
 import com.sun.istack.NotNull;
 
@@ -31,9 +33,11 @@ public abstract class Thing extends BaseEntity {
 	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "TYPE";
 	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "GATEWAY";
+	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
 
 	public static final String PROP_TYPE = "type";
 	public static final String PROP_GATEWAY = "gateway";
+	public static final String PROP_TWIN = "twin";
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = COL_GATEWAY_FK)
@@ -46,8 +50,12 @@ public abstract class Thing extends BaseEntity {
 	@Column(name = COL_READABLE)
 	private String readable;
 	
-	@OneToOne(mappedBy = ThingProxy.PROP_THING)
+	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ThingProxy proxy;
+
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = COL_TWIN_FK)
+	private DigitalTwin twin;
 
 	Thing() {
 	}
@@ -60,6 +68,17 @@ public abstract class Thing extends BaseEntity {
 		gateway.getThings().add(this);
 
 		type.getThings().add(this);
+	}
+
+	public abstract String getIdentifier();
+	public abstract String getKind();
+
+	public DigitalTwin getTwin() {
+		return twin;
+	}
+
+	public void setTwin(DigitalTwin twin) {
+		this.twin = twin;
 	}
 
 	public ThingGateway getGateway() {
@@ -76,5 +95,21 @@ public abstract class Thing extends BaseEntity {
 
 	public void setType(ThingType type) {
 		this.type = type;
+	}
+
+	public String getReadable() {
+		return readable;
+	}
+
+	public void setReadable(String readable) {
+		this.readable = readable;
+	}
+
+	public ThingProxy getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(ThingProxy proxy) {
+		this.proxy = proxy;
 	}
 }

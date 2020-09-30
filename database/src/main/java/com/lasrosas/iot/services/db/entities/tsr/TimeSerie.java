@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.lasrosas.iot.services.db.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.services.db.entities.shared.BaseEntity;
 import com.lasrosas.iot.services.db.entities.thg.Thing;
 
@@ -26,6 +27,7 @@ public class TimeSerie extends BaseEntity {
 	public static final String COL_SENSOR = PREFIX + "SENSOR";
 	public static final String COL_TYPE_FK = PREFIX_FK + TimeSerieType.PREFIX + "TYPE";
 	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "THING";
+	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
 	public static final String PROP_TYPE = "type";
 
 	@ManyToOne(optional = false)
@@ -34,10 +36,14 @@ public class TimeSerie extends BaseEntity {
 
 	@Column(name=COL_SENSOR)
 	private String sensor;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = COL_TYPE_FK)
 	private TimeSerieType type;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = COL_TWIN_FK)
+	private DigitalTwin twin;
 
 	@OneToMany(mappedBy = TimeSeriePoint.PROP_TIME_SERIE)
 	private List<TimeSeriePoint> points;
@@ -83,5 +89,13 @@ public class TimeSerie extends BaseEntity {
 
 	public void setPoints(List<TimeSeriePoint> points) {
 		this.points = points;
+	}
+
+	public DigitalTwin getTwin() {
+		return twin;
+	}
+
+	public void setTwin(DigitalTwin twin) {
+		this.twin = twin;
 	}
 }

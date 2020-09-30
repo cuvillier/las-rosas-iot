@@ -21,14 +21,15 @@ public class TimeSerieType extends BaseEntity {
 	public static final String TABLE = "T_TSR_TIME_SERIE_TYPE";
 	public static final String PREFIX = "TST_";
 	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_REDEABLE = PREFIX + "READABLE";
+	public static final String COL_DIFFUSED = PREFIX + "DIFFUSED";
 	public static final String COL_SCHEMA = PREFIX + "SCHEMA";
 
 	@OneToMany(mappedBy = TimeSerie.PROP_TYPE)
 	private List<TimeSerie> timeSeries;
 
-	@Column(name=COL_REDEABLE)
-	private String readable;
+	@Column(name=COL_DIFFUSED)
+	private boolean diffused;
+
 
 	@Column(name=COL_SCHEMA)
 	private String schema;
@@ -42,6 +43,14 @@ public class TimeSerieType extends BaseEntity {
 		this.schema = schema;
 	}
 
+	public boolean isDiffused() {
+		return diffused;
+	}
+
+	public void setDiffused(boolean diffused) {
+		this.diffused = diffused;
+	}
+
 	public List<TimeSerie> getTimeSeries() {
 		if (timeSeries == null)
 			timeSeries = new ArrayList<>();
@@ -50,14 +59,6 @@ public class TimeSerieType extends BaseEntity {
 
 	public void setTimeSeries(List<TimeSerie> timeSeries) {
 		this.timeSeries = timeSeries;
-	}
-
-	public String getReadable() {
-		return readable;
-	}
-
-	public void setReadable(String readable) {
-		this.readable = readable;
 	}
 
 	public String getSchema() {

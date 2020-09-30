@@ -3,15 +3,13 @@ package com.lasrosas.iot.services.lora.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.lasrosas.iot.services.lora.parser.impl.adenuis.AdenuisARF8180BAParser;
-import com.lasrosas.iot.services.lora.parser.impl.elsys.ElsysERSParser;
-
 public class PayloadParsers {
+
 	private Map<String, PayloadParser> parsers = new HashMap<>();
 
-	public PayloadParsers() {
-		add(new AdenuisARF8180BAParser());
-		add(new ElsysERSParser());
+	public PayloadParsers(PayloadParser ... parsers) {
+		for(var parser : parsers)
+			add(parser);
 	}
 
 	private void add(PayloadParser parser) {

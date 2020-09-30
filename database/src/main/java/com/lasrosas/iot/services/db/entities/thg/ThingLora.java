@@ -36,4 +36,14 @@ public class ThingLora extends Thing {
 	public boolean isLogDecodedMessages() {
 		return true;
 	}
+
+	@Override
+	public String getIdentifier() {
+		return this.deveui;
+	}
+
+	@Override
+	public String getKind() {
+		return "lora";
+	}
 }

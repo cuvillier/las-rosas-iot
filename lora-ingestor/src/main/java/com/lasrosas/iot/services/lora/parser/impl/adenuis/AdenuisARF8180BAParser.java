@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lasrosas.iot.services.lora.MessageHolder;
-import com.lasrosas.iot.services.lora.ontology.AirEnvironment;
 import com.lasrosas.iot.services.lora.parser.PayloadParser;
+import com.lasrosas.iot.services.lora.parser.impl.adenuis.AdenuisTempFrame.BaseFrame;
 import com.lasrosas.iot.services.lora.parser.impl.adenuis.AdenuisTempFrame.Frame0x30x43;
+import com.lasrosas.iot.services.ontology.AirEnvironment;
+import com.lasrosas.iot.services.ontology.BatteryLevel;
 
 public class AdenuisARF8180BAParser implements PayloadParser {
 	private AdenuisTempParser parser = new AdenuisTempParser();
@@ -32,7 +34,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 			if(temp10thdeg != null) {
 
 				var norm = new AirEnvironment();
-				norm.setTemperature(temp10thdeg / 10.0F);
+				norm.setTemperature(temp10thdeg / 10.0);
 
 				result.add(new MessageHolder(AirEnvironment.SCHEMA, "InternalSensor", norm));
 			}
@@ -41,10 +43,19 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 			if(temp10thdeg != null) {
 
 				var norm = new AirEnvironment();
-				norm.setTemperature(temp10thdeg / 10.0F);
+				norm.setTemperature(temp10thdeg / 10.0);
 
 				result.add(new MessageHolder(AirEnvironment.SCHEMA, "ExternalSensor", norm));
 			}
+		}
+
+		if(message instanceof Frame0x30x43 ) {
+			BaseFrame frame = (BaseFrame)message;
+			var normalized = new BatteryLevel();
+
+			normalized.setPercentage(frame.getStatus().isLowBat()?0:1);
+
+			result.add(new MessageHolder(BatteryLevel.SCHEMA, null, normalized));
 		}
 
 		return result;
