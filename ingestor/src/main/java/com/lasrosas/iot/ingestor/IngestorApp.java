@@ -11,14 +11,14 @@ import org.springframework.context.annotation.PropertySource;
 import com.lasrosas.iot.database.IOTDatabaseConfig;
 
 @SpringBootApplication(scanBasePackages="com.lasrosas.iot")
-@PropertySource("classpath:LoraIngestorApp.properties")
+@PropertySource("classpath:IngestorApp.properties")
 @Import(IOTDatabaseConfig.class)
-public class LoraIngestorApp {
+public class IngestorApp {
 
-	public static class LoraIngestorLineRunner implements CommandLineRunner {
+	public static class IngestorLineRunner implements CommandLineRunner {
 		private LoraIngestor ingestor;
 
-		public LoraIngestorLineRunner(LoraIngestor ingestor) {
+		public IngestorLineRunner(LoraIngestor ingestor) {
 			this.ingestor = ingestor;
 		}
 
@@ -33,12 +33,12 @@ public class LoraIngestorApp {
 	}
 
 	public static final void main(String... args) {
-		SpringApplication.run(LoraIngestorApp.class, args);
+		SpringApplication.run(IngestorApp.class, args);
 	}
 
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		var ingestor = ctx.getBean(LoraIngestor.class);
-		return new LoraIngestorLineRunner(ingestor);
+		return new IngestorLineRunner(ingestor);
 	}
 }

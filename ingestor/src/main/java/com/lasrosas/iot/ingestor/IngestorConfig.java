@@ -14,7 +14,7 @@ import com.lasrosas.iot.shared.utils.LocalTopic;
 
 
 @Configuration
-public class LoraIngestorConfig {
+public class IngestorConfig {
 	
 	@Bean
 	@ConfigurationProperties(prefix = "lora-ingestor")

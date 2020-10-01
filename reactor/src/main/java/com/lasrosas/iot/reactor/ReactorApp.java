@@ -25,10 +25,6 @@ public class ReactorApp {
 		@Override
 		public void run(String... args) throws Exception {
 			reactor.start();
-			
-			while(true) {
-				Thread.sleep(60*60*1000);
-			}
 		}
 	}
 
@@ -38,7 +34,7 @@ public class ReactorApp {
 
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-		var ingestor = ctx.getBean(Reactor.class);
-		return new ReactorLineRunner(ingestor);
+		var reactor = ctx.getBean(Reactor.class);
+		return new ReactorLineRunner(reactor);
 	}
 }
