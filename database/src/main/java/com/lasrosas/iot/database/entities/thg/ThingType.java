@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,6 +25,7 @@ public class ThingType extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_READABLE = PREFIX + "READABLE";
 	public static final String COL_MODEL = PREFIX + "MODEL";
+	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "BATTERY_MIN_PERCENTAGE";
 	public static final String COL_MANUFACTURER = PREFIX + "MANUFACTURER";
 
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
@@ -39,6 +39,9 @@ public class ThingType extends BaseEntity {
 
 	@Column(name = COL_READABLE)
 	private String readable;
+
+	@Column(name = COL_BATTERY_MIN_PERCENTAGE)
+	private Double batteryMinPercentage;
 
 	ThingType() {
 	}
@@ -79,5 +82,13 @@ public class ThingType extends BaseEntity {
 
 	public void setReadable(String readable) {
 		this.readable = readable;
+	}
+
+	public Double getBatteryMinPercentage() {
+		return batteryMinPercentage;
+	}
+
+	public void setBatteryMinPercentage(Double batteryMinPercentage) {
+		this.batteryMinPercentage = batteryMinPercentage;
 	}
 }

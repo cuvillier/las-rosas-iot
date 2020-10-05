@@ -2,7 +2,9 @@ package com.lasrosas.iot.ingestor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -12,16 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.lasrosas.iot.database.entities.alrm.Alarm;
+import com.lasrosas.iot.database.entities.alrm.AlarmType;
+import com.lasrosas.iot.database.entities.alrm.ThingAlarm;
+import com.lasrosas.iot.database.entities.thg.Thing;
 import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.entities.thg.ThingProxy;
 import com.lasrosas.iot.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
+import com.lasrosas.iot.database.repo.ThingAlarmRepo;
+import com.lasrosas.iot.database.repo.AlarmTypeRepo;
 import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.ingestor.parser.PayloadParsers;
+import com.lasrosas.iot.shared.ontology.BatteryLevel;
 import com.lasrosas.iot.shared.utils.GsonUtils;
 import com.lasrosas.iot.shared.utils.LocalTopic;
 import com.lasrosas.iot.shared.utils.NotFoundException;
@@ -30,8 +39,6 @@ public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
 	private LoraServerRAK7249Mqtt rak7249Mqtt;
-
-	private InfluxdbWriter influxdbWriter;
 
 	private PayloadParsers sensors;
 
@@ -49,33 +56,29 @@ public class LoraIngestor {
 
 	@Autowired
 	private TimeSeriePointRepo tspRepo;
-	
-	@Autowired
-	private LocalTopic<TimeSeriePoint> newPointTopic;
 
-	public LoraIngestor(LoraServerRAK7249Mqtt rak7249Mqtt, PayloadParsers sensors, InfluxdbWriter influxdbWriter) {
+	@Autowired
+	private ThingAlarmRepo alrRepo;
+
+	@Autowired
+	private AlarmTypeRepo altRepo;
+
+	private LocalTopic<List<TimeSeriePoint>> newPointTopic;
+	
+	public LoraIngestor(
+			LoraServerRAK7249Mqtt rak7249Mqtt, 
+			PayloadParsers sensors) {
 		this.rak7249Mqtt = rak7249Mqtt;
 		this.sensors = sensors;
-		this.influxdbWriter = influxdbWriter;
 	}
 
-	public void start() throws Exception {
+	public void start(LocalTopic<List<TimeSeriePoint>> newPointTopic) throws Exception {
 
-		newPointTopic.subcribe(influxdbWriter::send);
-
-		newPointTopic.subcribe(this::sendToTwin);
+		this.newPointTopic = newPointTopic;
 
 		this.rak7249Mqtt.start(c -> {
 			handleLoraMessage(rak7249Mqtt.getLoraServerRAK7249(), c);
 		});
-	}
-
-	private void sendToTwin(TimeSeriePoint point) {
-
-		var thing = point.getTimeSerie().getThing();
-
-		var dtwin = thing.getTwin();
-		if( dtwin != null ) dtwin.onNewPoint(point);
 	}
 
 	private String getAsString(JsonObject json, String memberName, boolean mandatory) {
@@ -116,6 +119,8 @@ public class LoraIngestor {
 			var data = decodeData(loraMessage);
 
 			var decodedMessages = payloadParser.decode(data);
+			
+			var notification = new ArrayList<TimeSeriePoint>();
 
 			for (var decodedMessage : decodedMessages) {
 
@@ -125,11 +130,51 @@ public class LoraIngestor {
 				var normalizedMessages = payloadParser.normalize(decodedMessage);
 
 				for (var normalizedMessage : normalizedMessages) {
-					insertPoint(thing, time, normalizedMessage, true);
+					var point = insertPoint(thing, time, normalizedMessage, true);
+
+					if(normalizedMessage.getMessage() instanceof BatteryLevel) {
+						handleBatteryLevel(thing, time, (BatteryLevel)normalizedMessage.getMessage());
+					} else
+						notification.add(point);
 				}
 			}
+
+			newPointTopic.publish(notification);
+
 		} catch (Exception e) {
 			log.error("Cannot handle message", e);
+		}
+	}
+
+	private void handleBatteryLevel(Thing thing, LocalDateTime time, BatteryLevel batteryLevel) {
+		boolean newAlarm = false;
+
+		var thingType = thing.getType();
+
+		if( batteryLevel.getAlarm() != null) {
+			newAlarm = batteryLevel.getAlarm();
+
+		} else if(batteryLevel.getPercentage() != null ) {
+			var percentage = batteryLevel.getPercentage();
+
+			if( thingType.getBatteryMinPercentage() != null && percentage < thingType.getBatteryMinPercentage()) {
+				newAlarm = true;
+			}
+		}
+
+		var alarmType = altRepo.getByName(AlarmType.THING_BATTERY_ALARM);
+		var alarm = alrRepo.getByTypeAndThingAndStateNot(alarmType, thing, Alarm.State.Closed);
+
+		if(alarm == null && newAlarm) {
+
+			// Activate battery alarm
+			alarm = new ThingAlarm(thing, alarmType, time);
+			alrRepo.save(alarm);
+
+		} else if(alarm != null && !newAlarm ) {
+
+			// Close the battery alarm
+			alarm.close(time);
 		}
 	}
 
@@ -143,9 +188,9 @@ public class LoraIngestor {
 		return decodedData;
 	}
 
-	private void insertPoint(ThingLora thing, LocalDateTime time, MessageHolder holder, boolean proxify) {
+	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, MessageHolder holder, boolean proxify) {
 		var json = gson.toJsonTree(holder.getMessage()).getAsJsonObject();
-		insertPoint(thing, time, holder.getSchema(), holder.getSensor(), json);
+		var point = insertPoint(thing, time, holder.getSchema(), holder.getSensor(), json);
 
 		if( proxify) {
 			var proxy = thing.getProxy();
@@ -179,11 +224,12 @@ public class LoraIngestor {
 			var changes = GsonUtils.mergeJsonObjects(json, subjson, time);
 			if(changes != 0) 
 				proxy.setValues(gson.toJson(proxyValue));
-
 		}
+
+		return point;
 	}
 
-	private void insertPoint(ThingLora thing, LocalDateTime time, String schema, String sensor, JsonObject message) {
+	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, String schema, String sensor, JsonObject message) {
 
 		if( schema == null ) 
 			throw new NotFoundException("schema in the sensor normalized message.");
@@ -204,7 +250,6 @@ public class LoraIngestor {
 
 		var tsp = new TimeSeriePoint(tsr, time, json);
 		tspRepo.save(tsp);
-
-		newPointTopic.publish(tsp);
+		return tsp;
 	}
 }

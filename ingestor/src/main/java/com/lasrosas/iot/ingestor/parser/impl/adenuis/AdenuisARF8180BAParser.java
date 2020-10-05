@@ -51,9 +51,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 
 		if(message instanceof Frame0x30x43 ) {
 			BaseFrame frame = (BaseFrame)message;
-			var normalized = new BatteryLevel();
-
-			normalized.setPercentage(frame.getStatus().isLowBat()?0:1);
+			var normalized = new BatteryLevel(frame.getStatus().isLowBat());
 
 			result.add(new MessageHolder(BatteryLevel.SCHEMA, null, normalized));
 		}

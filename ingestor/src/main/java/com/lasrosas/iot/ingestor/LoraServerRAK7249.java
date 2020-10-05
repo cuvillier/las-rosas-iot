@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.repo.GatewayRepo;
 import com.lasrosas.iot.database.repo.ThingLoraRepo;
@@ -65,7 +66,12 @@ public class LoraServerRAK7249 extends LoraServer {
 				return;
 			}
 
-			var payload = gson.fromJson(payloadJson, JsonObject.class);
+			JsonObject payload;
+			try {
+				payload = gson.fromJson(payloadJson, JsonObject.class);
+			} catch(JsonSyntaxException e) {
+				throw new RuntimeException("Message with an invalid Json format", e);
+			}
 
 			switch(messageType) {
 			case JOIN:

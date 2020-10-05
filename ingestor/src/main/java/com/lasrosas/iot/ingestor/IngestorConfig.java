@@ -1,5 +1,7 @@
 package com.lasrosas.iot.ingestor;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +14,13 @@ import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
 import com.lasrosas.iot.shared.utils.LocalTopic;
 
-
 @Configuration
 public class IngestorConfig {
 	
 	@Bean
 	@ConfigurationProperties(prefix = "lora-ingestor")
-	public LoraIngestor LoraIngestor(LoraServerRAK7249Mqtt rak7249mqtt, PayloadParsers sensors, InfluxdbWriter influxdbWriter) {
-		return new LoraIngestor(rak7249mqtt, sensors, influxdbWriter);
+	public LoraIngestor LoraIngestor(LoraServerRAK7249Mqtt rak7249mqtt, PayloadParsers sensors) {
+		return new LoraIngestor(rak7249mqtt, sensors);
 	}
 
 	@Bean
@@ -70,12 +71,17 @@ public class IngestorConfig {
 	}
 
 	@Bean
-	public InfluxdbWriter InfluxdbWriter() {
-		return new InfluxdbWriter();
+	public WriteMessageToInfluxDB WriteMessageToInfluxDB() {
+		return new WriteMessageToInfluxDB();
+	}
+
+	@Bean
+	public SendMessageToTwin sendMessageToTwin() {
+		return new SendMessageToTwin();
 	}
 
 	@Bean(name="newPointTopic")
-	public LocalTopic<TimeSeriePoint> newPointTopic() {
-		return new LocalTopic<TimeSeriePoint>();
+	public LocalTopic<List<TimeSeriePoint>> newPointTopic() {
+		return new LocalTopic<List<TimeSeriePoint>>();
 	}
 }

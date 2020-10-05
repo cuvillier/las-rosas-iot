@@ -3,8 +3,6 @@ package com.lasrosas.iot.shared.utils;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.LocalDateTime;
-
 import org.junit.Test;
 
 import com.google.gson.JsonObject;

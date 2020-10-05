@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<config.path>${project.basedir}/config</config.path>
 	</properties>
 
 	<dependencyManagement>
@@ -71,29 +72,6 @@
 	</dependencyManagement>
 
 
-	<dependencies>
-	</dependencies>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<release>11</release>
-						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-						<parameters>true</parameters>
-					</configuration>
-				</plugin>
-
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<argLine>--enable-preview</argLine>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 	<modules>
 		<module>shared</module>
 		<module>database</module>

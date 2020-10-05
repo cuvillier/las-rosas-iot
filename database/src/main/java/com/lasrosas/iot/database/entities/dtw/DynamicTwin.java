@@ -3,8 +3,6 @@ package com.lasrosas.iot.database.entities.dtw;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import com.lasrosas.iot.database.entities.thg.ThingLora;
-
 @Entity
 @DiscriminatorValue(DynamicTwin.DISCRIMINATOR)
 public class DynamicTwin extends DigitalTwin {

@@ -11,7 +11,12 @@ import org.springframework.context.annotation.PropertySource;
 import com.lasrosas.iot.database.IOTDatabaseConfig;
 
 @SpringBootApplication(scanBasePackages="com.lasrosas.iot")
-@PropertySource("classpath:ReactorApp.properties")
+@PropertySource({
+		"file:${config.path}/LasRosasIOT.properties",
+		"file:${config.path}/ReactorApp.properties",
+		"classpath:ReactorApp-jar.properties",
+		"classpath:Database-jar.properties",
+})
 @Import(IOTDatabaseConfig.class)
 public class ReactorApp {
 

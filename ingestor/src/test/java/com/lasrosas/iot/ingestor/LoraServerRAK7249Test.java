@@ -6,6 +6,6 @@ public class LoraServerRAK7249Test {
 
 	@Test
 	public void test() {
-		var server = new LoraServerRAK7249();
+		// var server = new LoraServerRAK7249();
 	}
 }

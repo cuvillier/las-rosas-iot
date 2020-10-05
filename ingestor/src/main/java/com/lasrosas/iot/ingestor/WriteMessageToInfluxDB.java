@@ -1,6 +1,7 @@
 package com.lasrosas.iot.ingestor;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,8 +19,8 @@ import com.google.gson.JsonObject;
 import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 
-public class InfluxdbWriter {
-	public static Logger log = LoggerFactory.getLogger(InfluxdbWriter.class);
+public class WriteMessageToInfluxDB {
+	public static Logger log = LoggerFactory.getLogger(WriteMessageToInfluxDB.class);
 
 	private final static String DATABASE_NAME= "lasrosasiot";
 
@@ -31,28 +32,29 @@ public class InfluxdbWriter {
 	private String password = "lasrosas";
 	private InfluxDB influxDB;
 
-	public void send(TimeSeriePoint point) {
+	public void send(List<TimeSeriePoint> points) {
 
 		influxDB = InfluxDBFactory.connect(serverURL, username, password);
 		
 		try {
 			influxDB.setDatabase(DATABASE_NAME);
 	
-			ThingLora thing = (ThingLora)point.getTimeSerie().getThing();
-			String measurement = "lora." + thing.getDeveui() + "." + point.getTimeSerie().getType().getSchema();
-			if(point.getTimeSerie().getSensor() != null)
-				measurement += "." + point.getTimeSerie().getSensor();
+			for(var point: points) {
+				ThingLora thing = (ThingLora)point.getTimeSerie().getThing();
+				String measurement = "lora." + thing.getDeveui() + "." + point.getTimeSerie().getType().getSchema();
+				if(point.getTimeSerie().getSensor() != null)
+					measurement += "." + point.getTimeSerie().getSensor();
+		
+				var jsono = gson.fromJson(point.getValue(), JsonObject.class);
+				
+				var influxPointBuilder = Point.measurement(measurement)
+					    .time(Timestamp.valueOf(point.getTime()).getTime(), TimeUnit.MILLISECONDS);
 	
-			var jsono = gson.fromJson(point.getValue(), JsonObject.class);
-			
-			var influxPointBuilder = Point.measurement(measurement)
-				    .time(Timestamp.valueOf(point.getTime()).getTime(), TimeUnit.MILLISECONDS);
-
-			addFields(influxPointBuilder, "", jsono);
-	
-			var influxPoint = influxPointBuilder.build();
-			influxDB.write(influxPoint);
-
+				addFields(influxPointBuilder, "", jsono);
+		
+				var influxPoint = influxPointBuilder.build();
+				influxDB.write(influxPoint);
+			}
 		} finally {
 			influxDB.close();
 		}

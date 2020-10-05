@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.lasrosas.iot.database.entities.alrm.Alarm;
+import com.lasrosas.iot.database.entities.alrm.ThingAlarm;
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
 import com.sun.istack.NotNull;

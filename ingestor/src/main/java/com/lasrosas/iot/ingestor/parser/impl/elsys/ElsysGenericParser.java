@@ -241,10 +241,7 @@ public class ElsysGenericParser {
 		}
 
 		if(message.getVdd() != null ) {
-			var normalized = new BatteryLevel();
-			normalized.setVoltage(message.getVdd() / 1000.0);
-			normalized.computePercentageFromVoltage(0, 3.6);
-
+			var normalized = new BatteryLevel(message.getVdd() / 1000.0, 0.0, 3.6);
 			result.add(new MessageHolder(BatteryLevel.SCHEMA, null, normalized));
 		}
 
