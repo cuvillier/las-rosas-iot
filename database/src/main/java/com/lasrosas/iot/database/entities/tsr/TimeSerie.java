@@ -60,6 +60,12 @@ public class TimeSerie extends BaseEntity {
 		this.sensor = sensor;
 	}
 
+	public TimeSerie(DigitalTwin twin, TimeSerieType type) {
+		super();
+		this.twin= twin;
+		this.type = type;
+	}
+
 	public Thing getThing() {
 		return thing;
 	}

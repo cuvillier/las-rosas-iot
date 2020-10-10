@@ -1,7 +1,7 @@
 package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.ingestor.MessageHolder;
+import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ConnectionMode;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ExternalSensorIdentifier;
@@ -18,7 +18,7 @@ import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisTempParser {
 
-	public MessageHolder parse(byte[] payload) {
+	public ThingMessageHolder parse(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
@@ -50,7 +50,7 @@ public class AdenuisTempParser {
 
 		frame.setStatus(status);
 
-		return new MessageHolder("Adenuis.Temp.frame." + frame.getClass().getSimpleName(), null, frame);
+		return new ThingMessageHolder("Adenuis.Temp.frame." + frame.getClass().getSimpleName(), null, frame);
 	}
 
 	public Frame0x10 parse0x10(ByteParser parser) {

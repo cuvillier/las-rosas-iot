@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -16,11 +17,14 @@ import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.repo.GatewayRepo;
 import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.ThingTypeRepo;
+import com.lasrosas.iot.mqtt.MqttSession;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class LoraServerRAK7249 extends LoraServer {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 	public static Logger payloadLog = LoggerFactory.getLogger("payload-rak7249");
+
+	private MqttSession mqtt;
 
 	@Autowired
 	private ThingLoraRepo thgLorRepo;
@@ -38,8 +42,22 @@ public class LoraServerRAK7249 extends LoraServer {
 		JOIN, UPLOAD
 	}
 
-	public LoraServerRAK7249() {
+	public LoraServerRAK7249(MqttSession mqtt) {
 		super("rak7249");
+
+		this.mqtt = mqtt;
+	}
+
+	public void start(Consumer<JsonObject> consumer) {
+		try {
+			mqtt.subscribe("application/+/device/+/+", (topic, msg) -> {
+				handleMessage(topic, msg, consumer);
+			});
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Transactional
@@ -80,7 +98,7 @@ public class LoraServerRAK7249 extends LoraServer {
 
 			case UPLOAD:
 				var loraMessage = handleUpload(payload);
-				consumer.accept((loraMessage));
+				consumer.accept(loraMessage);
 				break;
 			}
 		} catch(Exception e) {

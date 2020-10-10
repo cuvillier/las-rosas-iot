@@ -2,9 +2,10 @@ package com.lasrosas.iot.ingestor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.ingestor.parser.PayloadParsers;
@@ -12,20 +13,21 @@ import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
+import com.lasrosas.iot.mqtt.MqttSession;
 import com.lasrosas.iot.shared.utils.LocalTopic;
 
-@Configuration
+@ConfigurationProperties
+@Validated
 public class IngestorConfig {
-	
+
 	@Bean
-	@ConfigurationProperties(prefix = "lora-ingestor")
-	public LoraIngestor LoraIngestor(LoraServerRAK7249Mqtt rak7249mqtt, PayloadParsers sensors) {
-		return new LoraIngestor(rak7249mqtt, sensors);
+	public LoraIngestor LoraIngestor(LoraServerRAK7249 rak7249, PayloadParsers sensors) {
+		return new LoraIngestor(rak7249, sensors);
 	}
 
 	@Bean
-	public LoraServerRAK7249 LoraServerRAK7249() {
-		return new LoraServerRAK7249();
+	public LoraServerRAK7249 loraServerRAK7249(@Qualifier("rak7249.mqtt") MqttSession mqtt) {
+		return new LoraServerRAK7249(mqtt);
 	}
 
 	@Bean
@@ -58,26 +60,15 @@ public class IngestorConfig {
 		return new PayloadParsers(adenuisARF8180BAParser, elsysErsParser, elsysMB7389Parser);
 	}
 
-	@Bean
-	@ConfigurationProperties(prefix = "rak7249")
-	public LoraServer loraServerRAK4972() {
-		return new LoraServerRAK7249();
+	@Bean("rak7249.mqtt")
+	@ConfigurationProperties(prefix = "lora-servers.rak7249.mqtt")
+	public MqttSession mqttRak7249() {
+		return new MqttSession();
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "rak7249")
-	public LoraServerRAK7249Mqtt loraServerRAK4972Mqtt(LoraServerRAK7249 loraServerRAK7249) {
-		return new LoraServerRAK7249Mqtt(loraServerRAK7249);
-	}
-
-	@Bean
-	public WriteMessageToInfluxDB WriteMessageToInfluxDB() {
-		return new WriteMessageToInfluxDB();
-	}
-
-	@Bean
-	public SendMessageToTwin sendMessageToTwin() {
-		return new SendMessageToTwin();
+	public SendMessageToTwin sendMessageToTwin(@Qualifier("mqtt") MqttSession mqtt) {
+		return new SendMessageToTwin(mqtt);
 	}
 
 	@Bean(name="newPointTopic")

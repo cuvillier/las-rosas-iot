@@ -3,7 +3,7 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lasrosas.iot.ingestor.MessageHolder;
+import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x30x43;
@@ -14,17 +14,17 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 	private AdenuisTempParser parser = new AdenuisTempParser();
 
 	@Override
-	public List<MessageHolder> decode(byte[] payload) {
+	public List<ThingMessageHolder> decode(byte[] payload) {
 
-		var result = new ArrayList<MessageHolder>();
+		var result = new ArrayList<ThingMessageHolder>();
 		result.add(parser.parse(payload));
 
 		return result;
 	}
 
 	@Override
-	public List<MessageHolder> normalize(MessageHolder messageHolder) {
-		var result = new ArrayList<MessageHolder>();
+	public List<ThingMessageHolder> normalize(ThingMessageHolder messageHolder) {
+		var result = new ArrayList<ThingMessageHolder>();
 		Object message = messageHolder.getMessage();
 
 		if(message instanceof Frame0x30x43 ) {
@@ -36,7 +36,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(new MessageHolder(AirEnvironment.SCHEMA, "InternalSensor", norm));
+				result.add(new ThingMessageHolder(AirEnvironment.SCHEMA, "InternalSensor", norm));
 			}
 
 			temp10thdeg = frame.getValueExternalSensor10thDeg();
@@ -45,7 +45,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(new MessageHolder(AirEnvironment.SCHEMA, "ExternalSensor", norm));
+				result.add(new ThingMessageHolder(AirEnvironment.SCHEMA, "ExternalSensor", norm));
 			}
 		}
 
@@ -53,7 +53,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 			BaseFrame frame = (BaseFrame)message;
 			var normalized = new BatteryLevel(frame.getStatus().isLowBat());
 
-			result.add(new MessageHolder(BatteryLevel.SCHEMA, null, normalized));
+			result.add(new ThingMessageHolder(BatteryLevel.SCHEMA, null, normalized));
 		}
 
 		return result;

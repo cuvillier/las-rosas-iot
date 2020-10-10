@@ -1,7 +1,7 @@
 package com.lasrosas.iot.shared.ontology;
 
-public class DistanceMeasure extends Ontology {
-	public static final String SCHEMA = "DistanceMeasure";
+public class DistanceMeasurement extends Ontology {
+	public static final String SCHEMA = "DistanceMeasurement";
 
 	private Double distance;
 

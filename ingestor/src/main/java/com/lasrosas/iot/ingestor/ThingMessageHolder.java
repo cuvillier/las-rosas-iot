@@ -1,11 +1,16 @@
 package com.lasrosas.iot.ingestor;
 
-public class MessageHolder {
+import java.time.LocalDateTime;
+
+public class ThingMessageHolder {
 	private String schema;
 	private String sensor;
+	private Long thingId;
+	private Long twinId;
+	private LocalDateTime time;
 	private Object message;
 
-	public MessageHolder(String schema, String sensor, Object message) {
+	public ThingMessageHolder(String schema, String sensor, Object message) {
 		super();
 
 		this.schema = schema;

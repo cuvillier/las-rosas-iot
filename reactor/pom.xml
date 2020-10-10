@@ -19,14 +19,6 @@
 			<groupId>com.lasrosas.iot</groupId>
 			<artifactId>database</artifactId>			
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.influxdb</groupId>
-			<artifactId>influxdb-java</artifactId>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

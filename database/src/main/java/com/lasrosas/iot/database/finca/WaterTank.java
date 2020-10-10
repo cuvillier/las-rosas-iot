@@ -4,16 +4,21 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
-import com.lasrosas.iot.shared.ontology.DistanceMeasure;
+import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
 
 @Entity
 @DiscriminatorValue(WaterTank.DISCRIMINATOR)
 public class WaterTank extends DigitalTwin {
+	public static final Logger log = LoggerFactory.getLogger(WaterTank.class);
+	
 	public static final String PREFIX = "WAT_";
 	public static final String DISCRIMINATOR = "WAT";
 
@@ -41,7 +46,7 @@ public class WaterTank extends DigitalTwin {
 	private Double volume;
 
 	@Column(name=COL_PERCENTAGE)
-	private Double percentage;
+	private Integer percentageFill;
 
 	public WaterTank() {
 	}
@@ -54,9 +59,9 @@ public class WaterTank extends DigitalTwin {
 
 	@Override
 	protected void handleNewPoint(TimeSeriePoint point) {
-		if( point.getTimeSerie().getType().getSchema().contentEquals(DistanceMeasure.SCHEMA)) {
+		if( point.getTimeSerie().getType().getSchema().contentEquals(DistanceMeasurement.SCHEMA)) {
 			var gson = new GsonBuilder().create();
-			var distanceMeasure = gson.fromJson(point.getValue(), DistanceMeasure.class);
+			var distanceMeasure = gson.fromJson(point.getValue(), DistanceMeasurement.class);
 			if(distanceMeasure.getDistance() != null) {
 				setLevel(distanceMeasure.getDistance());
 			}
@@ -65,7 +70,7 @@ public class WaterTank extends DigitalTwin {
 
 	@Override
 	protected boolean isInterestedBy(TimeSerieType tst) {
-		return	tst.getSchema().equals(DistanceMeasure.SCHEMA) ||
+		return	tst.getSchema().equals(DistanceMeasurement.SCHEMA) ||
 				tst.getSchema().equals(AirEnvironment.SCHEMA);
 	}
 
@@ -79,7 +84,7 @@ public class WaterTank extends DigitalTwin {
 
 	private void onLevelChanged() {
 		this.volume = computeVolume();
-		this.percentage = computeFillPercent();
+		this.percentageFill = computeFillPercent();
 	}
 
 	private Double computeVolume() {
@@ -96,15 +101,18 @@ public class WaterTank extends DigitalTwin {
 		
 	}
 
-	public Double computeFillPercent() {
+	public Integer computeFillPercent() {
 		if( level == null)
 			return null;
-		else
-			return this.volume/ getVolumeMax();
+		else {
+			var percentage = (int)(100*(this.volume/ getVolumeMax()) + 0.5);
+			log.info("WaterTank volume=" + this.volume + " volumeMax=" + getVolumeMax() + " %=" + percentage);
+			return percentage;
+		}
 	}
 
-	public Double getPercentage() {
-		return percentage;
+	public Integer getPercentageFill() {
+		return percentageFill;
 	}
 
 	public Double getLevel() {

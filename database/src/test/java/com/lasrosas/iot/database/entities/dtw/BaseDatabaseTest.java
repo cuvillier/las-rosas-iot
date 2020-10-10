@@ -15,8 +15,8 @@ import com.lasrosas.iot.shared.utils.UtilsConfig;
 @DataJpaTest()
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ContextConfiguration(classes = { DatabaseTestConfig.class, UtilsConfig.class })
-@EnableJpaRepositories(basePackages = { "com.lasrosas.iot.database.repo" })
-@EntityScan("com.lasrosas.iot.database.entities")
+@EnableJpaRepositories(basePackages = { "com.lasrosas.iot" })
+@EntityScan("com.lasrosas.iot")
 public abstract class BaseDatabaseTest {
 
 	@PersistenceContext

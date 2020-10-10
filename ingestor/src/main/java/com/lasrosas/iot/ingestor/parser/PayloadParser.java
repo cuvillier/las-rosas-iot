@@ -2,11 +2,11 @@ package com.lasrosas.iot.ingestor.parser;
 
 import java.util.List;
 
-import com.lasrosas.iot.ingestor.MessageHolder;
+import com.lasrosas.iot.ingestor.ThingMessageHolder;
 
 public interface PayloadParser {
 	String getManufacturer();
 	String getModel();
-	List<MessageHolder> decode(byte[] data);
-	List<MessageHolder> normalize(MessageHolder decodedMessage);
+	List<ThingMessageHolder> decode(byte[] data);
+	List<ThingMessageHolder> normalize(ThingMessageHolder decodedMessage);
 }

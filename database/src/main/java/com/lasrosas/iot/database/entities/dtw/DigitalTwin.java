@@ -26,7 +26,7 @@ import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 @Table(name = DigitalTwin.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = DigitalTwin.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = DigitalTwin.COL_DISCRIMINATOR)
-public abstract class DigitalTwin extends BaseEntity {
+public  class DigitalTwin extends BaseEntity {
 
 	public static final String TABLE = "T_DTW_DIGITAL_TWIN";
 	public static final String PREFIX = "TWI_";

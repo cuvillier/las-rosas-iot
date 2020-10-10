@@ -38,7 +38,7 @@ import com.lasrosas.iot.shared.utils.NotFoundException;
 public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
-	private LoraServerRAK7249Mqtt rak7249Mqtt;
+	private LoraServerRAK7249 rak7249;
 
 	private PayloadParsers sensors;
 
@@ -66,9 +66,9 @@ public class LoraIngestor {
 	private LocalTopic<List<TimeSeriePoint>> newPointTopic;
 	
 	public LoraIngestor(
-			LoraServerRAK7249Mqtt rak7249Mqtt, 
+			LoraServerRAK7249 rak7249, 
 			PayloadParsers sensors) {
-		this.rak7249Mqtt = rak7249Mqtt;
+		this.rak7249 = rak7249;
 		this.sensors = sensors;
 	}
 
@@ -76,8 +76,8 @@ public class LoraIngestor {
 
 		this.newPointTopic = newPointTopic;
 
-		this.rak7249Mqtt.start(c -> {
-			handleLoraMessage(rak7249Mqtt.getLoraServerRAK7249(), c);
+		this.rak7249.start(c -> {
+			handleLoraMessage(rak7249, c);
 		});
 	}
 
@@ -188,7 +188,7 @@ public class LoraIngestor {
 		return decodedData;
 	}
 
-	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, MessageHolder holder, boolean proxify) {
+	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, ThingMessageHolder holder, boolean proxify) {
 		var json = gson.toJsonTree(holder.getMessage()).getAsJsonObject();
 		var point = insertPoint(thing, time, holder.getSchema(), holder.getSensor(), json);
 

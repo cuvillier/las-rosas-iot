@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lasrosas.iot.ingestor.MessageHolder;
+import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
 
 public class ElsysErsParser implements PayloadParser {
@@ -13,12 +13,12 @@ public class ElsysErsParser implements PayloadParser {
 	private ElsysGenericParser parser;
 
 	@Override
-	public List<MessageHolder> decode(byte[] data) {
+	public List<ThingMessageHolder> decode(byte[] data) {
 		return parser.decode(data);
 	}
 
 	@Override
-	public List<MessageHolder> normalize(MessageHolder decodedMessage) {
+	public List<ThingMessageHolder> normalize(ThingMessageHolder decodedMessage) {
 		return parser.normalize(decodedMessage);
 	}
 
