@@ -10,9 +10,9 @@ import com.lasrosas.iot.database.IOTDatabaseConfig;
 @SpringBootApplication(scanBasePackages="com.lasrosas.iot")
 @Import({IOTDatabaseConfig.class, ReactorConfig.class})
 public class ReactorApp implements CommandLineRunner {
-	private Reactor reactor;
+	private ReactorEngine reactor;
 
-	public ReactorApp(Reactor reactor) {
+	public ReactorApp(ReactorEngine reactor) {
 		this.reactor = reactor;
 	}
 

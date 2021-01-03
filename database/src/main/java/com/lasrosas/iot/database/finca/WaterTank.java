@@ -1,24 +1,30 @@
 package com.lasrosas.iot.database.finca;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
-import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
 
 @Entity
+@Table(name=WaterTank.TABLE)
+@PrimaryKeyJoinColumn(name=WaterTank.COL_TECHID)
 @DiscriminatorValue(WaterTank.DISCRIMINATOR)
 public class WaterTank extends DigitalTwin {
 	public static final Logger log = LoggerFactory.getLogger(WaterTank.class);
 	
+	public static final String TABLE = "T_DTW_WATER_TANK";
 	public static final String PREFIX = "WAT_";
 	public static final String DISCRIMINATOR = "WAT";
 
@@ -29,6 +35,8 @@ public class WaterTank extends DigitalTwin {
 	public static final String COL_VOLUME = PREFIX + "VOLUME";
 	public static final String COL_PERCENTAGE = PREFIX + "PERCENTAGE";
 	public static final String COL_SENSOR_ALT = PREFIX + "SENSOR_ALT";
+	public static final String COL_WATER_FLOW = PREFIX + "WATER_FLOW";
+	public static final String COL_MAX_WATER_FLOW = PREFIX + "MAX_WATER_FLOW";
 
 	@Column(name=COL_LENGTH)
 	private Double length;
@@ -48,6 +56,12 @@ public class WaterTank extends DigitalTwin {
 	@Column(name=COL_PERCENTAGE)
 	private Integer percentageFill;
 
+	@Column(name=COL_WATER_FLOW)
+	private Double waterFlow;
+
+	@Column(name=COL_MAX_WATER_FLOW)
+	private Double maxWaterFlow;
+
 	public WaterTank() {
 	}
 
@@ -55,17 +69,6 @@ public class WaterTank extends DigitalTwin {
 		this.length = length;
 		this.radius = radius;
 		this.sensorAltitude = sensorAltitude;
-	}
-
-	@Override
-	protected void handleNewPoint(TimeSeriePoint point) {
-		if( point.getTimeSerie().getType().getSchema().contentEquals(DistanceMeasurement.SCHEMA)) {
-			var gson = new GsonBuilder().create();
-			var distanceMeasure = gson.fromJson(point.getValue(), DistanceMeasurement.class);
-			if(distanceMeasure.getDistance() != null) {
-				setLevel(distanceMeasure.getDistance());
-			}
-		}
 	}
 
 	@Override
@@ -119,6 +122,29 @@ public class WaterTank extends DigitalTwin {
 		return level;
 	}
 
+	public void setLevel(LocalDateTime previousTime, Double currentVolume, LocalDateTime time, Double levelMeasured) {
+		log.debug("Update watertank level to " + level + " m. volume=" + currentVolume);
+
+		this.level = levelMeasured;
+
+		// Compute volume
+		onLevelChanged();
+
+		// UPdate waterflow
+		this.waterFlow = computeWaterFlow(time, this.volume, previousTime, currentVolume);
+	}
+
+	private static Double computeWaterFlow(LocalDateTime previousTime,Double previousVolume, LocalDateTime time, Double volume) {
+		if(time == null || volume == null || previousTime == null || previousVolume == null) return null;
+
+		var seconds = time.until(previousTime, ChronoUnit.SECONDS);
+		var houres = seconds / (double)(60*60);	// Waterflow per hour
+		if(houres < 0.0000001) return null;
+		var waterflow = (previousVolume - volume) / houres;
+		log.debug("Compute waterFlow. waterflow=" + waterflow + " time frame=" + seconds + "s");
+		return waterflow;
+	}
+
 	public void setLevel(Double levelMeasured) {
 		this.level = levelMeasured;
 		
@@ -147,5 +173,17 @@ public class WaterTank extends DigitalTwin {
 
 	public void setSensorAltitude(Double sensorAltitude) {
 		this.sensorAltitude = sensorAltitude;
+	}
+
+	public Double getWaterFlow() {
+		return waterFlow;
+	}
+
+	public Double getMaxWaterFlow() {
+		return maxWaterFlow;
+	}
+
+	public void setMaxWaterFlow(Double maxWaterFlow) {
+		this.maxWaterFlow = maxWaterFlow;
 	}
 }

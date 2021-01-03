@@ -11,8 +11,10 @@ lora-servers:
      mqtt:
        clientid: IngesterIn
        server: localhost
+       persistenceFolder: target/mqtt
 mqtt:
    clientid: IngesterOut
+   persistenceFolder: target/mqtt
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -25,3 +27,9 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
         physical_naming_strategy: com.lasrosas.iot.database.UpperCaseNamingStrategy
+logging:
+  level:
+    org.springframework.orm: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.engine.transaction.internal.TransactionImpl: DEBUG
+    com.lasrosas.iot.reactore.reactores.WaterTankReactor: DEBUG

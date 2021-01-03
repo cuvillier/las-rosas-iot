@@ -6,6 +6,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -33,6 +35,7 @@ public abstract class Thing extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_READABLE = PREFIX + "READABLE";
 	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
+	public static final String COL_MODE = PREFIX + "MODE";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "TYPE";
 	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "GATEWAY";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
@@ -59,6 +62,16 @@ public abstract class Thing extends BaseEntity {
 	@JoinColumn(name = COL_TWIN_FK)
 	private DigitalTwin twin;
 
+	public enum Mode {
+		Enabled,
+		Disabled,
+		Removed
+	}
+
+	@Column(name = COL_MODE)
+	@Enumerated(EnumType.STRING)
+	private Mode mode = Mode.Enabled;
+
 	Thing() {
 	}
 
@@ -74,6 +87,14 @@ public abstract class Thing extends BaseEntity {
 
 	public abstract String getIdentifier();
 	public abstract String getKind();
+
+	public Mode getMode() {
+		return mode;
+	}
+
+	public void setMode(Mode mode) {
+		this.mode = mode;
+	}
 
 	public DigitalTwin getTwin() {
 		return twin;

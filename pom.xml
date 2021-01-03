@@ -30,6 +30,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot</groupId>
+				<artifactId>mqtt</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.lasrosas.iot</groupId>
 				<artifactId>shared</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -75,6 +80,7 @@
 	<modules>
 		<module>shared</module>
 		<module>database</module>
+		<module>mqtt</module>
 		<module>ingestor</module>
 		<module>reactor</module>
 	</modules>

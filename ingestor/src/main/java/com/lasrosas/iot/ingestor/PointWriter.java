@@ -96,6 +96,7 @@ public class PointWriter {
 
 		var tsp = new TimeSeriePoint(tsr, time, json);
 		tspRepo.save(tsp);
+
 		return tsp;
 	}
 }

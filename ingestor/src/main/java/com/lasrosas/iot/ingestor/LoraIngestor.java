@@ -10,7 +10,6 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -23,8 +22,8 @@ import com.lasrosas.iot.database.entities.thg.ThingProxy;
 import com.lasrosas.iot.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
-import com.lasrosas.iot.database.repo.ThingAlarmRepo;
 import com.lasrosas.iot.database.repo.AlarmTypeRepo;
+import com.lasrosas.iot.database.repo.ThingAlarmRepo;
 import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
@@ -38,16 +37,14 @@ import com.lasrosas.iot.shared.utils.NotFoundException;
 public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
-	private LoraServerRAK7249 rak7249;
-
 	private PayloadParsers sensors;
 
 	@Autowired
 	private Gson gson;
-	
+
 	@Autowired
 	private ThingLoraRepo thgLoraRepo;
-	
+
 	@Autowired
 	private TimeSerieRepo tsrRepo;
 
@@ -63,29 +60,15 @@ public class LoraIngestor {
 	@Autowired
 	private AlarmTypeRepo altRepo;
 
-	private LocalTopic<List<TimeSeriePoint>> newPointTopic;
-	
-	public LoraIngestor(
-			LoraServerRAK7249 rak7249, 
-			PayloadParsers sensors) {
-		this.rak7249 = rak7249;
+	public LoraIngestor(PayloadParsers sensors) {
 		this.sensors = sensors;
-	}
-
-	public void start(LocalTopic<List<TimeSeriePoint>> newPointTopic) throws Exception {
-
-		this.newPointTopic = newPointTopic;
-
-		this.rak7249.start(c -> {
-			handleLoraMessage(rak7249, c);
-		});
 	}
 
 	private String getAsString(JsonObject json, String memberName, boolean mandatory) {
 
 		var member = json.get(memberName);
-		if( member == null ) {
-			if( mandatory ) 
+		if (member == null) {
+			if (mandatory)
 				throw new NotFoundException("Member " + memberName + " in json " + gson.toJson(json));
 			return null;
 		}
@@ -93,57 +76,59 @@ public class LoraIngestor {
 		return member.getAsString();
 	}
 
-	@Transactional
-	public void handleLoraMessage(LoraServer loraServer, JsonObject loraMessage) {
+	public static class LoraMessageIngestionResult {
+		private List<TimeSeriePoint> notification;
+	}
 
-		try {
-			var deveui = getAsString(loraMessage, "deveui", true);
-			var timestamp = Long.parseLong(getAsString(loraMessage, "timestamp", true));
-			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());  
+	public List<TimeSeriePoint> handleLoraMessage(LoraServer loraServer, JsonObject loraMessage) {
 
-			var thing = thgLoraRepo.getByDeveui(deveui);
-			if(thing == null) throw new NotFoundException("thing deveui=" + deveui);
+		var result = new ArrayList<TimeSeriePoint>();
 
-			var thingType = thing.getType();
+		var deveui = getAsString(loraMessage, "deveui", true);
+		var timestamp = Long.parseLong(getAsString(loraMessage, "timestamp", true));
+		LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
+				TimeZone.getDefault().toZoneId());
 
-			var payloadParser = sensors.getParser(thingType.getManufacturer(), thingType.getModel());
-			if(payloadParser == null) throw new NotFoundException("Sensor type manufacturer="+thingType.getManufacturer() + ", model="+ thingType.getModel());
+		var thing = thgLoraRepo.getByDeveui(deveui);
+		if (thing == null)
+			throw new NotFoundException("thing deveui=" + deveui);
 
-			String schema = thingType.getManufacturer() +"." + thingType.getModel() + ".lora";
-			String sensor = null;
-			
-			if(thing.isLogLoraMessages())
-				insertPoint(thing, time, schema, sensor, loraMessage);
+		var thingType = thing.getType();
 
-			// Convert base64, hex to byte[]
-			var data = decodeData(loraMessage);
+		var payloadParser = sensors.getParser(thingType.getManufacturer(), thingType.getModel());
+		if (payloadParser == null)
+			throw new NotFoundException(
+					"Sensor type manufacturer=" + thingType.getManufacturer() + ", model=" + thingType.getModel());
 
-			var decodedMessages = payloadParser.decode(data);
-			
-			var notification = new ArrayList<TimeSeriePoint>();
+		String schema = thingType.getManufacturer() + "." + thingType.getModel() + ".lora";
+		String sensor = null;
 
-			for (var decodedMessage : decodedMessages) {
+		if (thing.isLogLoraMessages())
+			result.add(insertPoint(thing, time, schema, sensor, loraMessage));
 
-				if(thing.isLogDecodedMessages())
-					insertPoint(thing, time, decodedMessage, false);
+		// Convert base64, hex to byte[]
+		var data = decodeData(loraMessage);
 
-				var normalizedMessages = payloadParser.normalize(decodedMessage);
+		var decodedMessages = payloadParser.decode(data);
 
-				for (var normalizedMessage : normalizedMessages) {
-					var point = insertPoint(thing, time, normalizedMessage, true);
+		for (var decodedMessage : decodedMessages) {
 
-					if(normalizedMessage.getMessage() instanceof BatteryLevel) {
-						handleBatteryLevel(thing, time, (BatteryLevel)normalizedMessage.getMessage());
-					} else
-						notification.add(point);
+			if (thing.isLogDecodedMessages())
+				result.add(insertPoint(thing, time, decodedMessage, false));
+
+			var normalizedMessages = payloadParser.normalize(decodedMessage);
+
+			for (var normalizedMessage : normalizedMessages) {
+				var point = insertPoint(thing, time, normalizedMessage, true);
+
+				if (normalizedMessage.getMessage() instanceof BatteryLevel) {
+					handleBatteryLevel(thing, time, (BatteryLevel) normalizedMessage.getMessage());
 				}
+
+				result.add(point);
 			}
-
-			newPointTopic.publish(notification);
-
-		} catch (Exception e) {
-			log.error("Cannot handle message", e);
 		}
+		return result;
 	}
 
 	private void handleBatteryLevel(Thing thing, LocalDateTime time, BatteryLevel batteryLevel) {
@@ -151,13 +136,13 @@ public class LoraIngestor {
 
 		var thingType = thing.getType();
 
-		if( batteryLevel.getAlarm() != null) {
+		if (batteryLevel.getAlarm() != null) {
 			newAlarm = batteryLevel.getAlarm();
 
-		} else if(batteryLevel.getPercentage() != null ) {
+		} else if (batteryLevel.getPercentage() != null) {
 			var percentage = batteryLevel.getPercentage();
 
-			if( thingType.getBatteryMinPercentage() != null && percentage < thingType.getBatteryMinPercentage()) {
+			if (thingType.getBatteryMinPercentage() != null && percentage < thingType.getBatteryMinPercentage()) {
 				newAlarm = true;
 			}
 		}
@@ -165,13 +150,13 @@ public class LoraIngestor {
 		var alarmType = altRepo.getByName(AlarmType.THING_BATTERY_ALARM);
 		var alarm = alrRepo.getByTypeAndThingAndStateNot(alarmType, thing, Alarm.State.Closed);
 
-		if(alarm == null && newAlarm) {
+		if (alarm == null && newAlarm) {
 
 			// Activate battery alarm
 			alarm = new ThingAlarm(thing, alarmType, time);
 			alrRepo.save(alarm);
 
-		} else if(alarm != null && !newAlarm ) {
+		} else if (alarm != null && !newAlarm) {
 
 			// Close the battery alarm
 			alarm.close(time);
@@ -180,7 +165,8 @@ public class LoraIngestor {
 
 	private byte[] decodeData(JsonObject loraMessage) {
 		var encoding = loraMessage.get("dataEncoding").getAsString();
-		if( !encoding.equalsIgnoreCase("base64") ) throw new RuntimeException("Unknown data encoding encoding=" + encoding);
+		if (!encoding.equalsIgnoreCase("base64"))
+			throw new RuntimeException("Unknown data encoding encoding=" + encoding);
 
 		var encodedData = loraMessage.get("data").getAsString();
 		var decodedData = Base64.getDecoder().decode(encodedData);
@@ -188,15 +174,16 @@ public class LoraIngestor {
 		return decodedData;
 	}
 
-	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, ThingMessageHolder holder, boolean proxify) {
+	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, ThingMessageHolder holder,
+			boolean proxify) {
 		var json = gson.toJsonTree(holder.getMessage()).getAsJsonObject();
 		var point = insertPoint(thing, time, holder.getSchema(), holder.getSensor(), json);
 
-		if( proxify) {
+		if (proxify) {
 			var proxy = thing.getProxy();
 
 			// Create the proxy if needed
-			if( proxy == null ) {
+			if (proxy == null) {
 				proxy = new ThingProxy();
 				proxy.setThing(thing);
 				thing.setProxy(proxy);
@@ -207,41 +194,43 @@ public class LoraIngestor {
 
 			var proxyJsonValue = proxy.getValues();
 			var proxyValue = gson.fromJson(proxyJsonValue, JsonObject.class);
-			if( proxyValue == null) proxyValue = new JsonObject();
+			if (proxyValue == null)
+				proxyValue = new JsonObject();
 
 			String subjsonName;
-			if( holder.getSensor() != null )
+			if (holder.getSensor() != null)
 				subjsonName = holder.getSensor() + "-" + holder.getSchema();
 			else
 				subjsonName = holder.getSchema();
 
 			JsonObject subjson = proxyValue.getAsJsonObject(subjsonName);
-			if( subjson == null ) {
+			if (subjson == null) {
 				subjson = new JsonObject();
 				proxyValue.add(subjsonName, subjson);
 			}
 
 			var changes = GsonUtils.mergeJsonObjects(json, subjson, time);
-			if(changes != 0) 
+			if (changes != 0)
 				proxy.setValues(gson.toJson(proxyValue));
 		}
 
 		return point;
 	}
 
-	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, String schema, String sensor, JsonObject message) {
+	private TimeSeriePoint insertPoint(ThingLora thing, LocalDateTime time, String schema, String sensor,
+			JsonObject message) {
 
-		if( schema == null ) 
+		if (schema == null)
 			throw new NotFoundException("schema in the sensor normalized message.");
 
 		var tst = tstRepo.findBySchema(schema);
-		if( tst == null ) {
+		if (tst == null) {
 			tst = new TimeSerieType(schema);
 			tstRepo.save(tst);
 		}
 
 		var tsr = tsrRepo.findByThingAndTypeAndSensor(thing, tst, sensor);
-		if( tsr == null ) {
+		if (tsr == null) {
 			tsr = new TimeSerie(thing, tst, sensor);
 			tsrRepo.save(tsr);
 		}

@@ -1,28 +1,24 @@
 package com.lasrosas.iot.ingestor;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 
-import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.ingestor.parser.PayloadParsers;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
 import com.lasrosas.iot.mqtt.MqttSession;
-import com.lasrosas.iot.shared.utils.LocalTopic;
 
 @ConfigurationProperties
 @Validated
 public class IngestorConfig {
 
 	@Bean
-	public LoraIngestor LoraIngestor(LoraServerRAK7249 rak7249, PayloadParsers sensors) {
-		return new LoraIngestor(rak7249, sensors);
+	public LoraIngestor LoraIngestor(PayloadParsers sensors) {
+		return new LoraIngestor(sensors);
 	}
 
 	@Bean
@@ -69,10 +65,5 @@ public class IngestorConfig {
 	@Bean
 	public SendMessageToTwin sendMessageToTwin(@Qualifier("mqtt") MqttSession mqtt) {
 		return new SendMessageToTwin(mqtt);
-	}
-
-	@Bean(name="newPointTopic")
-	public LocalTopic<List<TimeSeriePoint>> newPointTopic() {
-		return new LocalTopic<List<TimeSeriePoint>>();
 	}
 }

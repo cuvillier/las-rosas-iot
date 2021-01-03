@@ -2,6 +2,9 @@ package com.lasrosas.iot.database.entities.finca;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import org.junit.jupiter.api.Test;
 
 import com.lasrosas.iot.database.finca.WaterTank;
@@ -39,5 +42,20 @@ public class WaterTankTest {
 
 		tank.setLevel( tank.getRadius() *2);
 		assertEquals(0, tank.getVolume(), 0.0001);
+	}
+
+	@Test
+	public void computeWaterFlow() {
+		var tank = new WaterTank(6, 2.5/2, 0);
+
+		var time = LocalDateTime.now();
+		tank.setLevel(null, null, time, 1.0);
+		
+		assertEquals(null, tank.getWaterFlow());
+
+		var time2 = time.plus(30, ChronoUnit.MINUTES);
+
+		tank.setLevel(time, tank.getVolume(), time2, tank.getLevel() + 0.5);
+		assertEquals(-14.89939, tank.getWaterFlow(), 0.0001);
 	}
 }

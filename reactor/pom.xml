@@ -19,6 +19,10 @@
 			<groupId>com.lasrosas.iot</groupId>
 			<artifactId>database</artifactId>			
 		</dependency>
+		<dependency>
+			<groupId>com.lasrosas.iot</groupId>
+			<artifactId>mqtt</artifactId>			
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

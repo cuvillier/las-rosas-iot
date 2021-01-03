@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
@@ -24,11 +25,15 @@ public class TimeSerie extends BaseEntity {
 	public static final String TABLE = "T_TSR_TIME_SERIE";
 	public static final String PREFIX = "TSR_";
 	public static final String PREFIX_FK = PREFIX + "FK_";
+
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_SENSOR = PREFIX + "SENSOR";
+	public static final String COL_INFLUXDB_MEASUREMENT= PREFIX + "INFLUXDB_MEASUREMENT";
 	public static final String COL_TYPE_FK = PREFIX_FK + TimeSerieType.PREFIX + "TYPE";
 	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "THING";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
+	public static final String COL_CURRENT_VALUE_FK = PREFIX_FK + TimeSeriePoint.PREFIX + "CURRENT_VALUE";
+
 	public static final String PROP_TYPE = "type";
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -48,6 +53,13 @@ public class TimeSerie extends BaseEntity {
 
 	@OneToMany(mappedBy = TimeSeriePoint.PROP_TIME_SERIE)
 	private List<TimeSeriePoint> points;
+
+	@OneToOne
+	@JoinColumn(name=COL_CURRENT_VALUE_FK)
+	private TimeSeriePoint currentValue;
+
+	@Column(name=COL_INFLUXDB_MEASUREMENT)
+	private String influxdbMeasurement;
 
 	public TimeSerie() {
 		super();
@@ -104,5 +116,21 @@ public class TimeSerie extends BaseEntity {
 
 	public void setTwin(DigitalTwin twin) {
 		this.twin = twin;
+	}
+
+	public TimeSeriePoint getCurrentValue() {
+		return currentValue;
+	}
+
+	public void setCurrentValue(TimeSeriePoint currentValue) {
+		this.currentValue = currentValue;
+	}
+
+	public String getInfluxdbMeasurement() {
+		return influxdbMeasurement;
+	}
+
+	public void setInfluxdbMeasurement(String influxdbMeasurement) {
+		this.influxdbMeasurement = influxdbMeasurement;
 	}
 }

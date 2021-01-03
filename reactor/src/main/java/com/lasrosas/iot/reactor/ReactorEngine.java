@@ -25,8 +25,8 @@ import com.lasrosas.iot.reactore.reactores.TwinReactors;
 import com.lasrosas.iot.shared.ontology.WaterTankFilling;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
-public class Reactor {
-	public static final Logger log = LoggerFactory.getLogger(Reactor.class);
+public class ReactorEngine {
+	public static final Logger log = LoggerFactory.getLogger(ReactorEngine.class);
 
 	@Autowired
 	private Gson gson;
@@ -52,7 +52,7 @@ public class Reactor {
 
 	private TwinReactors twinReactors;
 
-	public Reactor(TwinReactors twinReactors, InfluxdbSession influxdb, MqttSession mqtt) {
+	public ReactorEngine(TwinReactors twinReactors, InfluxdbSession influxdb, MqttSession mqtt) {
 		this.twinReactors = twinReactors;
 		this.influxdb = influxdb;
 		this.mqtt = mqtt;
@@ -73,25 +73,40 @@ public class Reactor {
 
 	@Transactional
 	public void handleMessage(String topic, MqttMessage msg) {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+
 		var parts = topic.split("/");
 		var twinTechid = Long.parseLong(parts[1]);
 		var twin = twinRepo.getOne(twinTechid);
 
 		var reactor = twinReactors.getReactor(twin);
-
-		if(reactor == null) return;
-
 		var json = new String(msg.getPayload());
+
+		if(reactor == null) {
+			log.info("No reactor.");
+			log.debug(json);
+			return;
+		}
+
 		var jsono = gson.fromJson(json, JsonArray.class);
+
+		log.debug("Handle message:");
+		log.debug(json);
 
 		// Mapping between incoming data and reactor receiver is now static
 		// Later, may become dynamic and configuratble.
 		var receiverValues = reactor.mapReceiverValues(jsono);
-		
+
+		log.debug((receiverValues == null?0: receiverValues.size()) + " messages maped");
+
 		if(receiverValues == null || receiverValues.size() == 0) 
 			return;
 
 		var transmiterValues = reactor.react(twin, receiverValues);
+		log.debug(transmiterValues.size() + " messages transmited");
 
 		// Send data to mysql, influxdb and publish to mqtt
 		for(var value: transmiterValues) {
@@ -100,6 +115,11 @@ public class Reactor {
 	}
 
 	private TimeSeriePoint insertPoint(DigitalTwin twin, LocalDateTime time, String schema, JsonObject jsono) {
+		
+		if(log.isDebugEnabled()) {
+			log.debug("Add point to the twin " + twin.getName());
+			log.debug(gson.toJson(jsono));
+		}
 
 		if( schema == null ) 
 			throw new NotFoundException("schema in the sensor normalized message.");
@@ -107,12 +127,14 @@ public class Reactor {
 		var tst = tstRepo.findBySchema(schema);
 		if( tst == null ) {
 			tst = new TimeSerieType(schema);
+			log.debug("New time serie type for schema " + schema);
 			tstRepo.save(tst);
 		}
 
 		var tsr = tsrRepo.findByTwinAndType(twin, tst);
 		if( tsr == null ) {
 			tsr = new TimeSerie(twin, tst);
+			log.debug("New time serie for schema " + schema);
 			tsrRepo.save(tsr);
 		}
 
@@ -126,8 +148,13 @@ public class Reactor {
 
 		// Publish to Mqtt
 		var topic = "digital-twin/" + twin.getTechid() + "/changes/" + schema;
+
 		jsono.addProperty("time", time.toString());
 		json = gson.toJson(jsono);
+
+		log.debug("Publish to mqtt topic " + topic);
+		log.debug(json);
+
 		var message = new MqttMessage(json.getBytes());
 		mqtt.publish(topic, message);
 

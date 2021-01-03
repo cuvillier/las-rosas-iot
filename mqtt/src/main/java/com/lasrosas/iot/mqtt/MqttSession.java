@@ -32,6 +32,9 @@ public class MqttSession {
 	@NotNull
 	private String server = "localhost";
 
+	@NotNull
+	private String persistFolder = "mqtt-persistence";
+
 	@Min(0)
 	@Max(32000)
 	private int port = 1883;
@@ -60,8 +63,8 @@ public class MqttSession {
 			if (mqtt != null)
 				return;
 
-			MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence("/Users/tibo/Projets/las-rosas-iot/git/las-rosas-iot/ingestor/target/mqtt-" + clientId);
-			this.mqtt = new MqttClient("tcp://" + server + ":" + port, clientId, dataStore);
+			var persist = new MqttDefaultFilePersistence(persistFolder);
+			this.mqtt = new MqttClient("tcp://" + server + ":" + port, clientId, persist);
 
 			MqttConnectOptions options = new MqttConnectOptions();
 			options.setAutomaticReconnect(this.automaticReconnect);
@@ -69,7 +72,7 @@ public class MqttSession {
 			options.setConnectionTimeout(this.connectionTimeout);
 			this.mqtt.connect(options);
 
-			log.info("Connected to mqtt");
+			log.info("Connected to mqtt server=" + server + ", port=" + port);
 		} catch (MqttException e) {
 			throw new RuntimeException(e);
 		}

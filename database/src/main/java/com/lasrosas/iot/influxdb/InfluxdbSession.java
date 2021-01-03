@@ -54,6 +54,7 @@ public class InfluxdbSession {
 	private long lastOpenAttempt = 0;
 
 	public void write(List<TimeSeriePoint> points) {
+		if(points.size() == 0) return;
 
 		log.info("Write " + points.size() + " points to influxDB");
 
@@ -68,10 +69,10 @@ public class InfluxdbSession {
 		var thing = (ThingLora) point.getTimeSerie().getThing();
 		var twin = point.getTimeSerie().getTwin();
 
-		if(thing != null) 
-			measurement= "lora." + thing.getDeveui() + "." + point.getTimeSerie().getType().getSchema();
+		if(twin == null) 
+			measurement= "thing.lora." + thing.getDeveui() + "." + point.getTimeSerie().getType().getSchema();
 		else
-			measurement= "dtwin." + twin.getType().getSpace().getName() + "." + twin.getType().getName() + "." + twin.getName();
+			measurement= "twin." + twin.getType().getSpace().getName() + "." + twin.getType().getName() + "." + twin.getName();
 
 		if (point.getTimeSerie().getSensor() != null)
 			measurement += "." + point.getTimeSerie().getSensor();
@@ -173,6 +174,11 @@ public class InfluxdbSession {
 				influxDB = null;
 			}
 		}
+	}
+	
+
+	public InfluxDB getInfluxDB() {
+		return influxDB;
 	}
 
 	public String getServerURL() {

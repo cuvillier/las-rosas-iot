@@ -20,6 +20,7 @@ public class TwinReactors {
 		if( !appContext.containsBean(twinReactorName)) {
 			twinReactorName = twinReactorName + "-" + twin.getName();
 			if( !appContext.containsBean(twinReactorName)) {
+				log.info("Cannot find reactor " + twinReactorName);
 				return null;
 			}
 		}

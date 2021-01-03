@@ -8,6 +8,7 @@ influxdb:
    password: lasrosasiot
 mqtt:
    clientid: Reactor
+   persistenceFolder: target/mqtt
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -20,3 +21,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
         physical_naming_strategy: com.lasrosas.iot.database.UpperCaseNamingStrategy
+logging:
+ level:
+   root: INFO
+   org.springframework.orm: INFO
+   org.springframework.transaction: INFO
+   org.hibernate.engine.transaction.internal.TransactionImpl: INFO
+   com.lasrosas.iot.*: DEBUG

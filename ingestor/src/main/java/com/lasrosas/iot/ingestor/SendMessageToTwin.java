@@ -29,6 +29,8 @@ public class SendMessageToTwin {
 
 	public void send(List<TimeSeriePoint> points) {
 		try {
+			if(points.size() == 0) return;
+			
 			var jsonArray = new JsonArray(points.size());
 
 			var thing = points.get(0).getTimeSerie().getThing();

@@ -7,14 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-import com.lasrosas.iot.database.entities.dtw.ThingTwin;
 import com.lasrosas.iot.database.entities.thg.Thing;
 
 @Entity
-@DiscriminatorValue(ThingTwin.DISCRIMINATOR)
+@DiscriminatorValue(ThingAlarm.DISCRIMINATOR)
 public class ThingAlarm extends Alarm {
 
-	public static final String PREFIX = "TAL_";
+	public static final String PREFIX = "THA_";
 	public static final String PREFIX_FK = PREFIX + "FK_";
 
 	public static final String DISCRIMINATOR = "THG";

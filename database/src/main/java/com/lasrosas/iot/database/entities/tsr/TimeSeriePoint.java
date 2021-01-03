@@ -9,8 +9,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostPersist;
 import javax.persistence.Table;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
 
 @Entity
@@ -51,6 +54,11 @@ public class TimeSeriePoint extends BaseEntity {
 		this.value = value;
 	}
 
+	@PostPersist()
+	public void postPersist() {
+		timeSerie.setCurrentValue(this);
+	}
+
 	public TimeSerie getTimeSerie() {
 		return timeSerie;
 	}
@@ -73,5 +81,10 @@ public class TimeSeriePoint extends BaseEntity {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public JsonObject getValue(Gson gson) {
+		if(value == null) return null;
+		return gson.fromJson(value, JsonObject.class);
 	}
 }

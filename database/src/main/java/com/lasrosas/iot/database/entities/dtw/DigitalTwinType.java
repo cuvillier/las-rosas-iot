@@ -29,6 +29,8 @@ public abstract class DigitalTwinType extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_NAME = PREFIX + "NAME";
+	public static final String COL_PUBLISH_ONTHOLOGY = PREFIX + "PUBLISH_ONTHOLOGY";
+	
 	public static final String COL_MAY_HAVE_CHILDREN = PREFIX + "MAY_HAVE_CHILDREN";
 	public static final String COL_SPACE_FK = PREFIX_FK + DigitalSpace.PREFIX + "SPACE";
 
@@ -46,6 +48,14 @@ public abstract class DigitalTwinType extends BaseEntity {
 
 	@Column(name=COL_NAME)
 	private String name;
+
+	public enum PublishOnthology {
+		NONE,
+		UNKNOWN,
+		ALL
+	}
+	@Column(name=COL_PUBLISH_ONTHOLOGY)
+	private PublishOnthology publishOnthology = PublishOnthology.UNKNOWN;
 
 	public String getName() {
 		return name;

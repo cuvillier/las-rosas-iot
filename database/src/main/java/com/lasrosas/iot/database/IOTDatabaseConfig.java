@@ -6,14 +6,12 @@ import javax.validation.constraints.NotNull;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.influxdb.InfluxdbSession;
-import com.lasrosas.iot.mqtt.MqttSession;
 
 @ConfigurationProperties(prefix = "sql")
 @Validated
@@ -41,12 +39,6 @@ public class IOTDatabaseConfig {
 		dataSource.setPassword(password);
 
 		return dataSource;
-	}
-
-	@ConfigurationProperties(prefix = "mqtt")
-	@Bean("mqtt")
-	public MqttSession MqttSession() {
-		return new MqttSession();
 	}
 
 	@ConfigurationProperties(prefix="influxdb")

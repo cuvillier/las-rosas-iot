@@ -18,24 +18,23 @@ import javax.persistence.Table;
 
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
 import com.lasrosas.iot.database.entities.thg.Thing;
-import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = DigitalTwin.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = DigitalTwin.COL_TECHID), name = BaseEntity.PROP_TECHID)})
-@DiscriminatorColumn(name = DigitalTwin.COL_DISCRIMINATOR)
-public  class DigitalTwin extends BaseEntity {
+@DiscriminatorColumn(name=DigitalTwin.COL_DESCRIMINATOR)
+public abstract class DigitalTwin extends BaseEntity {
 
 	public static final String TABLE = "T_DTW_DIGITAL_TWIN";
 	public static final String PREFIX = "TWI_";
 	public static final String PREFIX_FK = PREFIX + "FK_";
 
 	public static final String COL_TECHID = PREFIX + "TECHID";
+	public static final String COL_DESCRIMINATOR = PREFIX + "DISCRIMINATOR";
 	public static final String COL_NAME = PREFIX + "NAME";
 	public static final String COL_PROPERTIES = PREFIX + "PROPERTIES";
-	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
 	public static final String COL_TYPE_FK = PREFIX_FK + DigitalTwinType.PREFIX + "TYPE";
 	public static final String COL_PART_OF_FK = PREFIX_FK + DigitalTwin.PREFIX + "PART_OF";
 
@@ -108,15 +107,6 @@ public  class DigitalTwin extends BaseEntity {
 
 	public void setProperties(String properties) {
 		this.properties = properties;
-	}
-
-	public void onNewPoint(TimeSeriePoint point) {
-		var tst = point.getTimeSerie().getType();
-		if(!isInterestedBy(tst)) return;
-		handleNewPoint(point);
-	}
-
-	protected void handleNewPoint(TimeSeriePoint point) {
 	}
 
 	protected boolean isInterestedBy(TimeSerieType tst) {
