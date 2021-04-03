@@ -1,5 +1,10 @@
 package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 public class AdenuisARF8170BAFrame {
 
 	public static class Status {
@@ -11,24 +16,31 @@ public class AdenuisARF8170BAFrame {
 		public boolean isConfig() {
 			return config;
 		}
+
 		public void setConfig(boolean config) {
 			this.config = config;
 		}
+
 		public boolean isTimestamp() {
 			return timestamp;
 		}
+
 		public void setTimestamp(boolean timestamp) {
 			this.timestamp = timestamp;
 		}
+
 		public int getFrameCounter() {
 			return frameCounter;
 		}
+
 		public void setFrameCounter(int frameCounter) {
 			this.frameCounter = frameCounter;
 		}
+
 		public boolean isLowBat() {
 			return lowBat;
 		}
+
 		public void setLowBat(boolean lowBat) {
 			this.lowBat = lowBat;
 		}
@@ -44,10 +56,6 @@ public class AdenuisARF8170BAFrame {
 		public int getCode() {
 			return code;
 		}
-
-		public void setCode(int code) {
-			this.code = code;
-		}
 	}
 
 	public static class BaseUplinkFrame extends BaseFrame {
@@ -56,9 +64,11 @@ public class AdenuisARF8170BAFrame {
 		public BaseUplinkFrame(int code) {
 			super(code);
 		}
+
 		public Status getStatus() {
 			return status;
 		}
+
 		public void setStatus(Status status) {
 			this.status = status;
 		}
@@ -72,54 +82,62 @@ public class AdenuisARF8170BAFrame {
 
 	// Uplink
 	public enum ProductMode {
-		PARK,
-		PRODUCTION,
-		TEST,
-		REPLI;
+		PARK, PRODUCTION, TEST, REPLI;
 
 		public static ProductMode parse306(int s306) {
-			switch(s306) {
-			case 0: return PARK;
-			case 1: return PRODUCTION;
-			case 2: return TEST;
-			case 3: return REPLI;
-			default: throw new RuntimeException("Invalid ProductMode S306 value=" + s306);
+			switch (s306) {
+			case 0:
+				return PARK;
+			case 1:
+				return PRODUCTION;
+			case 2:
+				return TEST;
+			case 3:
+				return REPLI;
+			default:
+				throw new RuntimeException("Invalid ProductMode S306 value=" + s306);
 			}
 		}
 	}
 
 	public static enum ChannelType {
-		DEACTIVTED,
-		INPUT_EVENT_ON,
-		INPUT_EVENT_OFF,
-		INPUT_EVENT_ON_OFF,
-		OUTPUT;
+		DEACTIVTED, INPUT_EVENT_ON, INPUT_EVENT_OFF, INPUT_EVENT_ON_OFF, OUTPUT;
 
 		public static ChannelType parse(int channelType) {
-			switch(channelType) {
-			case 0: return DEACTIVTED;
-			case 1: return INPUT_EVENT_ON;
-			case 2: return INPUT_EVENT_OFF;
-			case 3: return INPUT_EVENT_ON_OFF;
-			case 4: return OUTPUT;
-			default: throw new RuntimeException("Invalid ChannelType value=" + channelType);
+			switch (channelType) {
+			case 0:
+				return DEACTIVTED;
+			case 1:
+				return INPUT_EVENT_ON;
+			case 2:
+				return INPUT_EVENT_OFF;
+			case 3:
+				return INPUT_EVENT_ON_OFF;
+			case 4:
+				return OUTPUT;
+			default:
+				throw new RuntimeException("Invalid ChannelType value=" + channelType);
 			}
 		}
-		
+
 	}
 
 	public static class ChannelConfiguration {
 		private Integer debounceDurationMs;
 		private ChannelType type;
+
 		public Integer getDebounceDurationMs() {
 			return debounceDurationMs;
 		}
+
 		public void setDebounceDurationMs(Integer debounceDurationMs) {
 			this.debounceDurationMs = debounceDurationMs;
 		}
+
 		public ChannelType getType() {
 			return type;
 		}
+
 		public void setType(ChannelType type) {
 			this.type = type;
 		}
@@ -187,13 +205,12 @@ public class AdenuisARF8170BAFrame {
 		}
 
 	}
-	
+
 	public enum ProvisioningMode {
-		ABP,
-		OTAA;
+		ABP, OTAA;
 
 		public static ProvisioningMode parse(int code) {
-			switch(code) {
+			switch (code) {
 			case 0:
 				return ABP;
 			case 1:
@@ -212,18 +229,23 @@ public class AdenuisARF8170BAFrame {
 		public boolean isActivatedByADR() {
 			return activatedByADR;
 		}
+
 		public void setActivatedByADR(boolean activatedByADR) {
 			this.activatedByADR = activatedByADR;
 		}
+
 		public boolean isDutyCycle() {
 			return dutyCycle;
 		}
+
 		public void setDutyCycle(boolean dutyCycle) {
 			this.dutyCycle = dutyCycle;
 		}
+
 		public boolean isClassA() {
 			return classA;
 		}
+
 		public void setClassA(boolean classA) {
 			this.classA = classA;
 		}
@@ -256,16 +278,11 @@ public class AdenuisARF8170BAFrame {
 
 	}
 
-	public enum RequestStatus {
-		NA,
-		SUCSESS,
-		ERROR_GENERIC,
-		ERROR_WRONG_STATE,
-		ERROR_INVALID_REQUEST,
-		OTHER;
+	public enum Request2FStatus {
+		NA, SUCSESS, ERROR_GENERIC, ERROR_WRONG_STATE, ERROR_INVALID_REQUEST, OTHER;
 
-		public static RequestStatus parse(int code) {
-			switch(code) {
+		public static Request2FStatus parse(int code) {
+			switch (code) {
 			case 0:
 				return NA;
 			case 1:
@@ -280,14 +297,14 @@ public class AdenuisARF8170BAFrame {
 				return OTHER;
 
 			default:
-				throw new RuntimeException("Invalid RequestStatus mode=" + code);
+				throw new RuntimeException("Invalid Request2FStatus mode=" + code);
 			}
 		}
 	}
 
 	public static class UplinkFrame0x2F extends BaseUplinkFrame {
 		private int downlinkFrameCode;
-		private RequestStatus requestStatus;
+		private Request2FStatus requestStatus;
 
 		public UplinkFrame0x2F() {
 			super(0x2F);
@@ -301,21 +318,20 @@ public class AdenuisARF8170BAFrame {
 			this.downlinkFrameCode = downlinkFrameCode;
 		}
 
-		public RequestStatus getRequestStatus() {
+		public Request2FStatus getRequestStatus() {
 			return requestStatus;
 		}
 
-		public void setRequestStatus(RequestStatus requestStatus) {
+		public void setRequestStatus(Request2FStatus requestStatus) {
 			this.requestStatus = requestStatus;
 		}
 	}
-	
+
 	public enum ChannelState {
-		OPEN_OFF,
-		CLOSED_ON;
+		OPEN_OFF, CLOSED_ON;
 
 		public static ChannelState parse(int code) {
-			switch(code) {
+			switch (code) {
 			case 0:
 				return OPEN_OFF;
 			case 1:
@@ -413,7 +429,7 @@ public class AdenuisARF8170BAFrame {
 			this.timestamp = timestamp;
 		}
 	}
-	
+
 	public static class UplinkFrame0x40 extends BaseUplinkFrame {
 		private Integer channel1EventCounter;
 		private Integer channel2EventCounter;
@@ -430,7 +446,7 @@ public class AdenuisARF8170BAFrame {
 		private ChannelState channel3CurrentState;
 		private ChannelState channel3PreviousFrameState;
 		private ChannelState channel4CurrentState;
-		private ChannelState channel4PreviousFrameState;		
+		private ChannelState channel4PreviousFrameState;
 		private Long timestamp;
 
 		public UplinkFrame0x40() {
@@ -626,36 +642,113 @@ public class AdenuisARF8170BAFrame {
 			this.timestamp = timestamp;
 		}
 	}
-	
+
+	public static class RegisterValue {
+		private int registerNumber;
+		private Boolean asBoolean;
+		private Integer asInt;
+		private Long asLong;
+
+		public RegisterValue(int registerNumber, boolean value) {
+			this.registerNumber = registerNumber;
+			this.asBoolean = value;
+		}
+
+		public RegisterValue(int registerNumber, int value) {
+			super();
+			this.registerNumber = registerNumber;
+			this.asInt = value;
+		}
+
+		public RegisterValue(int registerNumber, long value) {
+			super();
+			this.registerNumber = registerNumber;
+			this.asLong = value;
+		}
+
+		public int getRegisterNumber() {
+			return registerNumber;
+		}
+
+		public Boolean getAsBoolean() {
+			if (asBoolean == null)
+				throw new RuntimeException("Value of register " + registerNumber + " is not a boolean");
+			return asBoolean;
+		}
+
+		public Integer getAsInt() {
+			if (asInt == null)
+				throw new RuntimeException("Value of register " + registerNumber + " is not an integer");
+			return asInt;
+		}
+
+		public Long getAsLong() {
+			if (asLong == null)
+				throw new RuntimeException("Value of register " + registerNumber + " is not a long");
+			return asLong;
+		}
+	}
+
 	public static class UplinkFrame0x31 extends BaseUplinkFrame {
-		private byte[] registerValue;
+		private List<RegisterValue> values = new ArrayList<>();
 
 		public UplinkFrame0x31() {
 			super(0x31);
 		}
 
-		public byte[] getRegisterValue() {
-			return registerValue;
+		public List<RegisterValue> getValues() {
+			return Collections.unmodifiableList((values));
 		}
 
-		public void setRegisterValue(byte[] registerValue) {
-			this.registerValue = registerValue;
+		public void addValue(RegisterValue value) {
+			this.values.add(value);
+		}
+	}
+
+	public enum Request33Status {
+		NA, SUCSESS, SUCCESS_NO_UPDATE, ERROR_COHERENCY, ERROR_INVALID_REGISTER, ERROR_INVALID_VALUE,
+		ERROR_TRUNCATED_VALUE, ERROR_ACCESS_NOT_ALLOWED, ERROR_OTHER;
+
+		public static Request33Status parse(int code) {
+			switch (code) {
+			case 0:
+				return NA;
+			case 1:
+				return SUCSESS;
+			case 2:
+				return SUCCESS_NO_UPDATE;
+			case 3:
+				return ERROR_COHERENCY;
+			case 4:
+				return ERROR_INVALID_REGISTER;
+			case 5:
+				return ERROR_INVALID_VALUE;
+			case 6:
+				return ERROR_TRUNCATED_VALUE;
+			case 7:
+				return ERROR_ACCESS_NOT_ALLOWED;
+			case 8:
+				return ERROR_OTHER;
+
+			default:
+				throw new RuntimeException("Invalid RequestStatus mode=" + code);
+			}
 		}
 	}
 
 	public static class UplinkFrame0x33 extends BaseUplinkFrame {
-		private RequestStatus requestStatus;
+		private Request33Status requestStatus;
 		private Integer regsiterIdIfError;
 
 		public UplinkFrame0x33() {
 			super(0x33);
 		}
 
-		public RequestStatus getRequestStatus() {
+		public Request33Status getRequestStatus() {
 			return requestStatus;
 		}
 
-		public void setRequestStatus(RequestStatus requestStatus) {
+		public void setRequestStatus(Request33Status requestStatus) {
 			this.requestStatus = requestStatus;
 		}
 
@@ -668,7 +761,7 @@ public class AdenuisARF8170BAFrame {
 		}
 
 	}
-	
+
 	// Downlink
 	public static class DownlinkFrame0x01 extends BaseDownlinkFrame {
 		public DownlinkFrame0x01() {
@@ -688,14 +781,13 @@ public class AdenuisARF8170BAFrame {
 		}
 	}
 
-
 	public static class DownlinkFrame0x06 extends BaseDownlinkFrame {
 		private ChannelState channel1State;
 		private ChannelState channel2State;
 		private ChannelState channel3State;
 		private ChannelState channel4State;
 		private boolean uplinkACKRequered;
-		
+
 		public DownlinkFrame0x06() {
 			super(0x06);
 		}
@@ -742,65 +834,78 @@ public class AdenuisARF8170BAFrame {
 	}
 
 	public static class DownlinkFrame0x07 extends BaseDownlinkFrame {
+		private int channel1PulseDuration;
+		private int channel2PulseDuration;
+		private int channel3PulseDuration;
+		private int channel4PulseDuration;
+		private boolean ackRequired;
+
 		public DownlinkFrame0x07() {
 			super(0x07);
 		}
+
+		public int getChannel1PulseDuration() {
+			return channel1PulseDuration;
+		}
+
+		public void setChannel1PulseDuration(int channel1PulseDuration) {
+			this.channel1PulseDuration = channel1PulseDuration;
+		}
+
+		public int getChannel2PulseDuration() {
+			return channel2PulseDuration;
+		}
+
+		public void setChannel2PulseDuration(int channel2PulseDuration) {
+			this.channel2PulseDuration = channel2PulseDuration;
+		}
+
+		public int getChannel3PulseDuration() {
+			return channel3PulseDuration;
+		}
+
+		public void setChannel3PulseDuration(int channel3PulseDuration) {
+			this.channel3PulseDuration = channel3PulseDuration;
+		}
+
+		public int getChannel4PulseDuration() {
+			return channel4PulseDuration;
+		}
+
+		public void setChannel4PulseDuration(int channel4PulseDuration) {
+			this.channel4PulseDuration = channel4PulseDuration;
+		}
+
+		public boolean isAckRequired() {
+			return ackRequired;
+		}
+
+		public void setAckRequired(boolean ackRequired) {
+			this.ackRequired = ackRequired;
+		}
+
 	}
 
 	public static class DownlinkFrame0x40 extends BaseDownlinkFrame {
-		private Integer registerConfid1;
-		private Integer registerConfid2;
-		private Integer registerConfid3;
-		
+		private List<Integer> registerNumbers = new ArrayList<>();
+
 		public DownlinkFrame0x40() {
 			super(0x40);
 		}
 
-		public Integer getRegisterConfid1() {
-			return registerConfid1;
+		public List<Integer> registerNumbers() {
+			return Collections.unmodifiableList(registerNumbers);
 		}
 
-		public void setRegisterConfid1(Integer registerConfid1) {
-			this.registerConfid1 = registerConfid1;
+		public void addRegisters(int... registers) {
+			for (var register : registers) {
+				registerNumbers.add(register);
+			}
 		}
-
-		public Integer getRegisterConfid2() {
-			return registerConfid2;
-		}
-
-		public void setRegisterConfid2(Integer registerConfid2) {
-			this.registerConfid2 = registerConfid2;
-		}
-
-		public Integer getRegisterConfid3() {
-			return registerConfid3;
-		}
-
-		public void setRegisterConfid3(Integer registerConfid3) {
-			this.registerConfid3 = registerConfid3;
-		}
-	}
-
-	public static class RegisterValue {
-		private int confid;
-		private byte[] Value;
-		public int getConfid() {
-			return confid;
-		}
-		public void setConfid(int confid) {
-			this.confid = confid;
-		}
-		public byte[] getValue() {
-			return Value;
-		}
-		public void setValue(byte[] value) {
-			Value = value;
-		}
-		
 	}
 
 	public static class DownlinkFrame0x41 extends BaseDownlinkFrame {
-		private RegisterValue [] registerValues;
+		private RegisterValue[] registerValues;
 
 		public DownlinkFrame0x41() {
 			super(0x41);
@@ -814,6 +919,7 @@ public class AdenuisARF8170BAFrame {
 			this.registerValues = registerValues;
 		}
 	}
+
 	public static class DownlinkFrame0x48 extends BaseDownlinkFrame {
 		private int minutesBeforeReboot;
 
@@ -829,21 +935,21 @@ public class AdenuisARF8170BAFrame {
 			this.minutesBeforeReboot = minutesBeforeReboot;
 		}
 	}
-	
+
 	public static class DownlinkFrame0x49 extends BaseDownlinkFrame {
-		private Long dateTime;
+		private Long timestamp;
 		private Integer clockDriftCompensation;
 
 		public DownlinkFrame0x49() {
 			super(0x49);
 		}
 
-		public Long getDateTime() {
-			return dateTime;
+		public Long getTimestamp() {
+			return timestamp;
 		}
 
-		public void setDateTime(Long dateTime) {
-			this.dateTime = dateTime;
+		public void setTimestamp(Long timestamp) {
+			this.timestamp = timestamp;
 		}
 
 		public Integer getClockDriftCompensation() {

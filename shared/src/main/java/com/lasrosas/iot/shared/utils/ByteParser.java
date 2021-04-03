@@ -69,6 +69,10 @@ public class ByteParser {
 	}
 
 	public int suint(int lgr, ByteOrder indian, boolean signed) {
+		return (int)sulong(lgr, indian, signed);
+	}
+
+	public long sulong(int lgr, ByteOrder indian, boolean signed) {
 
 		// Ugly code...
 
@@ -97,7 +101,7 @@ public class ByteParser {
 		}
 
 		var binaryString = new String(liBinary);
-		var result = Integer.parseUnsignedInt(binaryString, 2) * sign;
+		var result = Long.parseUnsignedLong(binaryString, 2) * sign;
 
 		if( sign < 0 ) result--;
 		

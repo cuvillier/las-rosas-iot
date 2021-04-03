@@ -12,8 +12,18 @@ import org.junit.jupiter.api.Test;
 
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ChannelType;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x01;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x02;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x05;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x07;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x40;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x41;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x48;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x49;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ProvisioningMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.RequestStatus;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.RegisterValue;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.Request2FStatus;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.Request33Status;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisARF8180BAParserTest {
@@ -85,7 +95,7 @@ public class AdenuisARF8180BAParserTest {
 		assertFalse(frame.getStatus().isTimestamp());
 
 		assertEquals(0x6, frame.getDownlinkFrameCode());
-		assertEquals(RequestStatus.SUCSESS, frame.getRequestStatus());
+		assertEquals(Request2FStatus.SUCSESS, frame.getRequestStatus());
 	}
 
 	@Test
@@ -157,4 +167,175 @@ public class AdenuisARF8180BAParserTest {
 
 		assertEquals("Mon Oct 17 22:32:57 CEST 2022", new Date(frame.getTimestamp()) + "");
 	}
+	
+	@Test
+	public void uplinkFrame0x31() {
+		var byteParser = new ByteParser(new byte[] {(byte)0xA4,
+				/* 304 2 bytes			1962		*/ 0x07, (byte)0xAA,
+				/* 306 1 byte			200			*/ (byte)0xC8,
+				/* 300 2 bytes			12345 		*/ 0x30, 0x39,
+				/* 301 2 bytes			30000		*/ 0x075, 0x30,
+				/* 308 4 bytes			4042322160	*/ (byte)0xF0, (byte)0xF0, (byte)0xF0, (byte)0xF0,
+				/* 315 1 bytes, signed	-128		*/ (byte)0xFF,
+				});
+
+		var frame0x40 = new DownlinkFrame0x40();
+
+		frame0x40.addRegisters(304, 306, 300, 301, 308, 315);
+		var frame = decoder.parseUplinkFrame0x31(byteParser, frame0x40);
+
+		assertEquals(5, frame.getStatus().getFrameCounter());
+		assertFalse(frame.getStatus().isConfig());
+		assertFalse(frame.getStatus().isLowBat());
+		assertTrue(frame.getStatus().isTimestamp());
+
+		var value = frame.getValues().get(0);
+		assertEquals(1962, value.getAsInt());			// 304		
+
+		value = frame.getValues().get(1);
+		assertEquals(200, value.getAsInt());			// 306
+
+		value = frame.getValues().get(2);
+		assertEquals(12345, value.getAsInt());			// 300
+
+		value = frame.getValues().get(3);
+		assertEquals(30000, value.getAsInt());			// 301
+
+		value = frame.getValues().get(4);
+		assertEquals(4042322160L, value.getAsLong());	// 308
+
+		value = frame.getValues().get(5);
+		assertEquals(-1, value.getAsInt());			// 315
+	}
+
+	@Test
+	public void uplinkFrame0x33() {
+		var byteParser = new ByteParser(new byte[] {(byte)0x80, 0x04, 0x01, 0x40});
+
+		var frame = decoder.parseUplinkFrame0x33(byteParser);
+
+		assertEquals(4, frame.getStatus().getFrameCounter());
+		assertFalse(frame.getStatus().isConfig());
+		assertFalse(frame.getStatus().isLowBat());
+		assertFalse(frame.getStatus().isTimestamp());
+
+		assertEquals(Request33Status.ERROR_INVALID_REGISTER, frame.getRequestStatus());
+		assertEquals(320, frame.getRegsiterIdIfError());
+	}
+
+	@Test
+	public void downlinkFrame0x01() {
+		var frame = new DownlinkFrame0x01();
+		byte[] bytes = decoder.encodeDownlinkFrame0x01(frame);
+
+		assertEquals(1, bytes.length);
+		assertEquals(0x01, bytes[0]);
+	}
+
+	@Test
+	public void downlinkFrame0x02() {
+		var frame = new DownlinkFrame0x02();
+		byte[] bytes = decoder.encodeDownlinkFrame0x02(frame);
+
+		assertEquals(1, bytes.length);
+		assertEquals(0x02, bytes[0]);
+	}
+
+	@Test
+	public void downlinkFrame0x05() {
+		var frame = new DownlinkFrame0x05();
+		byte[] bytes = decoder.encodeDownlinkFrame0x05(frame);
+
+		assertEquals(1, bytes.length);
+		assertEquals(0x05, bytes[0]);
+	}
+
+	@Test
+	public void downlinkFrame0x07() {
+		var frame = new DownlinkFrame0x07();
+		frame.setChannel2PulseDuration(1);
+		frame.setChannel3PulseDuration(255);
+		byte[] bytes = decoder.encodeDownlinkFrame0x07(frame);
+
+		assertEquals(6, bytes.length);
+		assertEquals(0x07, bytes[0]);
+		assertEquals(0x00, bytes[1]);
+		assertEquals(0x01, bytes[2]);
+		assertEquals((byte)0xFF, bytes[3]);
+		assertEquals(0x00, bytes[4]);
+		assertEquals(0x00, bytes[5]);
+	}
+
+	@Test
+	public void downlinkFrame0x40() {
+		var frame = new DownlinkFrame0x40();
+		frame.addRegisters(300, 301, 302, 304);
+		byte[] bytes = decoder.encodeDownlinkFrame0x40(frame);
+
+		assertEquals(5, bytes.length);
+		assertEquals(0x40, bytes[0]);
+		assertEquals(0, bytes[1]);
+		assertEquals(1, bytes[2]);
+		assertEquals(2, bytes[3]);
+		assertEquals(4, bytes[4]);
+	}
+
+	@Test
+	public void downlinkFrame0x41() {
+		var frame = new DownlinkFrame0x41();
+		RegisterValue[] values = {
+				new RegisterValue(306, 123),
+				new RegisterValue(304, 1234),
+				new RegisterValue(308, 1234123412L),
+				new RegisterValue(315, -100)
+		};
+		frame.setRegisterValues(values);
+		byte[] bytes = decoder.encodeDownlinkFrame0x41(frame);
+
+		assertEquals(9, bytes.length);
+		assertEquals(0x41, bytes[0]);
+
+		assertEquals(0x7B, bytes[1]);
+
+		assertEquals(0x04, bytes[2]);
+		assertEquals((byte)0xD2, bytes[3]);
+
+		assertEquals((byte)0x49, bytes[4]);
+		assertEquals((byte)0x8F, bytes[5]);
+		assertEquals((byte)0x3A, bytes[6]);
+		assertEquals((byte)0x94, bytes[7]);
+		
+		assertEquals((byte)-100, bytes[8]);
+	}
+
+	@Test
+	public void downlinkFrame0x48() {
+		var frame = new DownlinkFrame0x48();
+		frame.setMinutesBeforeReboot(1440);
+		byte[] bytes = decoder.encodeDownlinkFrame0x48(frame);
+
+		assertEquals(3, bytes.length);
+		assertEquals((byte)0x48, bytes[0]);
+		assertEquals(0x05, bytes[1]);
+		assertEquals((byte)0xA0, bytes[2]);
+	}
+
+	@Test
+	public void downlinkFrame0x49() {
+		var frame = new DownlinkFrame0x49();
+		frame.setTimestamp(238613932L /* Epoch 2013 */ + 1356998400L /* ms 2013 */);
+		frame.setClockDriftCompensation(-35);
+		byte[] bytes = decoder.encodeDownlinkFrame0x49(frame);
+
+		assertEquals(6, bytes.length);
+
+		assertEquals((byte)0x49, bytes[0]);
+
+		assertEquals((byte)0x0E, bytes[1]);
+		assertEquals((byte)0x38, bytes[2]);
+		assertEquals((byte)0xF5, bytes[3]);
+		assertEquals((byte)0xAC, bytes[4]);
+
+		assertEquals((byte)0xDD, bytes[5]);
+}
 }
