@@ -47,6 +47,12 @@ public class WaterTankReactor implements TwinReactor {
 	public WaterTankReactor() {
 	}
 
+	/*
+
+Schema: Level, IndorEnvironment
+
+	 */
+
 	public List<ReceiverValue> mapReceiverValues(JsonArray values) {
 		var result = new ArrayList<ReceiverValue>();
 

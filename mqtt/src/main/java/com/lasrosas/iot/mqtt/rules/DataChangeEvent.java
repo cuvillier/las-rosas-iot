@@ -1,9 +1,9 @@
-package com.lasrosas.iot.shared.rules;
+package com.lasrosas.iot.mqtt.rules;
 
-public class DataChangedEvent extends IotEvent {
+public class DataChangeEvent extends IotEvent {
 	private DataChange dataChange;
 	
-	public DataChangedEvent(DataChange dataChange) {
+	public DataChangeEvent(DataChange dataChange) {
 		super();
 		this.dataChange = dataChange;
 	}

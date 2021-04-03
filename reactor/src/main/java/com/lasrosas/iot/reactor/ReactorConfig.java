@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.lasrosas.iot.influxdb.InfluxdbSession;
-import com.lasrosas.iot.mqtt.MqttSession;
+import com.lasrosas.iot.mqtt.session.MqttSession;
 import com.lasrosas.iot.reactore.reactores.TwinReactors;
 import com.lasrosas.iot.reactore.reactores.WaterTankReactor;
 

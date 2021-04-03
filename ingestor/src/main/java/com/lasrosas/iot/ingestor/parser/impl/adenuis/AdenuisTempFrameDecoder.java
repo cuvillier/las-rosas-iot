@@ -2,23 +2,23 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ConnectionMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ExternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x10;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x11;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x12;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x20;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Frame0x43;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.InternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ProductMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.Status;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.TypeOfExternalSensor;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ConnectionMode;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ExternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x10;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x11;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x12;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x20;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x43;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.InternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ProductMode;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Status;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.TypeOfExternalSensor;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
-public class AdenuisTempParser {
+public class AdenuisTempFrameDecoder {
 
-	public ThingMessageHolder parse(byte[] payload) {
+	public ThingMessageHolder decode(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();

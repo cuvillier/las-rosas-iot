@@ -16,11 +16,12 @@ import com.lasrosas.iot.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 import com.lasrosas.iot.database.repo.DigitalTwinRepo;
+import com.lasrosas.iot.database.repo.ThingRepo;
 import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.influxdb.InfluxdbSession;
-import com.lasrosas.iot.mqtt.MqttSession;
+import com.lasrosas.iot.mqtt.session.MqttSession;
 import com.lasrosas.iot.reactore.reactores.TwinReactors;
 import com.lasrosas.iot.shared.ontology.WaterTankFilling;
 import com.lasrosas.iot.shared.utils.NotFoundException;
@@ -42,6 +43,9 @@ public class ReactorEngine {
 	private TimeSerieRepo tsrRepo;
 
 	@Autowired
+	private ThingRepo thgRepo;
+
+	@Autowired
 	private TimeSeriePointRepo tspRepo;
 
 	@Autowired
@@ -60,8 +64,12 @@ public class ReactorEngine {
 
 	public void start() {
 		try {
-			mqtt.subscribe("digital-twin/+/from-sensor", (topic, msg) -> {
-				handleMessage(topic, msg);
+			mqtt.subscribe("sensors/+/+/+/measurements", (topic, msg) -> {
+				handleSensorMessage(topic, msg);
+			});
+
+			mqtt.subscribe("digital-twin/+/+/data-changes", (topic, msg) -> {
+				handleDigitalTwinMessage(topic, msg);
 			});
 
 		} catch (RuntimeException e) {
@@ -72,26 +80,35 @@ public class ReactorEngine {
 	}
 
 	@Transactional
-	public void handleMessage(String topic, MqttMessage msg) {
+	public void handleSensorMessage(String topic, MqttMessage msg) {
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
 
-		var parts = topic.split("/");
-		var twinTechid = Long.parseLong(parts[1]);
-		var twin = twinRepo.getOne(twinTechid);
-
-		var reactor = twinReactors.getReactor(twin);
 		var json = new String(msg.getPayload());
 
+		var parts = topic.split("/");
+		var thgTechid = Long.parseLong(parts[3]);
+		var thing = thgRepo.getOne(thgTechid);
+		var twin = thing.getTwin();
+
+		if(twin == null) {
+			log.info("No twin.");
+			log.debug(json);
+			return;			
+		}
+
+		var reactor = twinReactors.getReactor(twin);
+
 		if(reactor == null) {
-			log.info("No reactor.");
+			log.info("No reactor for twin type " + twin.getType().getName());
 			log.debug(json);
 			return;
 		}
 
-		var jsono = gson.fromJson(json, JsonArray.class);
+		var messageJO = gson.fromJson(json, JsonObject.class);
 
 		log.debug("Handle message:");
 		log.debug(json);
@@ -112,6 +129,10 @@ public class ReactorEngine {
 		for(var value: transmiterValues) {
 			insertPoint(twin, value.getTime(), WaterTankFilling.SCHEMA, value.getValue());
 		}
+	}
+
+	@Transactional
+	public void handleDigitalTwinMessage(String topic, MqttMessage msg) {
 	}
 
 	private TimeSeriePoint insertPoint(DigitalTwin twin, LocalDateTime time, String schema, JsonObject jsono) {

@@ -10,8 +10,8 @@ import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
 
-public class AdenuisARF8180BAParser implements PayloadParser {
-	private AdenuisTempFrameDecoder decoder = new AdenuisTempFrameDecoder();
+public class AdenuisARF8170BAParser implements PayloadParser {
+	private AdenuisARF8170BAFrameDecoder decoder = new AdenuisARF8170BAFrameDecoder();
 
 	@Override
 	public List<ThingMessageHolder> parse(byte[] payload) {

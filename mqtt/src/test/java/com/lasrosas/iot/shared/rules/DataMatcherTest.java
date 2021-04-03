@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.lasrosas.iot.mqtt.rules.DataChangeMatcher;
+
 public class DataMatcherTest {
 
 	@Test

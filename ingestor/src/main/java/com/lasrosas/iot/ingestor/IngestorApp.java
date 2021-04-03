@@ -24,6 +24,8 @@ public class IngestorApp implements CommandLineRunner {
 
 	@Autowired
 	private LoraServerRAK7249 rak7249;
+	
+	private long txid = System.currentTimeMillis();
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -31,7 +33,7 @@ public class IngestorApp implements CommandLineRunner {
 		this.rak7249.start(c -> {
 			var newPoints = loraIngestor.handleLoraMessage(rak7249, c);
 			writeMessageToInfluxDB.write(newPoints);
-			sendMessageToTwin.send(newPoints);
+			sendMessageToTwin.send(newPoints, txid);
 		});
 
 		while(true) {

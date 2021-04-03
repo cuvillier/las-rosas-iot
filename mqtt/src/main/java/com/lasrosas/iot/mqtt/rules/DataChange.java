@@ -1,21 +1,28 @@
-package com.lasrosas.iot.shared.rules;
+package com.lasrosas.iot.mqtt.rules;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class DataChange {
 
+	private LocalDateTime time;
+	
+	// Sensor, DigitalTwin...
+	private String entityClass;
+
+	private long entityId;
+
+	private NewValue [] newValues;
+
 	public static class NewValue {
 		private String attribute;
 		private String oldValue;
-		private LocalDateTime time;
 		private String newValue;
 
-		public NewValue(LocalDateTime time, String attribute, String oldValue, String newValue) {
+		public NewValue(String attribute, String oldValue, String newValue) {
 			super();
 			this.attribute = attribute;
 			this.oldValue = oldValue;
-			this.time = time;
 			this.newValue = newValue;
 		}
 
@@ -25,30 +32,29 @@ public class DataChange {
 		public String getOldValue() {
 			return oldValue;
 		}
-		public LocalDateTime getTime() {
-			return time;
-		}
 		public String getNewValue() {
 			return newValue;
 		}
 	}
 
-	private String entityType;
-	private long entityId;
-	private NewValue [] newValues;
-
 	public DataChange() {
 	}
 
-	public DataChange(String entityType, long entityId, NewValue ... newValues) {
+	public DataChange(String entityClass, long entityId, LocalDateTime time, NewValue ... newValues) {
 		super();
-		this.entityType = entityType;
+
+		this.entityClass = entityClass;
 		this.entityId = entityId;
+		this.time = time;
 		this.newValues = Arrays.copyOf(newValues, newValues.length);
 	}
 
-	public String getEntityType() {
-		return entityType;
+	public LocalDateTime getTime() {
+		return time;
+	}
+
+	public String getEntityClass() {
+		return entityClass;
 	}
 	public long getEntityId() {
 		return entityId;

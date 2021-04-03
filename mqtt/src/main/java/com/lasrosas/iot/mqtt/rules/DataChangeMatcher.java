@@ -1,4 +1,4 @@
-package com.lasrosas.iot.shared.rules;
+package com.lasrosas.iot.mqtt.rules;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ public class DataChangeMatcher {
 	}
 
 	public boolean match(DataChange dataChange) {
-		return match(dataChange.getEntityType(), dataChange.getEntityId(), dataChange.getAttributes());
+		return match(getEntityType(), dataChange.getEntityId(), dataChange.getAttributes());
 	}
 
 	public boolean match(String entityType, Long entityId, String ... attributes) {

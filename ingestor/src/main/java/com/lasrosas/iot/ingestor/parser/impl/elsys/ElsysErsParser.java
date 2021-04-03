@@ -13,7 +13,7 @@ public class ElsysErsParser implements PayloadParser {
 	private ElsysGenericParser parser;
 
 	@Override
-	public List<ThingMessageHolder> decode(byte[] data) {
+	public List<ThingMessageHolder> parse(byte[] data) {
 		return parser.decode(data);
 	}
 

@@ -6,11 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.ingestor.parser.PayloadParsers;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
-import com.lasrosas.iot.mqtt.MqttSession;
+import com.lasrosas.iot.mqtt.session.MqttSession;
 
 @ConfigurationProperties
 @Validated
@@ -32,6 +33,11 @@ public class IngestorConfig {
 	}
 
 	@Bean
+	public AdenuisARF8170BAParser AdenuisARF8170BAParser() {
+		return new AdenuisARF8170BAParser();
+	}
+
+	@Bean
 	public ElsysGenericParser ElsysGenericParser() {
 		return new ElsysGenericParser();
 	}
@@ -50,6 +56,7 @@ public class IngestorConfig {
 	@ConfigurationProperties(prefix = "lora-sensors")
 	public PayloadParsers LoraSensors(
 			AdenuisARF8180BAParser adenuisARF8180BAParser,
+			AdenuisARF8170BAParser adenuisARF8170BAParser,
 			ElsysErsParser elsysErsParser,
 			ElsysMB7389Parser elsysMB7389Parser) {
 		

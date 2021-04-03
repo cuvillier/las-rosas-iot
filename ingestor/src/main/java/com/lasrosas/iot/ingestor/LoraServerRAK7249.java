@@ -17,7 +17,7 @@ import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.repo.GatewayRepo;
 import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.ThingTypeRepo;
-import com.lasrosas.iot.mqtt.MqttSession;
+import com.lasrosas.iot.mqtt.session.MqttSession;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class LoraServerRAK7249 extends LoraServer {

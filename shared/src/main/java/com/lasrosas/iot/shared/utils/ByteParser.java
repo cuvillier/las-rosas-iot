@@ -46,7 +46,7 @@ public class ByteParser {
 		}
 	}
 
-	enum ByteOrder {
+	public enum ByteOrder {
 		LI, BI
 	}
 
@@ -54,6 +54,10 @@ public class ByteParser {
 		if (lgr > 8)
 			throw new RuntimeException("byte order must be specified for int > 8 bits lgr=" + lgr);
 
+		return suint(lgr, ByteOrder.BI, false);
+	}
+
+	public int uintBI(int lgr) {
 		return suint(lgr, ByteOrder.BI, false);
 	}
 
@@ -125,11 +129,19 @@ public class ByteParser {
 		return suint(16, ByteOrder.BI, false);
 	}
 
+	public long uint32BI() {
+		return suint(32, ByteOrder.BI, false);
+	}
+
 	public int uint4() {
 		return uint(4);
 	}
 
 	public int sint16BI() {
 		return suint(16, ByteOrder.BI, true);
+	}
+
+	public void assertEmpty() {
+		if(hasMore() ) throw new RuntimeException("Unparsed bits: lgr=" + bytes.length + ", ibyte=" + ibyte + ", ibit=" + ibit);
 	}
 }

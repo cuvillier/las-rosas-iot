@@ -7,6 +7,10 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import com.lasrosas.iot.mqtt.rules.DataChange;
+import com.lasrosas.iot.mqtt.rules.DataChangeMatcher;
+import com.lasrosas.iot.mqtt.rules.DataChangeRule;
+
 public class DataRuleTest {
 
 	@Test
@@ -17,11 +21,11 @@ public class DataRuleTest {
 				new DataChangeMatcher("Person", null, "firstname"));
 
 		result[0] = false;
-		rule.evaluate(new DataChange("Person", 1234L, new DataChange.NewValue(LocalDateTime.now(), "firstname", "joe", "bob")));
+		rule.evaluate(new DataChange("Person", 1234L, LocalDateTime.now(), new DataChange.NewValue("firstname", "joe", "bob")));
 		assertTrue(result[0]);
 
 		result[0] = false;
-		rule.evaluate(new DataChange("Person", 1234L, new DataChange.NewValue(LocalDateTime.now(), "notglop", "qweqwe", "poipoi")));
+		rule.evaluate(new DataChange("Person", 1234L, LocalDateTime.now(), new DataChange.NewValue("notglop", "qweqwe", "poipoi")));
 		assertFalse(result[0]);
 	}
 }

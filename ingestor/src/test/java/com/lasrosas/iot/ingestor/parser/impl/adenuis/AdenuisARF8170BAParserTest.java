@@ -6,15 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ConnectionMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ExternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.InternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.ProductMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisTempFrame.TypeOfExternalSensor;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ConnectionMode;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ExternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.InternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ProductMode;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.TypeOfExternalSensor;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
-public class AdenuisTempParserTest {
-	private AdenuisTempParser frameParser = new AdenuisTempParser();
+public class AdenuisARF8170BAParserTest {
+	private AdenuisTempFrameDecoder frameParser = new AdenuisTempFrameDecoder();
 
 	@Test
 	public void status() {

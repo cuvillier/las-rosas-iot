@@ -1,4 +1,4 @@
-package com.lasrosas.iot.shared.rules;
+package com.lasrosas.iot.mqtt.rules;
 
 public class RuleMatcher {
 	private final String eventClass;

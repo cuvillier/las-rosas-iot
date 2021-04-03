@@ -1,4 +1,4 @@
-package com.lasrosas.iot.mqtt;
+package com.lasrosas.iot.mqtt.session;
 
 import javax.annotation.PreDestroy;
 import javax.validation.constraints.Max;

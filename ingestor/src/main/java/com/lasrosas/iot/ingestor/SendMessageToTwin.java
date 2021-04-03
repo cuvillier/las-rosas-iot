@@ -2,8 +2,6 @@ package com.lasrosas.iot.ingestor;
 
 import java.util.List;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,48 +11,50 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
-import com.lasrosas.iot.mqtt.MqttSession;
+import com.lasrosas.iot.mqtt.session.MqttSession;
 
 public class SendMessageToTwin {
 	public static final Logger log = LoggerFactory.getLogger(SendMessageToTwin.class);
 
 	@Autowired
 	private Gson gson;
-	
+
 	private MqttSession mqtt;
 
 	public SendMessageToTwin(MqttSession mqtt) {
 		this.mqtt = mqtt;
 	}
 
-	public void send(List<TimeSeriePoint> points) {
+	public void send(List<TimeSeriePoint> points, long txid) {
 		try {
 			if(points.size() == 0) return;
-			
-			var jsonArray = new JsonArray(points.size());
+
+			var pointsJO = new JsonArray(points.size());
 
 			var thing = points.get(0).getTimeSerie().getThing();
 
-			var dtwin = thing.getTwin();
-			if( dtwin == null ) return;
+			String topic = "sensors/" + thing.getType().getManufacturer() + "/" +  thing.getType().getModel() + "/" + thing.getTechid() + "/measurements";
 
-			String topic = "digital-twin/" + dtwin.getTechid() + "/from-sensor";
-	
 			for(var point: points) {
 
-				var jsono = new JsonObject();
-				jsono.addProperty("action", "newTimeSeriePoints");
-				jsono.addProperty("tspTechid", point.getTechid());
-				jsonArray.add(jsono);
+				var pointJO = new JsonObject();
+				pointJO.addProperty("txid", txid);
+				pointJO.addProperty("techid", point.getTechid());
+				pointJO.addProperty("schema", point.getTimeSerie().getType().getSchema());
+				pointJO.add("value", point.getValue(gson));
+				pointsJO.add(pointJO);
 			}
 
-			var messageJson = gson.toJson(jsonArray);
+			var messageJO = new JsonObject();
+			messageJO.addProperty("txid", txid);
+			messageJO.addProperty("publishTime", System.currentTimeMillis());
+			messageJO.add("points", pointsJO);
 
-			var message = new MqttMessage(messageJson.getBytes());
-			
-			log.info("Publish topic=" + topic + " message=" + new String(message.getPayload()));
-			this.mqtt.publish(topic, message);
-			
+			var messageJson = gson.toJson(messageJO);
+
+			var messageMQTT = new MqttMessage(messageJson.getBytes());
+			log.info("Publish topic=" + topic + " message=" + new String(messageMQTT.getPayload()));
+			this.mqtt.publish(topic, messageMQTT);
 
 		} catch (RuntimeException e) {
 			throw e;

@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
-public class AdenuisTempFrame {
+public class AdenuisARF8180BAFrame {
 
 	public static class Status {
 		private int frameCounter;
