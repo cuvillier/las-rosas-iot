@@ -24,12 +24,16 @@ public class ThingType extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_READABLE = PREFIX + "READABLE";
+	public static final String COL_CONFIGURATION_SCHEMA = PREFIX + "CONFIGURATION_SCHEMA";
 	public static final String COL_MODEL = PREFIX + "MODEL";
 	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "BATTERY_MIN_PERCENTAGE";
 	public static final String COL_MANUFACTURER = PREFIX + "MANUFACTURER";
 
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
 	private List<Thing> things;
+
+	@Column(name = COL_CONFIGURATION_SCHEMA)
+	private String configurationSchema;
 
 	@Column(name = COL_MANUFACTURER)
 	private String manufacturer;
@@ -43,7 +47,7 @@ public class ThingType extends BaseEntity {
 	@Column(name = COL_BATTERY_MIN_PERCENTAGE)
 	private Double batteryMinPercentage;
 
-	ThingType() {
+	protected ThingType() {
 	}
 
 	public ThingType(String readable) {

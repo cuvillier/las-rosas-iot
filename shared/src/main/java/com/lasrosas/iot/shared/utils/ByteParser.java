@@ -125,6 +125,10 @@ public class ByteParser {
 		return li;
 	}
 
+	public byte ubyte() {
+		return (byte)uint(8);
+	}
+
 	public int uint8() {
 		return uint(8);
 	}
@@ -147,5 +151,24 @@ public class ByteParser {
 
 	public void assertEmpty() {
 		if(hasMore() ) throw new RuntimeException("Unparsed bits: lgr=" + bytes.length + ", ibyte=" + ibyte + ", ibit=" + ibit);
+	}
+
+	public byte[] bytes() {
+		return bytes(bytes.length - ibyte);
+	}
+
+	public byte[] bytes(int nbytes) {
+		if(ibit != 0) throw new RuntimeException("Not at the begining of a byte");
+		
+		if(nbytes == 0) return null;
+
+		var result = new byte[nbytes];
+
+		// Make a copy
+		for(int i = 0; i < nbytes; i++) result[i] = bytes[i + ibyte];
+
+		ibyte += nbytes;
+
+		return result;
 	}
 }

@@ -95,7 +95,6 @@ public class DigitalTwinChangeEngine extends DataChangeEngine<DigitalTwin> {
 
 		var currentValue = tsr.getCurrentValue();
 		var oldValue = gson.fromJson(currentValue.getValue(), JsonObject.class);
-		var newValues = findNewValues(value, oldValue);
 
 		var tsp = new TimeSeriePoint(tsr, time, json);
 		tspRepo.save(tsp);
@@ -103,14 +102,7 @@ public class DigitalTwinChangeEngine extends DataChangeEngine<DigitalTwin> {
 
 		// Write to InfluxDB
 		influxdb.write(tsp);
-
-		var publisher = new DataChangePublisher<DigitalTwin>(mqtt);
-
-		var dataChange = new DataChange(DigitalTwin.class.getSimpleName(), twin.getTechid(), time, newValues);
-		publisher.publish(dataChange);
-	}
-
-	private DataChange.NewValue [] findNewValues(JsonObject oldValue, JsonObject newValue) {
-		return null;
+		
+		// TODO: Diffuse data change event
 	}
 }

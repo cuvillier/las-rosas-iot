@@ -16,8 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.lasrosas.iot.database.entities.alrm.Alarm;
-import com.lasrosas.iot.database.entities.alrm.ThingAlarm;
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
 import com.sun.istack.NotNull;
@@ -25,7 +23,7 @@ import com.sun.istack.NotNull;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = Thing.TABLE)
-@AttributeOverrides({ @AttributeOverride(column = @Column(name = Thing.COL_TECHID), name = BaseEntity.PROP_TECHID), })
+@AttributeOverrides({ @AttributeOverride(column = @Column(name = Thing.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = Thing.COL_DISCRIMINATOR)
 public abstract class Thing extends BaseEntity {
 	public static final String TABLE = "T_THG_THING";
@@ -34,6 +32,7 @@ public abstract class Thing extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "TECHID";
 	public static final String COL_READABLE = PREFIX + "READABLE";
+	public static final String COL_CONFIGURATION = PREFIX + "CONFIGURATION";
 	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
 	public static final String COL_MODE = PREFIX + "MODE";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "TYPE";
@@ -61,6 +60,9 @@ public abstract class Thing extends BaseEntity {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = COL_TWIN_FK)
 	private DigitalTwin twin;
+	
+	@Column(name = COL_CONFIGURATION)
+	private String configuration;
 
 	public enum Mode {
 		Enabled,
@@ -134,5 +136,13 @@ public abstract class Thing extends BaseEntity {
 
 	public void setProxy(ThingProxy proxy) {
 		this.proxy = proxy;
+	}
+
+	public String getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
 	}
 }

@@ -11,6 +11,7 @@ import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOParser;
 import com.lasrosas.iot.mqtt.session.MqttSession;
 
 @ConfigurationProperties
@@ -58,9 +59,10 @@ public class IngestorConfig {
 			AdenuisARF8180BAParser adenuisARF8180BAParser,
 			AdenuisARF8170BAParser adenuisARF8170BAParser,
 			ElsysErsParser elsysErsParser,
-			ElsysMB7389Parser elsysMB7389Parser) {
+			ElsysMB7389Parser elsysMB7389Parser,
+			MFC88LW13IOParser mfc88LW1310Parser) {
 		
-		return new PayloadParsers(adenuisARF8180BAParser, elsysErsParser, elsysMB7389Parser);
+		return new PayloadParsers(adenuisARF8180BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
 	}
 
 	@Bean("rak7249.mqtt")

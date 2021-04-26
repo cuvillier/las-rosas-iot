@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Base64;
 import java.util.Date;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ChannelType;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.DownlinkFrame0x01;
@@ -24,16 +27,37 @@ import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.Provi
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.RegisterValue;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.Request2FStatus;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.Request33Status;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.UplinkFrame0x30;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisARF8180BAParserTest {
 	private AdenuisARF8170BAFrameDecoder decoder = new AdenuisARF8170BAFrameDecoder();
 
 	@Test
-	public void status() {
-		var byteParser = new ByteParser(new byte[] {(byte)0xA2});
-		var status = decoder.parseStatus(byteParser);
-	}
+	public void decode() {
+		var bytes = Base64.getDecoder().decode("MCAAIQAAAAAAAAA=");
+		var frame = decoder.decode(bytes);
+		
+		assertEquals(UplinkFrame0x30.class, frame.getMessage().getClass());
+		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame.getMessage();
+		
+		assertEquals(1, frame0x30.getStatus().getFrameCounter());
+		assertFalse(frame0x30.getStatus().isConfig());
+		assertFalse(frame0x30.getStatus().isLowBat());
+		assertFalse(frame0x30.getStatus().isTimestamp());
+
+		assertEquals(ChannelState.OPEN_OFF, frame0x30.getChannel1State());
+		assertEquals(ChannelState.OPEN_OFF, frame0x30.getChannel2State());
+		assertEquals(ChannelState.OPEN_OFF, frame0x30.getChannel3State());
+		assertEquals(ChannelState.OPEN_OFF, frame0x30.getChannel4State());
+
+		assertEquals(33, frame0x30.getChannel1EventCounter());
+		assertEquals(0, frame0x30.getChannel2EventCounter());
+		assertEquals(0, frame0x30.getChannel3EventCounter());
+		assertEquals(0, frame0x30.getChannel4EventCounter());
+
+		assertNull(frame0x30.getTimestamp());
+}
 
 	@Test
 	public void uplinkFrame0x10() {

@@ -3,15 +3,43 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
+import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.UplinkFrame0x10;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x30x43;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
+import com.lasrosas.iot.shared.utils.diffuse.Diffuse;
+import com.lasrosas.iot.shared.utils.diffuse.DiffuseMatcher;
 
 public class AdenuisARF8170BAParser implements PayloadParser {
+	public static final String MANUFACTURER = "Adeunis";
+	public static final String MODEL = "ARF8170BA";
+
+	public static Gson gson = new GsonBuilder().create();
+
 	private AdenuisARF8170BAFrameDecoder decoder = new AdenuisARF8170BAFrameDecoder();
+
+	public void updateConfig(Object data ) {
+		
+	}
+	public Adeunis8170BAConfiguration decodeConfig(String json) {
+		return gson.fromJson(json, Adeunis8170BAConfiguration.class);
+	}
+
+	public void updateConfig(Adeunis8170BAConfiguration config, UplinkFrame0x10 frame) {
+		config.setChannel1Type(frame.getS320_Channel1Configuration().getType());
+		config.setChannel2Type(frame.getS321_Channel2Configuration().getType());
+		config.setChannel3Type(frame.getS322_Channel3Configuration().getType());
+		config.setChannel4Type(frame.getS323_Channel4Configuration().getType());
+	}
 
 	@Override
 	public List<ThingMessageHolder> parse(byte[] payload) {

@@ -2,8 +2,9 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+
+import com.lasrosas.iot.ingestor.parser.ConfigFrame;
 
 public class AdenuisARF8170BAFrame {
 
@@ -119,12 +120,17 @@ public class AdenuisARF8170BAFrame {
 				throw new RuntimeException("Invalid ChannelType value=" + channelType);
 			}
 		}
-
 	}
 
 	public static class ChannelConfiguration {
-		private Integer debounceDurationMs;
 		private ChannelType type;
+		private Integer debounceDurationMs;
+
+		public ChannelConfiguration(ChannelType type, Integer debounceDurationMs) {
+			super();
+			this.type = type;
+			this.debounceDurationMs = debounceDurationMs;
+		}
 
 		public Integer getDebounceDurationMs() {
 			return debounceDurationMs;
@@ -143,7 +149,7 @@ public class AdenuisARF8170BAFrame {
 		}
 	}
 
-	public static class UplinkFrame0x10 extends BaseUplinkFrame {
+	public static class UplinkFrame0x10 extends BaseUplinkFrame implements ConfigFrame {
 
 		private int S300_TransmissionPeriodOfKeepAlive10sec;
 		private int S301_TransmissionPeriodOfPeriodicFrame10sec;
@@ -155,6 +161,12 @@ public class AdenuisARF8170BAFrame {
 		public UplinkFrame0x10() {
 			super(0x10);
 		}
+
+		@Override
+		public Object getConfig() {
+			return this;
+		}
+
 
 		public int getS300_TransmissionPeriodOfKeepAlive10sec() {
 			return S300_TransmissionPeriodOfKeepAlive10sec;
@@ -203,7 +215,6 @@ public class AdenuisARF8170BAFrame {
 		public void setS323_Channel4Configuration(ChannelConfiguration s323_Channel4Configuration) {
 			S323_Channel4Configuration = s323_Channel4Configuration;
 		}
-
 	}
 
 	public enum ProvisioningMode {
@@ -252,12 +263,17 @@ public class AdenuisARF8170BAFrame {
 
 	}
 
-	public static class UplinkFrame0x20 extends BaseUplinkFrame {
+	public static class UplinkFrame0x20 extends BaseUplinkFrame  implements ConfigFrame {
 		private LoraWanOptions S220_lorawanOptions;
 		private ProvisioningMode S221_ProvisioningMode;
 
 		public UplinkFrame0x20() {
 			super(0x20);
+		}
+
+		@Override
+		public Object getConfig() {
+			return this;
 		}
 
 		public LoraWanOptions getS220_lorawanOptions() {
@@ -342,7 +358,7 @@ public class AdenuisARF8170BAFrame {
 		}
 	}
 
-	public static class UplinkFrame0x30 extends BaseUplinkFrame {
+	public static class UplinkFrame0x30 extends BaseUplinkFrame implements ConfigFrame {
 		private Integer channel1EventCounter;
 		private Integer channel2EventCounter;
 		private Integer channel3EventCounter;
@@ -355,6 +371,11 @@ public class AdenuisARF8170BAFrame {
 
 		public UplinkFrame0x30() {
 			super(0x30);
+		}
+
+		@Override
+		public Object getConfig() {
+			return this;
 		}
 
 		public Integer getChannel1EventCounter() {

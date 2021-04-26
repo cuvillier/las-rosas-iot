@@ -117,7 +117,6 @@ public class AdenuisARF8170BAFrameDecoder {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
-		Status status = parseStatus(parser);
 
 		BaseFrame frame = null;
 		switch(code) {
@@ -130,13 +129,25 @@ public class AdenuisARF8170BAFrameDecoder {
 		case 0x2F :
 			frame = parseUplinkFrame0x2F(parser);
 			break;
+		case 0x30 :
+			frame = parseUplinkFrame0x30(parser);
+			break;
+/*
+		case 0x31 :
+			frame = parseUplinkFrame0x31(parser);
+			break;
+*/
+		case 0x33 :
+			frame = parseUplinkFrame0x33(parser);
+			break;
+		case 0x40 :
+			frame = parseUplinkFrame0x40(parser);
+			break;
+		case 0x59 :
+			frame = parseUplinkFrame0x59(parser);
+			break;
 		default:
-			throw new RuntimeException("Unknown frame code.");
-		}
-
-		if(frame instanceof BaseUplinkFrame ) {
-			BaseUplinkFrame uplink = (BaseUplinkFrame)frame;
-			uplink.setStatus(status);
+			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
 		return new ThingMessageHolder("Adenuis.Temp.frame." + frame.getClass().getSimpleName(), null, frame);
@@ -149,12 +160,7 @@ public class AdenuisARF8170BAFrameDecoder {
 	public ChannelConfiguration parseChannelConfiguration(ByteParser parser) {
 		var channelType = ChannelType.parse( parser.uint(4));
 		var debounceDuration = parseDebounceDuration(parser.uint(4));
-		var channelConfiguration = new ChannelConfiguration();
-
-		channelConfiguration.setDebounceDurationMs(debounceDuration);
-		channelConfiguration.setType(channelType);
-
-		return channelConfiguration;
+		return new ChannelConfiguration(channelType, debounceDuration);
 	}
 
 	private Integer parseDebounceDuration(int code) {
