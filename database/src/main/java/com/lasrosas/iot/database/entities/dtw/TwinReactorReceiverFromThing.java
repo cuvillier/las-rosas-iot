@@ -1,38 +1,26 @@
-package com.lasrosas.iot.database.entities.alrm;
-
-import java.time.LocalDateTime;
+package com.lasrosas.iot.database.entities.dtw;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import com.lasrosas.iot.database.entities.thg.Thing;
 
 @Entity
-@DiscriminatorValue(ThingAlarm.DISCRIMINATOR)
-public class ThingAlarm extends Alarm {
-
-	public static final String PREFIX = "tha_";
+@DiscriminatorValue(TwinReactorReceiverFromThing.DISCRIMINATOR)
+public class TwinReactorReceiverFromThing extends TwinReactorReceiver {
+	public static final String PREFIX = "rvt_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
-
 	public static final String DISCRIMINATOR = "thg";
-	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "thing";
+
+	public static final String COL_THING_FK = PREFIX_FK + "thing";
 	public static final String PROP_THING = "thing";
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name=COL_THING_FK)
 	private Thing thing;
 
-	public ThingAlarm() {
-		super();
-	}
-
-	public ThingAlarm(Thing thing, AlarmType type, LocalDateTime time) {
-		super(type, time);
-		this.thing = thing;
-	}
-	
 	public Thing getThing() {
 		return thing;
 	}

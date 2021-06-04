@@ -22,17 +22,17 @@ import com.lasrosas.iot.database.entities.thg.Thing;
 @AttributeOverrides({
 		@AttributeOverride(column = @Column(name = TimeSerie.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 public class TimeSerie extends BaseEntity {
-	public static final String TABLE = "T_TSR_TIME_SERIE";
-	public static final String PREFIX = "TSR_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_tsr_time_serie";
+	public static final String PREFIX = "tsr_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_SENSOR = PREFIX + "SENSOR";
-	public static final String COL_INFLUXDB_MEASUREMENT= PREFIX + "INFLUXDB_MEASUREMENT";
-	public static final String COL_TYPE_FK = PREFIX_FK + TimeSerieType.PREFIX + "TYPE";
-	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "THING";
-	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
-	public static final String COL_CURRENT_VALUE_FK = PREFIX_FK + TimeSeriePoint.PREFIX + "CURRENT_VALUE";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_SENSOR = PREFIX + "sensor";
+	public static final String COL_INFLUXDB_MEASUREMENT= PREFIX + "influxdb_measurement";
+	public static final String COL_TYPE_FK = PREFIX_FK + TimeSerieType.PREFIX + "type";
+	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "thing";
+	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
+	public static final String COL_CURRENT_VALUE_FK = PREFIX_FK + TimeSeriePoint.PREFIX + "current_value";
 
 	public static final String PROP_TYPE = "type";
 

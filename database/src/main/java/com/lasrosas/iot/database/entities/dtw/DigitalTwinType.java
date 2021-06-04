@@ -22,17 +22,17 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = DigitalTwinType.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 @DiscriminatorColumn(name = DigitalTwinType.COL_DISCRIMINATOR)
 public abstract class DigitalTwinType extends BaseEntity {
-	public static final String TABLE = "T_DTW_DIGITAL_TWIN_TYPE";
-	public static final String PREFIX = "TWT_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
-	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
+	public static final String TABLE = "t_dtw_digital_twin_type";
+	public static final String PREFIX = "twt_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
+	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_NAME = PREFIX + "NAME";
-	public static final String COL_PUBLISH_ONTHOLOGY = PREFIX + "PUBLISH_ONTHOLOGY";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_NAME = PREFIX + "name";
+	public static final String COL_PUBLISH_ONTHOLOGY = PREFIX + "publish_onthology";
 	
-	public static final String COL_MAY_HAVE_CHILDREN = PREFIX + "MAY_HAVE_CHILDREN";
-	public static final String COL_SPACE_FK = PREFIX_FK + DigitalSpace.PREFIX + "SPACE";
+	public static final String COL_MAY_HAVE_CHILDREN = PREFIX + "may_have_children";
+	public static final String COL_SPACE_FK = PREFIX_FK + DigitalSpace.PREFIX + "space";
 
 	public static final String PROP_SPACE = "space";
 
@@ -42,7 +42,7 @@ public abstract class DigitalTwinType extends BaseEntity {
 
 	@OneToMany(mappedBy = DigitalTwin.PROP_TYPE)
 	private List<DigitalTwin> twins;
-	
+
 	@Column(name=COL_MAY_HAVE_CHILDREN)
 	private boolean mayHaveChildren = false;
 

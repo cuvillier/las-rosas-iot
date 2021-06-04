@@ -18,16 +18,16 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @AttributeOverrides({
 		@AttributeOverride(column = @Column(name = ThingType.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 public class ThingType extends BaseEntity {
-	public static final String TABLE = "T_THG_THING_TYPE";
-	public static final String PREFIX = "TTY_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_thg_thing_type";
+	public static final String PREFIX = "tty_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_READABLE = PREFIX + "READABLE";
-	public static final String COL_CONFIGURATION_SCHEMA = PREFIX + "CONFIGURATION_SCHEMA";
-	public static final String COL_MODEL = PREFIX + "MODEL";
-	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "BATTERY_MIN_PERCENTAGE";
-	public static final String COL_MANUFACTURER = PREFIX + "MANUFACTURER";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_READABLE = PREFIX + "readable";
+	public static final String COL_CONFIGURATION_SCHEMA = PREFIX + "configuration_schema";
+	public static final String COL_MODEL = PREFIX + "model";
+	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "battery_min_percentage";
+	public static final String COL_MANUFACTURER = PREFIX + "manufacturer";
 
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
 	private List<Thing> things;

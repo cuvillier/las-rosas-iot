@@ -17,18 +17,18 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @Table(name = ThingProxy.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = ThingProxy.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 public class ThingProxy extends BaseEntity {
-	public static final String TABLE = "T_THG_THING_PROXY";
-	public static final String PREFIX = "THP_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_thg_thing_proxy";
+	public static final String PREFIX = "thp_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_BATTERY_STATE = PREFIX + "BATTERY_STATE";
-	public static final String COL_CONNECTION_STATE = PREFIX + "CONNECTION_STATE";
-	public static final String COL_BATTERY_LEVEL = PREFIX + "BATTERY_LEVEL";
-	public static final String COL_LAST_SEEN = PREFIX + "LAST_SEEN";
-	public static final String COL_CONFIG = PREFIX + "CONFIG";
-	public static final String COL_VALUES = PREFIX + "VALUES";
-	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "THING";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_BATTERY_STATE = PREFIX + "battery_state";
+	public static final String COL_CONNECTION_STATE = PREFIX + "connection_state";
+	public static final String COL_BATTERY_LEVEL = PREFIX + "battery_level";
+	public static final String COL_LAST_SEEN = PREFIX + "last_seen";
+	public static final String COL_CONFIG = PREFIX + "config";
+	public static final String COL_VALUES = PREFIX + "values";
+	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "thing";
 	public static final String PROP_THING = "thing";
 
 	@OneToOne(fetch = FetchType.LAZY)

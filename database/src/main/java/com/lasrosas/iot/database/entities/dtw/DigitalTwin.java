@@ -17,8 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
-import com.lasrosas.iot.database.entities.thg.Thing;
-import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -27,16 +25,16 @@ import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
 @DiscriminatorColumn(name=DigitalTwin.COL_DESCRIMINATOR)
 public abstract class DigitalTwin extends BaseEntity {
 
-	public static final String TABLE = "T_DTW_DIGITAL_TWIN";
-	public static final String PREFIX = "TWI_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_dtw_digital_twin";
+	public static final String PREFIX = "twi_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_DESCRIMINATOR = PREFIX + "DISCRIMINATOR";
-	public static final String COL_NAME = PREFIX + "NAME";
-	public static final String COL_PROPERTIES = PREFIX + "PROPERTIES";
-	public static final String COL_TYPE_FK = PREFIX_FK + DigitalTwinType.PREFIX + "TYPE";
-	public static final String COL_PART_OF_FK = PREFIX_FK + DigitalTwin.PREFIX + "PART_OF";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_DESCRIMINATOR = PREFIX + "discriminator";
+	public static final String COL_NAME = PREFIX + "name";
+	public static final String COL_PROPERTIES = PREFIX + "properties";
+	public static final String COL_TYPE_FK = PREFIX_FK + DigitalTwinType.PREFIX + "type";
+	public static final String COL_PART_OF_FK = PREFIX_FK + DigitalTwin.PREFIX + "part_of";
 
 	public static final String PROP_TYPE = "type";
 	public static final String PROP_PART_OF = "partOf";
@@ -58,8 +56,8 @@ public abstract class DigitalTwin extends BaseEntity {
 	@Column(name=COL_NAME)
 	private String name;
 
-	@OneToMany(mappedBy = Thing.PROP_TWIN)
-	private List<Thing> things = new ArrayList<>();
+	@OneToMany(mappedBy = TwinReactorReceiver.PROP_TWIN)
+	private List<TwinReactorReceiver> receivers = new ArrayList<>();
 
 	public DigitalTwinType getType() {
 		return type;
@@ -71,14 +69,6 @@ public abstract class DigitalTwin extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public List<Thing> getThings() {
-		return things;
-	}
-
-	public void setThings(List<Thing> things) {
-		this.things = things;
 	}
 
 	public void setType(DigitalTwinType type) {
@@ -109,7 +99,11 @@ public abstract class DigitalTwin extends BaseEntity {
 		this.properties = properties;
 	}
 
-	protected boolean isInterestedBy(TimeSerieType tst) {
-		return true;
+	public List<TwinReactorReceiver> getReceivers() {
+		return receivers;
+	}
+
+	public void setReceivers(List<TwinReactorReceiver> receivers) {
+		this.receivers = receivers;
 	}
 }

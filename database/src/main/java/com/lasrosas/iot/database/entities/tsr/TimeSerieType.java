@@ -18,11 +18,11 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 		@AttributeOverride(column = @Column(name = TimeSerieType.COL_TECHID), name = BaseEntity.PROP_TECHID)
 })
 public class TimeSerieType extends BaseEntity {
-	public static final String TABLE = "T_TSR_TIME_SERIE_TYPE";
-	public static final String PREFIX = "TST_";
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_DIFFUSED = PREFIX + "DIFFUSED";
-	public static final String COL_SCHEMA = PREFIX + "SCHEMA";
+	public static final String TABLE = "t_tsr_time_serie_type";
+	public static final String PREFIX = "tst_";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_DIFFUSED = PREFIX + "diffused";
+	public static final String COL_SCHEMA = PREFIX + "schema";
 
 	@OneToMany(mappedBy = TimeSerie.PROP_TYPE)
 	private List<TimeSerie> timeSeries;

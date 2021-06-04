@@ -3,9 +3,7 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.cfg.NotYetImplementedException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,8 +14,6 @@ import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseF
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x30x43;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
-import com.lasrosas.iot.shared.utils.diffuse.Diffuse;
-import com.lasrosas.iot.shared.utils.diffuse.DiffuseMatcher;
 
 public class AdenuisARF8170BAParser implements PayloadParser {
 	public static final String MANUFACTURER = "Adeunis";
@@ -42,12 +38,17 @@ public class AdenuisARF8170BAParser implements PayloadParser {
 	}
 
 	@Override
-	public List<ThingMessageHolder> parse(byte[] payload) {
+	public List<ThingMessageHolder> decodeUplink(byte[] payload) {
 
 		var result = new ArrayList<ThingMessageHolder>();
 		result.add(decoder.decode(payload));
 
 		return result;
+	}
+
+	@Override
+	public byte[] encodeDownlink(Object frame) {
+		throw new NotYetImplementedException();
 	}
 
 	@Override

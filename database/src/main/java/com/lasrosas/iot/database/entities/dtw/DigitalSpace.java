@@ -16,12 +16,12 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @Table(name = DigitalSpace.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = DigitalSpace.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 public class DigitalSpace extends BaseEntity {
-	public static final String TABLE = "T_DTW_SPACE";
-	public static final String PREFIX = "SPA_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_dtw_space";
+	public static final String PREFIX = "spa_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_NAME = PREFIX + "NAME";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_NAME = PREFIX + "name";
 
 	@Column(name=COL_NAME)
 	private String name;

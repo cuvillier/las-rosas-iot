@@ -6,18 +6,37 @@ import java.time.Month;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrameDecoder;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOParserTest {
 	private MFC88LW13IOFrameDecoder frameParser = new MFC88LW13IOFrameDecoder();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	@Test
-	public void frame0x10() {
-		var byteParser = new ByteParser(new byte[] {0x78, 0x7d, 0x3c, 0x25, 0x00, 0x02, 0x00, 0x02, 0x03, 0x01});
+	public void printFrame() {
+/*
+2021/04/28 22:10:15 Uplink0a 2b 00 21 24 01 00 00 00 00 00 00 00 01 00 00 00 2021/04/28 22:10:15 Uplink01 d0 36 dc 21 00 02 07 07 01 00 2021/04/28 22:09:57 Uplink01 be 36 dc 21 00 02 07 07 01 00 2021/04/28 22:09:57 Uplink01 bb 36 dc 21 00 02 07 07 01 00 2021/04/28 22:09:28 Uplink01 a7 36 dc 21 00 02 07 07 01 00 2021/04/28 22:09:26 Uplink01 a5 36 dc 21 00 02 07 07 01 01 2021/04/28 22:08:58 Join2021/04/28 22:08:58 Join2021/04/28 22:05:17 Uplink0a a6 b0 9c 2a 01 00 00 00 00 00 00 00 01 00 00 00 2021/04/28 22:05:15 Uplink01 95 98 1c 28 00 02 07 07 01 00 2021/04/28 22:04:56 Uplink01 83 98 1c 28 00 02 07 07 01 00
+ */
+		/*
+		var byteParser = new ByteParser(new byte[] {0x01, (byte)0x83, (byte)0x98, 0x1c, 0x28, 0x00, 0x02, 0x07, 0x07, 0x01, 0x00});
+		var frame = frameParser.decodeUplinkTimeSyncRequest(byteParser);
+		 */
+		
+		//var bytes = new byte[] {0x0a, (byte)0xa6, (byte)0xb0, (byte)0x9c, 0x2a, 0x01, 00, 00, 00, 00, 00, 00, 00, 01, 00, 00, 00};
+		var bytes = new byte[] {0x01, 0x4c, 0x53, (byte)0xdc, 0x21, 0x00, 0x02, 0x07, 0x07, 0x01, 0x00};
+		var frame = frameParser.decodeUplink(bytes);
+		System.out.println(gson.toJson(frame));
+	}
 
-		var frame = frameParser.parseUplinkTimeSyncRequest(byteParser);
+	@Test
+	public void parseUplinkTimeSyncRequest() {
+		var byteParser = new ByteParser(new byte[] {0x78, 0x7d, 0x3c, 0x25, 0x00, 0x02, 0x00, 0x02, 0x03, 0x01});
+		var frame = frameParser.decodeUplinkTimeSyncRequest(byteParser);		
+		System.out.println(gson.toJson(frame));
 
 		assertEquals(0x01, frame.getCode());
 		assertEquals(0x787d3c25, frame.getSyncId());
@@ -31,10 +50,10 @@ public class MFC88LW13IOParserTest {
 	}
 
 	@Test
-	public void dareTime() {
+	public void parseDateTime() {
 		var byteParser = new ByteParser(new byte[] {(byte)0xdc, 0x7e, 0x37, 0x21});
 
-		var dateTime = frameParser.parseDateTime(byteParser);
+		var dateTime = frameParser.decodeDateTime(byteParser);
 		System.out.println(dateTime);
 		assertEquals(2016, dateTime.getYear());
 		assertEquals(Month.SEPTEMBER, dateTime.getMonth());
@@ -43,4 +62,16 @@ public class MFC88LW13IOParserTest {
 		assertEquals(54, dateTime.getMinute());
 		assertEquals(56, dateTime.getSecond());
 	}
+
+/* No data test
+	@Test
+	public void parseUplinkIO() {
+		var byteParser = new ByteParser(new byte[] {0x78, 0x7d, 0x3c, 0x25, 0x00, 0x02, 0x00, 0x02, 0x03, 0x01});
+
+		var frame = frameParser.parseUplinkIO(byteParser);
+
+		assertEquals(0x0A, frame.getCode());
+		assertEquals(0x787d3c25, frame.getDateTime());
+	}
+*/
 }

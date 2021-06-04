@@ -2,6 +2,7 @@ package com.lasrosas.iot.ingestor.parser.impl.elsys;
 
 import java.util.List;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
@@ -13,8 +14,13 @@ public class ElsysMB7389Parser implements PayloadParser {
 	private ElsysGenericParser parser;
 
 	@Override
-	public List<ThingMessageHolder> parse(byte[] data) {
+	public List<ThingMessageHolder> decodeUplink(byte[] data) {
 		return parser.decode(data);
+	}
+
+	@Override
+	public byte[] encodeDownlink(Object frame) {
+		throw new NotYetImplementedException();
 	}
 
 	@Override

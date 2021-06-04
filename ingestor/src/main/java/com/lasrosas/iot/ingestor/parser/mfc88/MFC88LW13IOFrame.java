@@ -137,32 +137,84 @@ public class MFC88LW13IOFrame {
 		}
 	}
 
-	public static class UplinkDigitalData extends UplinkFrame {
-		public static final int CODE = 0x01;
+	public static abstract class UplinkDigitalData extends UplinkFrame {
+		public static final int CODE = 0x10;
 
 		public UplinkDigitalData() {
 			super(CODE);
 		}		
 	}
 
+	public static class UplinkInputCounterType1 extends UplinkDigitalData {
+		private int inputCounters[] = new int[16];
+
+		public int[] getInputCounters() {
+			return inputCounters;
+		}
+
+		public void setInputCounters(int[] inputCounters) {
+			for(var i = 0; i < inputCounters.length; i++)
+				this.inputCounters[i] = inputCounters[i];
+		}
+	}
+
 	public static class UplinkLengthError extends UplinkFrame {
-		public static final int CODE = 0x01;
+		public static final int CODE = 0xEE;
+		private int type;
+		private byte[] data = new byte[9];
 
 		public UplinkLengthError() {
 			super(CODE);
-		}		
+		}
+
+		public int getType() {
+			return type;
+		}
+
+		public void setType(int type) {
+			this.type = type;
+		}
+
+		public byte[] getData() {
+			return data;
+		}
+
+		public void setData(byte[] data) {
+			this.data = data;
+			for(var i = 0; i < data.length; i++)
+				this.data[i] = data[i];
+		}
 	}
 
 	public static class DownlinkTimeSyncAnswer extends DownlinkFrame {
-		public static final int CODE = 0x01;
+		public static final int CODE = 0x00;
+
+		private long syncID;
+		private LocalDateTime dateTime;
 
 		public DownlinkTimeSyncAnswer() {
 			super(CODE);
-		}		
+		}
+
+		public long getSyncID() {
+			return syncID;
+		}
+
+		public void setSyncID(long syncID) {
+			this.syncID = syncID;
+		}
+
+		public LocalDateTime getDateTime() {
+			return dateTime;
+		}
+
+		public void setDateTime(LocalDateTime dateTime) {
+			this.dateTime = dateTime;
+		}
 	}
 
 	public static class DownlinkIOMessage extends DownlinkFrame {
-		public static final int CODE = 0x01;
+		public static final int CODE = 0x0400;
 
 		public DownlinkIOMessage() {
 			super(CODE);
@@ -170,7 +222,7 @@ public class MFC88LW13IOFrame {
 	}
 
 	public static class DownlinkSetPeriod extends DownlinkFrame {
-		public static final int CODE = 0x01;
+		public static final int CODE = 0x040104005;
 
 		public DownlinkSetPeriod() {
 			super(CODE);
@@ -178,7 +230,7 @@ public class MFC88LW13IOFrame {
 	}
 
 	public static class DownlinkOffCommand extends DownlinkFrame {
-		public static final int CODE = 0x01;
+		public static final int CODE = 0x04FF;
 
 		public DownlinkOffCommand() {
 			super(CODE);

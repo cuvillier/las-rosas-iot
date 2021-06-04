@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.BaseFrame;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkFrame;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkIOMessage;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkOffCommand;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkSetPeriod;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkTimeSyncAnswer;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkDigitalData;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkIO;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkInputCounterType1;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkLengthError;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest;
 import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
@@ -17,7 +19,7 @@ import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOFrameDecoder {
 
-	public ThingMessageHolder decode(byte[] payload) {
+	public ThingMessageHolder decodeUplink(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
@@ -25,7 +27,10 @@ public class MFC88LW13IOFrameDecoder {
 		BaseFrame frame = null;
 		switch(code) {
 		case UplinkTimeSyncRequest.CODE :
-			frame = parseUplinkTimeSyncRequest(parser);
+			frame = decodeUplinkTimeSyncRequest(parser);
+			break;
+		case UplinkIO.CODE :
+			frame = decodeUplinkIO(parser);
 			break;
 		default:
 			throw new RuntimeException("Unknown frame code: " + code);
@@ -57,11 +62,11 @@ public class MFC88LW13IOFrameDecoder {
 		}
 	}
 
-	public UplinkTimeSyncRequest parseUplinkTimeSyncRequest(ByteParser parser) {
+	public UplinkTimeSyncRequest decodeUplinkTimeSyncRequest(ByteParser parser) {
 		var frame = new UplinkTimeSyncRequest();
 
 		frame.setSyncId(parser.uint32BI());
-		frame.setVersion(parseVersion(parser));
+		frame.setVersion(decodeVersion(parser));
 		frame.setApplicationType(parser.uint16BI());
 		frame.setOption(parser.uint8() == 1 ? UplinkTimeSyncRequestOption.AFTER_BOOT: UplinkTimeSyncRequestOption.GOING_DOWN);
 		frame.setRfu(parser.bytes());
@@ -69,16 +74,16 @@ public class MFC88LW13IOFrameDecoder {
 		return frame;
 	}
 
-	private MFC88Version parseVersion(ByteParser parser) {
-		int major = parser.uint8();
-		int minor = parser.uint8();
-		int build = parser.uint8();
+	private MFC88Version decodeVersion(ByteParser parser) {
+		var major = parser.uint8();
+		var minor = parser.uint8();
+		var build = parser.uint8();
 
 		return new MFC88Version(major, minor, build);
 	}
 
-	public LocalDateTime parseDateTime(ByteParser parser) {
-	 	var bytes = parser.bytes(4);
+	public LocalDateTime decodeDateTime(ByteParser parser) {
+		var bytes = new int [] {parser.uint8(), parser.uint8(), parser.uint8(), parser.uint8()};
 
 		// Reverse bytes MSB on the right
 		var swap = bytes[0];
@@ -89,7 +94,7 @@ public class MFC88LW13IOFrameDecoder {
 		bytes[1] = swap;
 
 		var year = 2000 + (bytes[0] >> 1);
-		var month = ((bytes[0] & 1) << 3) | ((bytes[1]) >> 5);
+		var month = ((bytes[0] & 1) << 3) | (((bytes[1]) >> 5)&0x1f);
 		var dayOfMonth = bytes[1] & 0x1F;
 		var houres= (bytes[2] >> 3)& 0x1F;
 		var minutes = ((bytes[2] & 0x7) << 3) | ((bytes[3] >> 5) & 0x7);
@@ -98,10 +103,10 @@ public class MFC88LW13IOFrameDecoder {
 		return LocalDateTime.of(year, month, dayOfMonth, houres, minutes, seconds);
 	}
 
-	public UplinkIO parseUplinkIO(ByteParser parser) {
+	public UplinkIO decodeUplinkIO(ByteParser parser) {
 		var frame = new UplinkIO();
 
-		frame.setDateTime(parseDateTime(parser));
+		frame.setDateTime(decodeDateTime(parser));
 		frame.setInputs(parser.uint(4));
 		frame.setOutputs(parser.uint(4));
 		frame.setEvents(parser.uint(4));
@@ -109,29 +114,63 @@ public class MFC88LW13IOFrameDecoder {
 		return frame;
 	}
 
-	public UplinkDigitalData parseUplinkDigitlData(ByteParser parser) {
-		var frame = new UplinkDigitalData();
+	public UplinkDigitalData decodeUplinkDigitlData(ByteParser parser) {
+		var type = parser.uint8();
+
+		switch(type) {
+		case 00: 
+			var frame = new UplinkInputCounterType1();
+			
+			var inputCounters = new int[16];
+			for(var i = 0; i < 16; i++) {
+				inputCounters[i] = parser.uint16BI();
+			}
+			frame.setInputCounters(inputCounters);
+			return frame;
+
+		case 01: case 02:
+			throw new RuntimeException("Digital data type " + type + " is not supported. Fix the code.");
+		default:
+			throw new RuntimeException("Invalid DigitalData type " + type);
+		}
+	}
+
+	public UplinkLengthError decodeUplinkLengthError(ByteParser parser) {
+		var frame = new UplinkLengthError();
+		frame.setType(parser.uint8());
+		frame.setData(parser.bytes(9));
+
 		return frame;
 	}
 
-	public UplinkLengthError parseUplinkLengthError(ByteParser parser) {
-		var frame = new UplinkLengthError();
-		return frame;
+	public byte[] encodeDownlink(DownlinkFrame frame) {
+		switch(frame.getCode()) {
+		case DownlinkTimeSyncAnswer.CODE:
+			return encodeDownlinkTimeSyncAnswer((DownlinkTimeSyncAnswer)frame);
+		case DownlinkIOMessage.CODE:
+			return encodeDownlinkIOMessage((DownlinkIOMessage)frame);
+		case DownlinkSetPeriod.CODE:
+			return encodeDownlinkSetPeriod((DownlinkSetPeriod)frame);
+		case DownlinkOffCommand.CODE:
+			return encodeDownlinkOffCommand((DownlinkOffCommand)frame);
+		default:
+			throw new RuntimeException("Downlink frame code not supported: " + frame.getCode());
+		}
 	}
-	public DownlinkTimeSyncAnswer parseDownlinkTimeSyncAnswer(ByteParser parser) {
-		var frame = new DownlinkTimeSyncAnswer();
-		return frame;
+
+	public byte[] encodeDownlinkTimeSyncAnswer(DownlinkTimeSyncAnswer frame) {
+		return null;
 	}
-	public DownlinkIOMessage parseDownlinkIOMessage(ByteParser parser) {
-		var frame = new DownlinkIOMessage();
-		return frame;
+
+	public byte[] encodeDownlinkIOMessage(DownlinkIOMessage frame) {
+		return null;
 	}
-	public DownlinkSetPeriod parseDownlinkSetPeriod(ByteParser parser) {
-		var frame = new DownlinkSetPeriod();
-		return frame;
+
+	public byte[] encodeDownlinkSetPeriod(DownlinkSetPeriod frame) {
+		return null;
 	}
-	public DownlinkOffCommand parseDownlinkOffCommand(ByteParser parser) {
-		var frame = new DownlinkOffCommand();
-		return frame;
+
+	public byte[] encodeDownlinkOffCommand(DownlinkOffCommand frame) {
+		return null;
 	}
 }

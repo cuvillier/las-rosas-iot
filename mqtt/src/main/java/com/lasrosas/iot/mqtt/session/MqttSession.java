@@ -48,7 +48,7 @@ public class MqttSession {
 
 	@Autowired
 	private PlatformTransactionManager txManager;
-
+	
 	private IMqttClient mqtt;
 
 	public IMqttClient getClient() {
@@ -114,6 +114,14 @@ public class MqttSession {
 				}
 
 			});
+		} catch (MqttException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void unsubscribe(String topicEx) {
+		try {
+			getClient().unsubscribe(topicEx);
 		} catch (MqttException e) {
 			throw new RuntimeException(e);
 		}

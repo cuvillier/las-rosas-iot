@@ -20,16 +20,16 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @AttributeOverrides({
 		@AttributeOverride(column = @Column(name = ThingGateway.COL_TECHID), name = BaseEntity.PROP_TECHID), })
 public class ThingGateway extends BaseEntity {
-	public static final String TABLE = "T_THG_GATEWAY";
-	public static final String PREFIX = "GTW_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_thg_gateway";
+	public static final String PREFIX = "gtw_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_NATURAL_ID = PREFIX + "NATURAL_ID";
-	public static final String COL_PROTOCOL = PREFIX + "PROTOCOL";
-	public static final String COL_URL = PREFIX + "URL";
-	public static final String COL_LOGIN = PREFIX + "LOGIN";
-	public static final String COL_PASSWORD = PREFIX + "PASSWORD";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_NATURAL_ID = PREFIX + "natural_id";
+	public static final String COL_PROTOCOL = PREFIX + "protocol";
+	public static final String COL_URL = PREFIX + "url";
+	public static final String COL_LOGIN = PREFIX + "login";
+	public static final String COL_PASSWORD = PREFIX + "password";
 
 	public static final String PROP_TYPE = "things";
 

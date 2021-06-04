@@ -16,12 +16,12 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @Table(name = AlarmType.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = AlarmType.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 public class AlarmType extends BaseEntity {
-	public static final String TABLE = "T_ALR_ALARM_TYPE";
-	public static final String PREFIX = "ALT_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_alr_alarm_type";
+	public static final String PREFIX = "alt_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_NAME = PREFIX + "NAME";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_NAME = PREFIX + "name";
 
 	public static final String THING_BATTERY_ALARM = "thing.battery";
 	public static final String THING_CONNECTION_ALARM = "thing.connection";

@@ -7,13 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrameDecoder;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.Adeunis8170BAConfiguration;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.UplinkFrame0x10;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x30x43;
-import com.lasrosas.iot.shared.ontology.AirEnvironment;
-import com.lasrosas.iot.shared.ontology.BatteryLevel;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkFrame;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkIOMessage;
 
 public class MFC88LW13IOParser implements PayloadParser {
 		public static final String MANUFACTURER = "MFC88";
@@ -24,20 +19,37 @@ public class MFC88LW13IOParser implements PayloadParser {
 		private MFC88LW13IOFrameDecoder decoder = new MFC88LW13IOFrameDecoder();
 
 		@Override
-		public List<ThingMessageHolder> parse(byte[] payload) {
+		public List<ThingMessageHolder> decodeUplink(byte[] payload) {
 
 			var result = new ArrayList<ThingMessageHolder>();
-			result.add(decoder.decode(payload));
+			result.add(decoder.decodeUplink(payload));
 
 			return result;
 		}
 
 		@Override
+		public byte[] encodeDownlink(Object frame) {
+			return decoder.encodeDownlink((DownlinkFrame)frame);
+		}
+
+		@Override
 		public List<ThingMessageHolder> normalize(ThingMessageHolder messageHolder) {
 			var result = new ArrayList<ThingMessageHolder>();
-			Object message = messageHolder.getMessage();
+//			Object message = messageHolder.getMessage();
 
 			return result;
+		}
+
+		public byte[] switchOn() {
+			var frame = new DownlinkIOMessage();
+			// TODO: Set values
+			return decoder.encodeDownlink(frame);
+		}
+
+		public byte[] switchOn(int seconds) {
+			var frame = new DownlinkIOMessage();
+			// TODO: Set values
+			return decoder.encodeDownlink(frame);
 		}
 
 		public String getManufacturer() {

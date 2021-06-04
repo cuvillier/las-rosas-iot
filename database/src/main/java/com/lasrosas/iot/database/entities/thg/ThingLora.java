@@ -7,10 +7,10 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(ThingLora.DISCRIMINATOR)
 public class ThingLora extends Thing {
-	public static final String PREFIX = "LOR_";
-	public static final String DISCRIMINATOR = "LOR";
+	public static final String PREFIX = "lor_";
+	public static final String DISCRIMINATOR = "lor";
 
-	public static final String COL_DEVEUI = PREFIX + "DEV_EUI";
+	public static final String COL_DEVEUI = PREFIX + "dev_eui";
 
 	ThingLora() {
 	}

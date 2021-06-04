@@ -8,6 +8,6 @@ import com.lasrosas.iot.database.entities.dtw.DigitalTwinType;
 @Entity
 @DiscriminatorValue(WaterTankType.DISCRIMINATOR)
 public class WaterTankType extends DigitalTwinType {
-	public static final String DISCRIMINATOR = "WAT";
+	public static final String DISCRIMINATOR = "wat";
 
 }

@@ -13,9 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
-import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
-import com.lasrosas.iot.shared.ontology.AirEnvironment;
-import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
 
 @Entity
 @Table(name=WaterTank.TABLE)
@@ -24,19 +21,19 @@ import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
 public class WaterTank extends DigitalTwin {
 	public static final Logger log = LoggerFactory.getLogger(WaterTank.class);
 	
-	public static final String TABLE = "T_DTW_WATER_TANK";
-	public static final String PREFIX = "WAT_";
-	public static final String DISCRIMINATOR = "WAT";
+	public static final String TABLE = "t_dtw_water_tank";
+	public static final String PREFIX = "wat_";
+	public static final String DISCRIMINATOR = "wat";
 
-	public static final String COL_LENGTH = PREFIX + "LENGTH";
-	public static final String COL_RADIUS = PREFIX + "RADIUS";
-	public static final String COL_VOLUME_MAX = PREFIX + "VOLUME_MAX";
-	public static final String COL_LEVEL = PREFIX + "LEVEL";
-	public static final String COL_VOLUME = PREFIX + "VOLUME";
-	public static final String COL_PERCENTAGE = PREFIX + "PERCENTAGE";
-	public static final String COL_SENSOR_ALT = PREFIX + "SENSOR_ALT";
-	public static final String COL_WATER_FLOW = PREFIX + "WATER_FLOW";
-	public static final String COL_MAX_WATER_FLOW = PREFIX + "MAX_WATER_FLOW";
+	public static final String COL_LENGTH = PREFIX + "length";
+	public static final String COL_RADIUS = PREFIX + "radius";
+	public static final String COL_VOLUME_MAX = PREFIX + "volume_max";
+	public static final String COL_LEVEL = PREFIX + "level";
+	public static final String COL_VOLUME = PREFIX + "volume";
+	public static final String COL_PERCENTAGE = PREFIX + "percentage";
+	public static final String COL_SENSOR_ALT = PREFIX + "sensor_alt";
+	public static final String COL_WATER_FLOW = PREFIX + "water_flow";
+	public static final String COL_MAX_WATER_FLOW = PREFIX + "max_water_flow";
 
 	@Column(name=COL_LENGTH)
 	private Double length;
@@ -69,12 +66,6 @@ public class WaterTank extends DigitalTwin {
 		this.length = length;
 		this.radius = radius;
 		this.sensorAltitude = sensorAltitude;
-	}
-
-	@Override
-	protected boolean isInterestedBy(TimeSerieType tst) {
-		return	tst.getSchema().equals(DistanceMeasurement.SCHEMA) ||
-				tst.getSchema().equals(AirEnvironment.SCHEMA);
 	}
 
 	public Double getVolumeMax() {

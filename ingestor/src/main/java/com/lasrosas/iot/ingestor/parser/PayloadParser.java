@@ -7,6 +7,7 @@ import com.lasrosas.iot.ingestor.ThingMessageHolder;
 public interface PayloadParser {
 	String getManufacturer();
 	String getModel();
-	List<ThingMessageHolder> parse(byte[] data);
+	List<ThingMessageHolder> decodeUplink(byte[] data);
+	byte[] encodeDownlink(Object frame);
 	List<ThingMessageHolder> normalize(ThingMessageHolder decodedMessage);
 }

@@ -1,5 +1,7 @@
 package com.lasrosas.iot.database.entities.thg;
 
+import java.util.List;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
@@ -13,10 +15,12 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
+import com.lasrosas.iot.database.entities.dtw.TwinReactorReceiverFromThing;
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
 import com.sun.istack.NotNull;
 
@@ -26,18 +30,18 @@ import com.sun.istack.NotNull;
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = Thing.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = Thing.COL_DISCRIMINATOR)
 public abstract class Thing extends BaseEntity {
-	public static final String TABLE = "T_THG_THING";
-	public static final String PREFIX = "THG_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_thg_thing";
+	public static final String PREFIX = "thg_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_READABLE = PREFIX + "READABLE";
-	public static final String COL_CONFIGURATION = PREFIX + "CONFIGURATION";
-	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
-	public static final String COL_MODE = PREFIX + "MODE";
-	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "TYPE";
-	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "GATEWAY";
-	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "TWIN";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_READABLE = PREFIX + "readable";
+	public static final String COL_CONFIGURATION = PREFIX + "configuration";
+	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
+	public static final String COL_MODE = PREFIX + "mode";
+	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "type";
+	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "gateway";
+	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
 
 	public static final String PROP_TYPE = "type";
 	public static final String PROP_GATEWAY = "gateway";
@@ -53,13 +57,12 @@ public abstract class Thing extends BaseEntity {
 
 	@Column(name = COL_READABLE)
 	private String readable;
-	
+
 	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ThingProxy proxy;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = COL_TWIN_FK)
-	private DigitalTwin twin;
+	@OneToMany(mappedBy = TwinReactorReceiverFromThing.PROP_THING)
+	private List<TwinReactorReceiverFromThing> receivers;
 	
 	@Column(name = COL_CONFIGURATION)
 	private String configuration;
@@ -97,13 +100,12 @@ public abstract class Thing extends BaseEntity {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
-
-	public DigitalTwin getTwin() {
-		return twin;
+	public List<TwinReactorReceiverFromThing> getReceivers() {
+		return receivers;
 	}
 
-	public void setTwin(DigitalTwin twin) {
-		this.twin = twin;
+	public void setReceivers(List<TwinReactorReceiverFromThing> receivers) {
+		this.receivers = receivers;
 	}
 
 	public ThingGateway getGateway() {

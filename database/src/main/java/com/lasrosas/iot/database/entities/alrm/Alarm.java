@@ -24,17 +24,17 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = Alarm.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = Alarm.COL_DISCRIMINATOR)
 public abstract class Alarm extends BaseEntity {
-	public static final String TABLE = "T_ALR_ALARM";
-	public static final String PREFIX = "ALR_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_alr_alarm";
+	public static final String PREFIX = "alr_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_TIME = PREFIX + "TIME";
-	public static final String COL_STATE = PREFIX + "STATE";
-	public static final String COL_OPENED_TIME = PREFIX + "OPENED_TIME";
-	public static final String COL_CLOSED_TIME = PREFIX + "CLOSED_TIME";
-	public static final String COL_DISCRIMINATOR = PREFIX + "DISCRIMINATOR";
-	public static final String COL_TYPE_FK = PREFIX_FK + AlarmType.PREFIX + "TYPE";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_TIME = PREFIX + "time";
+	public static final String COL_STATE = PREFIX + "state";
+	public static final String COL_OPENED_TIME = PREFIX + "opened_time";
+	public static final String COL_CLOSED_TIME = PREFIX + "closed_time";
+	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
+	public static final String COL_TYPE_FK = PREFIX_FK + AlarmType.PREFIX + "type";
 
 	public static final String PROP_TYPE = "type";
 

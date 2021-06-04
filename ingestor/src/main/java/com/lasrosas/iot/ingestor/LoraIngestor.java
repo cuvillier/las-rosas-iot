@@ -109,7 +109,7 @@ public class LoraIngestor {
 		// Convert base64, hex to byte[]
 		var data = decodeData(loraMessage);
 
-		var decodedMessages = payloadParser.parse(data);
+		var decodedMessages = payloadParser.decodeUplink(data);
 
 		for (var decodedMessage : decodedMessages) {
 

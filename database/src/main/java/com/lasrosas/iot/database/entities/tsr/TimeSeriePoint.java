@@ -22,14 +22,14 @@ import com.lasrosas.iot.database.entities.shared.BaseEntity;
 	@AttributeOverride(column = @Column(name = TimeSeriePoint.COL_TECHID), name = BaseEntity.PROP_TECHID)
 })
 public class TimeSeriePoint extends BaseEntity {
-	public static final String TABLE = "T_TSR_POINT";
-	public static final String PREFIX = "POI_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String TABLE = "t_tsr_point";
+	public static final String PREFIX = "poi_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 
-	public static final String COL_TECHID = PREFIX + "TECHID";
-	public static final String COL_TIME = PREFIX + "TIME";
-	public static final String COL_VALUE = PREFIX + "VALUE";
-	public static final String COL_TIME_SERIE_FK = PREFIX_FK + TimeSerie.PREFIX + "TIME_SERIE";
+	public static final String COL_TECHID = PREFIX + "techid";
+	public static final String COL_TIME = PREFIX + "time";
+	public static final String COL_VALUE = PREFIX + "value";
+	public static final String COL_TIME_SERIE_FK = PREFIX_FK + TimeSerie.PREFIX + "time_serie";
 
 	public static final String PROP_TIME_SERIE = "timeSerie";
 

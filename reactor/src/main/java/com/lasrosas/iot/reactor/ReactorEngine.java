@@ -1,17 +1,24 @@
 package com.lasrosas.iot.reactor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
+import com.lasrosas.iot.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
@@ -22,19 +29,22 @@ import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.influxdb.InfluxdbSession;
 import com.lasrosas.iot.mqtt.session.MqttSession;
-import com.lasrosas.iot.reactore.reactores.TwinReactors;
-import com.lasrosas.iot.shared.ontology.WaterTankFilling;
+import com.lasrosas.iot.reactore.reactor.ReactorReceiverValue;
+import com.lasrosas.iot.reactore.reactor.TwinReactor;
+import com.lasrosas.iot.shared.ontology.IotMessage;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class ReactorEngine {
 	public static final Logger log = LoggerFactory.getLogger(ReactorEngine.class);
 
 	@Autowired
+	private ApplicationContext beanContext;
+
+	@Autowired
 	private Gson gson;
 	
 	@Autowired
 	private DigitalTwinRepo twinRepo;
-	
 
 	@Autowired
 	private TimeSerieTypeRepo tstRepo;
@@ -54,24 +64,15 @@ public class ReactorEngine {
 	@Autowired
 	private MqttSession mqtt;
 
-	private TwinReactors twinReactors;
-
-	public ReactorEngine(TwinReactors twinReactors, InfluxdbSession influxdb, MqttSession mqtt) {
-		this.twinReactors = twinReactors;
+	public ReactorEngine(InfluxdbSession influxdb, MqttSession mqtt) {
 		this.influxdb = influxdb;
 		this.mqtt = mqtt;
 	}
 
 	public void start() {
 		try {
-			mqtt.subscribe("sensors/+/+/+/measurements", (topic, msg) -> {
-				handleSensorMessage(topic, msg);
-			});
-
-			mqtt.subscribe("digital-twin/+/+/data-changes", (topic, msg) -> {
-				handleDigitalTwinMessage(topic, msg);
-			});
-
+			mqtt.subscribe("thing/+/+/+", this::handleMessage);
+			mqtt.subscribe("digital-twin/+/+/+", this::handleMessage);
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
@@ -79,60 +80,119 @@ public class ReactorEngine {
 		}
 	}
 
-	@Transactional
-	public void handleSensorMessage(String topic, MqttMessage msg) {
+	private static class TwinReactorKey {
+		private final DigitalTwin twin;
+		private final String reactorBean;
 
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
+		public TwinReactorKey(DigitalTwin twin, String reactorBean) {
+			super();
+			this.twin = twin;
+			this.reactorBean = reactorBean;
 		}
 
-		var json = new String(msg.getPayload());
-
-		var parts = topic.split("/");
-		var thgTechid = Long.parseLong(parts[3]);
-		var thing = thgRepo.getOne(thgTechid);
-		var twin = thing.getTwin();
-
-		if(twin == null) {
-			log.info("No twin.");
-			log.debug(json);
-			return;			
+		public DigitalTwin getTwin() {
+			return twin;
 		}
 
-		var reactor = twinReactors.getReactor(twin);
-
-		if(reactor == null) {
-			log.info("No reactor for twin type " + twin.getType().getName());
-			log.debug(json);
-			return;
+		public String getReactorBean() {
+			return reactorBean;
 		}
 
-		var messageJO = gson.fromJson(json, JsonObject.class);
-
-		log.debug("Handle message:");
-		log.debug(json);
-
-		// Mapping between incoming data and reactor receiver is now static
-		// Later, may become dynamic and configuratble.
-		var receiverValues = reactor.mapReceiverValues(jsono);
-
-		log.debug((receiverValues == null?0: receiverValues.size()) + " messages maped");
-
-		if(receiverValues == null || receiverValues.size() == 0) 
-			return;
-
-		var transmiterValues = reactor.react(twin, receiverValues);
-		log.debug(transmiterValues.size() + " messages transmited");
-
-		// Send data to mysql, influxdb and publish to mqtt
-		for(var value: transmiterValues) {
-			insertPoint(twin, value.getTime(), WaterTankFilling.SCHEMA, value.getValue());
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((reactorBean == null) ? 0 : reactorBean.hashCode());
+			result = prime * result + ((twin == null) ? 0 : twin.hashCode());
+			return result;
 		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			TwinReactorKey other = (TwinReactorKey) obj;
+			if (reactorBean == null) {
+				if (other.reactorBean != null)
+					return false;
+			} else if (!reactorBean.equals(other.reactorBean))
+				return false;
+			if (twin == null) {
+				if (other.twin != null)
+					return false;
+			} else if (!twin.equals(other.twin))
+				return false;
+			return true;
+		}
+
 	}
 
 	@Transactional
-	public void handleDigitalTwinMessage(String topic, MqttMessage msg) {
+	public void handleMessage(String topic, MqttMessage msg) {
+
+		var parts = topic.split("/");
+
+		var senderGroup = parts[0];
+		// parts[1] is he sender type. No need here
+		var senderId = Long.parseLong(parts[2]);
+
+		List<TwinReactorReceiver> receivers = new ArrayList<>();
+
+		// Cast up list elements from sub classes to TwinReactorReceiver
+		if( senderGroup.equals("thing") ) {
+			thgRepo.getOne(senderId).getReceivers().stream().forEach(e -> receivers.add(e));
+		} else if( senderGroup.equals("digital-twin")) {
+			twinRepo.getOne(senderId).getReceivers().stream().forEach(e -> receivers.add(e));
+		} else {
+			log.warn("Unknown senderGroup : " + senderGroup);
+			return;
+		}
+
+		if(receivers.isEmpty() )
+			return;
+
+		var message = gson.fromJson(new String(msg.getPayload()), IotMessage.class);
+
+		/*
+		 * A sensor data may be used by multiple twins and multiple reactors.
+		 * Reactors are called for each (twin, reactor) tuple if the schema match.
+		 * This loop build the Twin / Reactor index.
+		 */
+		Map<TwinReactorKey, List<ReactorReceiverValue>> valuesByTwinAndReactor = new HashMap<>();
+		for(var receiver: receivers) {
+			var receiverType = receiver.getType();
+
+			for(var point: message.getPoints()) {
+
+				if( point.getSchema().equals(receiverType.getSchema()) ) {
+					var key = new TwinReactorKey(receiver.getTwin(), receiverType.getReactorType().getBean());
+	
+					var valuesForKey = valuesByTwinAndReactor.get(key);
+					if(valuesForKey == null) {
+						valuesForKey = new ArrayList<>();
+						valuesByTwinAndReactor.put(key, valuesForKey);
+					}
+
+					var value = gson.fromJson(point.getValue(), JsonObject.class);
+					valuesForKey.add(new ReactorReceiverValue(receiver, value));
+				}
+			}
+		}
+
+		// Call the react method on each (twin, reactor) tuple
+		for(var twinReactorKey: valuesByTwinAndReactor.keySet()) {
+			var receiverValues = valuesByTwinAndReactor.get(twinReactorKey);
+
+			var reactor = beanContext.getBean(TwinReactor.class, twinReactorKey.getReactorBean());
+			var result = reactor.react(twinReactorKey.getTwin(), receiverValues);
+
+			for(var point: result) {
+				insertPoint(twinReactorKey.getTwin(), message.getTime(), point.getSchema(), point.getJson());
+			}
+		}
 	}
 
 	private TimeSeriePoint insertPoint(DigitalTwin twin, LocalDateTime time, String schema, JsonObject jsono) {

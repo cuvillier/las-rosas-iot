@@ -3,6 +3,8 @@ package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.cfg.NotYetImplementedException;
+
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
 import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
@@ -14,13 +16,19 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 	private AdenuisTempFrameDecoder decoder = new AdenuisTempFrameDecoder();
 
 	@Override
-	public List<ThingMessageHolder> parse(byte[] payload) {
+	public List<ThingMessageHolder> decodeUplink(byte[] payload) {
 
 		var result = new ArrayList<ThingMessageHolder>();
 		result.add(decoder.decode(payload));
 
 		return result;
 	}
+
+	@Override
+	public byte[] encodeDownlink(Object frame) {
+		throw new NotYetImplementedException();
+	}
+
 
 	@Override
 	public List<ThingMessageHolder> normalize(ThingMessageHolder messageHolder) {

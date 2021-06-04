@@ -12,12 +12,12 @@ import javax.persistence.OneToMany;
 @Entity
 @DiscriminatorValue(DynamicTwinType.DISCRIMINATOR)
 public class DynamicTwinType extends DigitalTwinType {
-	public static final String DISCRIMINATOR = "DYN";
-	public static final String PREFIX = "DTT_";
-	public static final String PREFIX_FK = PREFIX + "FK_";
+	public static final String DISCRIMINATOR = "dyn";
+	public static final String PREFIX = "dtt_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
 	
-	public static final String COL_SUPER_TYPE_FK = PREFIX_FK + DynamicTwinType.PREFIX + "SUPER_TYPE";
-	public static final String COL_CONCRETE = PREFIX + "CONCRETE";
+	public static final String COL_SUPER_TYPE_FK = PREFIX_FK + DynamicTwinType.PREFIX + "super_type";
+	public static final String COL_CONCRETE = PREFIX + "concrete";
 	public static final String PROP_SUPER_TYPE = "superType";
 
 	@ManyToOne

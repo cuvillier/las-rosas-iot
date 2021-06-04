@@ -137,6 +137,10 @@ public class ByteParser {
 		return suint(16, ByteOrder.BI, false);
 	}
 
+	public int uint16LI() {
+		return suint(16, ByteOrder.LI, false);
+	}
+
 	public long uint32BI() {
 		return suint(32, ByteOrder.BI, false);
 	}

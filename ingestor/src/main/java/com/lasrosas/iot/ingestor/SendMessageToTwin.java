@@ -1,5 +1,6 @@
 package com.lasrosas.iot.ingestor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -12,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.mqtt.session.MqttSession;
+import com.lasrosas.iot.shared.ontology.IotMessage;
 
 public class SendMessageToTwin {
 	public static final Logger log = LoggerFactory.getLogger(SendMessageToTwin.class);
@@ -29,29 +31,21 @@ public class SendMessageToTwin {
 		try {
 			if(points.size() == 0) return;
 
-			var pointsJO = new JsonArray(points.size());
-
 			var thing = points.get(0).getTimeSerie().getThing();
 
-			String topic = "sensors/" + thing.getType().getManufacturer() + "/" +  thing.getType().getModel() + "/" + thing.getTechid() + "/measurements";
+			String topic = "thing/" + thing.getType().getManufacturer() + "-" +  thing.getType().getModel() + "/" + thing.getTechid() + "/measurements";
+
+			var message = new IotMessage(System.nanoTime(), LocalDateTime.now());
 
 			for(var point: points) {
-
-				var pointJO = new JsonObject();
-				pointJO.addProperty("txid", txid);
-				pointJO.addProperty("techid", point.getTechid());
-				pointJO.addProperty("schema", point.getTimeSerie().getType().getSchema());
-				pointJO.add("value", point.getValue(gson));
-				pointsJO.add(pointJO);
+				message.getPoints().add(
+						new IotMessage.Point(
+								point.getTechid(), 
+								point.getTimeSerie().getType().getSchema(),
+								point.getValue()));
 			}
 
-			var messageJO = new JsonObject();
-			messageJO.addProperty("txid", txid);
-			messageJO.addProperty("publishTime", System.currentTimeMillis());
-			messageJO.add("points", pointsJO);
-
-			var messageJson = gson.toJson(messageJO);
-
+			var messageJson = gson.toJson(message);
 			var messageMQTT = new MqttMessage(messageJson.getBytes());
 			log.info("Publish topic=" + topic + " message=" + new String(messageMQTT.getPayload()));
 			this.mqtt.publish(topic, messageMQTT);

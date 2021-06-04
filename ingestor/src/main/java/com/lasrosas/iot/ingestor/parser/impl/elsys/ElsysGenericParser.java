@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.DownlinkFrame;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
 import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
@@ -253,5 +254,4 @@ public class ElsysGenericParser {
 
 		return result;
 	}
-
 }
