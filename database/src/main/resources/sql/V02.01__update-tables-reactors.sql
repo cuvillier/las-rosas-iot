@@ -4,6 +4,7 @@ CREATE TABLE t_dtw_reactor_type
 	rat_techid INT UNSIGNED AUTO_INCREMENT,
 	rat_bean VARCHAR(50) NOT NULL,
 
+	
 	PRIMARY KEY (rat_techid)
 );
 
