@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.ingestor.parser.PayloadParsers;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAParser;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAParser;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAParser;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.ingestor.parser.impl.elsys.ElsysMB7389Parser;
@@ -29,13 +29,13 @@ public class IngestorConfig {
 	}
 
 	@Bean
-	public AdenuisARF8180BAParser AdenuisARF8180BAParser() {
-		return new AdenuisARF8180BAParser();
+	public AdeunisARF8180BAParser AdenuisARF8180BAParser() {
+		return new AdeunisARF8180BAParser();
 	}
 
 	@Bean
-	public AdenuisARF8170BAParser AdenuisARF8170BAParser() {
-		return new AdenuisARF8170BAParser();
+	public AdeunisARF8170BAParser AdenuisARF8170BAParser() {
+		return new AdeunisARF8170BAParser();
 	}
 
 	@Bean
@@ -54,15 +54,20 @@ public class IngestorConfig {
 	}
 
 	@Bean
+	public MFC88LW13IOParser MFC88LW13IOParser() {
+		return new MFC88LW13IOParser();
+	}
+
+	@Bean
 	@ConfigurationProperties(prefix = "lora-sensors")
 	public PayloadParsers LoraSensors(
-			AdenuisARF8180BAParser adenuisARF8180BAParser,
-			AdenuisARF8170BAParser adenuisARF8170BAParser,
+			AdeunisARF8180BAParser adenuisARF8180BAParser,
+			AdeunisARF8170BAParser adenuisARF8170BAParser,
 			ElsysErsParser elsysErsParser,
 			ElsysMB7389Parser elsysMB7389Parser,
 			MFC88LW13IOParser mfc88LW1310Parser) {
 		
-		return new PayloadParsers(adenuisARF8180BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
+		return new PayloadParsers(adenuisARF8180BAParser, adenuisARF8170BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
 	}
 
 	@Bean("rak7249.mqtt")
@@ -72,7 +77,13 @@ public class IngestorConfig {
 	}
 
 	@Bean
-	public SendMessageToTwin sendMessageToTwin(@Qualifier("mqtt") MqttSession mqtt) {
+	public SendMessageToTwin sendMessageToTwin(@Qualifier("out.mqtt") MqttSession mqtt) {
 		return new SendMessageToTwin(mqtt);
+	}
+
+	@Bean("out.mqtt")
+	@ConfigurationProperties(prefix = "out.mqtt")
+	public MqttSession MqttSession() {
+		return new MqttSession();
 	}
 }

@@ -3,7 +3,7 @@ CREATE TABLE t_dtw_reactor_type
 (
 	rat_techid INT UNSIGNED AUTO_INCREMENT,
 	rat_bean VARCHAR(50) NOT NULL,
-
+    rat_fk_twt_twin_type INT UNSIGNED NOT NULL,
 	
 	PRIMARY KEY (rat_techid)
 );

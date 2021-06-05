@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.parser.impl.elsys;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Base64;
 

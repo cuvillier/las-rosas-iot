@@ -4,17 +4,20 @@ sql:
    password: lasrosasiot
 influxdb:
    server: localhost
-   username: lasrosasiot
-   password: lasrosasiot
+   token: U18dY8w0PvV0lEAt8rL_2mF2LoRmsqraQOBi-diKAVqbpRLlJZy7YyymHTLHzhhZzFPLgDEmrH2sdVRiP0MpUw==
+   org: las-rosas.es
+   bucket: lasrosasiot
 lora-servers:
   rak7249:
      mqtt:
-       clientid: IngesterIn
-       server: localhost
-       persistenceFolder: target/mqtt
-mqtt:
-   clientid: IngesterOut
-   persistenceFolder: target/mqtt
+       clientid: IngesterInDev
+       server: 192.168.1.3
+       persistFolder: target/mqtt-IngesterInDev
+out:
+  mqtt:
+     clientid: IngesterOutDev
+     server: localhost
+     persistFolder: target/mqtt-IngesterOutDev
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

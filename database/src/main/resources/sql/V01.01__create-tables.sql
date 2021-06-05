@@ -1,3 +1,4 @@
+use lasrosasiot;
 
 CREATE TABLE t_dtw_space
 (
@@ -79,6 +80,7 @@ CREATE TABLE t_thg_thing_type
 	tty_manufacturer VARCHAR(32),
 	tty_model VARCHAR(32),
 	tty_version VARCHAR(16),
+	tty_configuration_schema VARCHAR(128),
 	tty_max_hours_invisible REAL DEFAULT NULL,
 	tty_battery_min_percentage REAL DEFAULT 25,
 	bty_rssi_1_meter INTEGER,
@@ -91,10 +93,11 @@ CREATE TABLE t_thg_thing
 	thg_techid INT UNSIGNED AUTO_INCREMENT,
 	thg_readable VARCHAR(50) DEFAULT NULL,
 	thg_discriminator VARCHAR(3) NOT NULL,
+	thg_configuration VARCHAR(3000) DEFAULT NULL,
 	thg_fk_tty_type INT UNSIGNED NOT NULL,
 	thg_fk_gtw_gateway INT UNSIGNED,
 	thg_ldty_visible datetime DEFAULT NULL,
-	thg_mode VARCHAR(10) DEFAULT 'enabled' NOT NULL,
+	thg_mode VARCHAR(10) DEFAULT 'Enabled' NOT NULL,
 	lor_dev_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_key VARCHAR(50) DEFAULT NULL,
@@ -141,7 +144,7 @@ CREATE TABLE t_tsr_time_serie
 	tsr_fk_thg_thing INT UNSIGNED DEFAULT NULL,
 	tsr_fk_tst_type INT UNSIGNED DEFAULT NULL,
 	tsr_fk_twi_twin INT UNSIGNED DEFAULT NULL,
-	tsr_fk_current_value INT UNSIGNED DEFAULT NULL,
+	tsr_fk_poi_current_value INT UNSIGNED DEFAULT NULL,
 	PRIMARY KEY (tsr_techid),
 	CONSTRAINT fk_tsr_fk_thg_thing FOREIGN KEY (tsr_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
 	CONSTRAINT fk_tsr_fk_tst_type FOREIGN KEY (tsr_fk_tst_type) REFERENCES t_tsr_time_serie_type(tst_techid)
@@ -158,7 +161,7 @@ CREATE TABLE t_tsr_point
 );
 
 ALTER TABLE t_tsr_time_serie
-ADD	CONSTRAINT fk_tsr_fk_current_value FOREIGN KEY (tsr_fk_current_value) REFERENCES t_tsr_point(poi_techid);
+ADD	CONSTRAINT fk_tsr_fk_poi_current_value FOREIGN KEY (tsr_fk_poi_current_value) REFERENCES t_tsr_point(poi_techid);
 
 /*--------------- ALARM --------------*/
 CREATE TABLE t_alr_alarm_type

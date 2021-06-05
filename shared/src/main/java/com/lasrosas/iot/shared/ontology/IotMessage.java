@@ -30,7 +30,6 @@ public class IotMessage {
 			var sb = new StringBuilder();
 			int n = 0;
 			while (true) {
-				System.out.println(in.peek());
 
 				switch (in.peek()) {
 				case BEGIN_ARRAY:

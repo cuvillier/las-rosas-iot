@@ -26,7 +26,7 @@ public abstract class TwinReactorType extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_BEAN = PREFIX + "bean";
-	public static final String COL_TWIN_TYPE_FK = PREFIX + "twin_type";
+	public static final String COL_TWIN_TYPE_FK = PREFIX_FK + DigitalTwinType.PREFIX + "twin_type";
 
 	@Column(name=COL_BEAN)
 	private String bean;

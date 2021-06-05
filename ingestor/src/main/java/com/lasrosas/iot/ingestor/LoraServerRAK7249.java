@@ -7,7 +7,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -78,6 +77,8 @@ public class LoraServerRAK7249 extends LoraServer {
 				messageType = MessageType.JOIN;
 			else if(topic.endsWith("/rx")) 
 				messageType = MessageType.UPLOAD;
+			else if(topic.endsWith("/ack")) 
+				return;	// Skip ack now.
 			else {
 				log.warn("Unknown topic: " + topic);
 				log.warn("Message skiped: " + payloadJson);

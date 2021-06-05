@@ -1,20 +1,19 @@
 package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ConnectionMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ExternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.InternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.ProductMode;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.TypeOfExternalSensor;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisTempFrameDecoder;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.ConnectionMode;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.ExternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.InternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.ProductMode;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.TypeOfExternalSensor;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisARF8170BAParserTest {
-	private AdenuisTempFrameDecoder frameParser = new AdenuisTempFrameDecoder();
+	private AdeunisTempFrameDecoder frameParser = new AdeunisTempFrameDecoder();
 
 	@Test
 	public void status() {

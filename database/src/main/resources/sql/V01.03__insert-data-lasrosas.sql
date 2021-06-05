@@ -1,3 +1,5 @@
+SET SQL_SAFE_UPDATES = 0;
+
 DELETE FROM t_thg_thing;
 DELETE FROM t_thg_thing_type;
 DELETE FROM t_thg_gateway;

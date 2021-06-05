@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.parser.impl.adenuis;
+package com.lasrosas.iot.ingestor.parser.impl.adeunis;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.lasrosas.iot.ingestor.parser.ConfigFrame;
 
-public class AdenuisARF8170BAFrame {
+public class AdeunisARF8170BAFrame {
 
 	public static class Status {
 		private int frameCounter;

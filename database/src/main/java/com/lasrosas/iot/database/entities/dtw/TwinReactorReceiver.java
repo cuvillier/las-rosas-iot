@@ -26,7 +26,7 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
-	public static final String COL_TYPE_FK = PREFIX_FK + TwinReactorReceiver.PREFIX + "type";
+	public static final String COL_TYPE_FK = PREFIX_FK + TwinReactorReceiverType.PREFIX + "type";
 	public static final String COL_SOURCE_FK = PREFIX_FK + "source";
 
 	public static final String PROP_TYPE = "type";

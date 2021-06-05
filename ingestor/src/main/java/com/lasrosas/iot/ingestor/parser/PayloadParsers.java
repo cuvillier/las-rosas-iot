@@ -7,8 +7,8 @@ public class PayloadParsers {
 
 	private Map<String, PayloadParser> parsers = new HashMap<>();
 
-	public PayloadParsers(PayloadParser ... parsers) {
-		for(var parser : parsers)
+	public PayloadParsers(PayloadParser ... parsersArgs) {
+		for(var parser : parsersArgs)
 			add(parser);
 	}
 

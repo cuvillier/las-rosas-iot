@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.parser.impl.adenuis;
+package com.lasrosas.iot.ingestor.parser.impl.adeunis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +7,13 @@ import org.hibernate.cfg.NotYetImplementedException;
 
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x30x43;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.BaseFrame;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.Frame0x30x43;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
 
-public class AdenuisARF8180BAParser implements PayloadParser {
-	private AdenuisTempFrameDecoder decoder = new AdenuisTempFrameDecoder();
+public class AdeunisARF8180BAParser implements PayloadParser {
+	private AdeunisTempFrameDecoder decoder = new AdeunisTempFrameDecoder();
 
 	@Override
 	public List<ThingMessageHolder> decodeUplink(byte[] payload) {
@@ -68,7 +68,7 @@ public class AdenuisARF8180BAParser implements PayloadParser {
 	}
 
 	public String getManufacturer() {
-		return "Adenuis";
+		return "Adeunis";
 	}
 
 	public String getModel() {

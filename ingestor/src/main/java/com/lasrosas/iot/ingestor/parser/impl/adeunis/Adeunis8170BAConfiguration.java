@@ -1,6 +1,6 @@
-package com.lasrosas.iot.ingestor.parser.impl.adenuis;
+package com.lasrosas.iot.ingestor.parser.impl.adeunis;
 
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.ChannelType;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
 
 public class Adeunis8170BAConfiguration {
 

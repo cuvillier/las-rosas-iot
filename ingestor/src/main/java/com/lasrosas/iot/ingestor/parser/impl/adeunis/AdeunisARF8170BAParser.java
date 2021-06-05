@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.parser.impl.adenuis;
+package com.lasrosas.iot.ingestor.parser.impl.adeunis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +9,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.parser.PayloadParser;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8170BAFrame.UplinkFrame0x10;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.parser.impl.adenuis.AdenuisARF8180BAFrame.Frame0x30x43;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x10;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.BaseFrame;
+import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8180BAFrame.Frame0x30x43;
 import com.lasrosas.iot.shared.ontology.AirEnvironment;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
 
-public class AdenuisARF8170BAParser implements PayloadParser {
+public class AdeunisARF8170BAParser implements PayloadParser {
 	public static final String MANUFACTURER = "Adeunis";
 	public static final String MODEL = "ARF8170BA";
 
 	public static Gson gson = new GsonBuilder().create();
 
-	private AdenuisARF8170BAFrameDecoder decoder = new AdenuisARF8170BAFrameDecoder();
+	private AdeunisARF8170BAFrameDecoder decoder = new AdeunisARF8170BAFrameDecoder();
 
 	public void updateConfig(Object data ) {
 		
@@ -89,10 +89,10 @@ public class AdenuisARF8170BAParser implements PayloadParser {
 	}
 
 	public String getManufacturer() {
-		return "Adenuis";
+		return MANUFACTURER;
 	}
 
 	public String getModel() {
-		return "ARF8180BA";
+		return MODEL;
 	}
 }

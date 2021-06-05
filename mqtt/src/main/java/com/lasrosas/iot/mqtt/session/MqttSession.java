@@ -30,10 +30,10 @@ public class MqttSession {
 	private String clientId;
 
 	@NotNull
-	private String server = "localhost";
+	private String server;
 
 	@NotNull
-	private String persistFolder = "mqtt-persistence";
+	private String persistFolder;
 
 	@Min(0)
 	@Max(32000)
@@ -182,5 +182,13 @@ public class MqttSession {
 
 	public void setConnectionTimeout(int connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
+	}
+
+	public String getPersistFolder() {
+		return persistFolder;
+	}
+
+	public void setPersistFolder(String persistFolder) {
+		this.persistFolder = persistFolder;
 	}
 }

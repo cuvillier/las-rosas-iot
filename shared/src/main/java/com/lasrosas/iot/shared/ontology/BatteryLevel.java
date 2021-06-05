@@ -26,7 +26,7 @@ public class BatteryLevel extends Ontology {
 		else {
 			if( voltage < minVoltage ) voltage = minVoltage;
 			if( voltage > maxVoltage) voltage = maxVoltage;
-			return (int)(100.0 * (voltage - minVoltage / (maxVoltage - minVoltage)) + 0.5);
+			return (int)(100.0 * ((voltage - minVoltage) / (maxVoltage - minVoltage)) + 0.5);
 		}
 	}
 
