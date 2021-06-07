@@ -27,7 +27,6 @@ public class WaterTank extends DigitalTwin {
 
 	public static final String COL_LENGTH = PREFIX + "length";
 	public static final String COL_RADIUS = PREFIX + "radius";
-	public static final String COL_VOLUME_MAX = PREFIX + "volume_max";
 	public static final String COL_LEVEL = PREFIX + "level";
 	public static final String COL_VOLUME = PREFIX + "volume";
 	public static final String COL_PERCENTAGE = PREFIX + "percentage";

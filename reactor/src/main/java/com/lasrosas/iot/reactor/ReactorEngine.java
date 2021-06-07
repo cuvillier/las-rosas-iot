@@ -228,7 +228,7 @@ public class ReactorEngine {
 		influxdb.write(tsp);
 
 		// Publish to Mqtt
-		var topic = "digital-twin/" + twin.getTechid() + "/changes/" + schema;
+		var topic = "digital-twin/"+ twin.getType().getName() + "/" + twin.getTechid() + "/changes/" + schema;
 
 		jsono.addProperty("time", time.toString());
 		json = gson.toJson(jsono);

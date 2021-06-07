@@ -15,7 +15,6 @@ CREATE TABLE t_dtw_digital_twin_type
 	twt_discriminator VARCHAR(3) NOT NULL,
 	twt_may_have_children BIT DEFAULT 0,
 	twt_fk_spa_space INT UNSIGNED NOT NULL,
-	twt_publish_onthology BIT DEFAULT 0,
 	dtt_fk_dtt_super_type INT UNSIGNED DEFAULT NULL,
 	dtt_concrete BIT DEFAULT 1,
 
@@ -43,7 +42,6 @@ CREATE TABLE t_dtw_water_tank (
   wat_length double NOT NULL,
   wat_radius double NOT NULL,
   wat_sensor_alt double NOT NULL,
-  wat_volume_max double DEFAULT NULL,
   wat_level double DEFAULT NULL,
   wat_volume double DEFAULT NULL,
   wat_percentage int(3) DEFAULT NULL,

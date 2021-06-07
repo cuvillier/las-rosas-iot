@@ -20,9 +20,7 @@ import com.lasrosas.iot.database.entities.thg.Thing;
 @Entity
 @Table(name = TwinReactorReceiverType.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = TwinReactorReceiverType.COL_TECHID), name = BaseEntity.PROP_TECHID)})
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = Thing.COL_DISCRIMINATOR)
-public abstract class TwinReactorReceiverType extends BaseEntity {
+public class TwinReactorReceiverType extends BaseEntity {
 	public static final String TABLE = "t_dtw_reactor_receiver_type";
 	public static final String PREFIX = "rrt_";
 	public static final String PREFIX_FK = PREFIX + "fk_";

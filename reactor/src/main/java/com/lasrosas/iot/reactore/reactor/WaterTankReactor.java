@@ -99,7 +99,7 @@ public class WaterTankReactor extends TwinReactor {
 		// Return result
 		var volume = waterTank.getVolume();
 		var percentage = waterTank.getPercentageFill();
-		var waterFlow = waterTank.getWaterFlow() != null ? null : waterTank.getWaterFlow();
+		var waterFlow = waterTank.getWaterFlow();
 
 		var wtf = new WaterTankFilling(volume, percentage, waterFlow);
 

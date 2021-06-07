@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,12 +12,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.lasrosas.iot.database.entities.shared.BaseEntity;
-import com.lasrosas.iot.database.entities.thg.Thing;
 
 @Entity
 @Table(name = TwinReactorType.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = TwinReactorType.COL_TECHID), name = BaseEntity.PROP_TECHID)})
-public abstract class TwinReactorType extends BaseEntity {
+public class TwinReactorType extends BaseEntity {
 	public static final String TABLE = "t_dtw_reactor_type";
 	public static final String PREFIX = "rat_";
 	public static final String PREFIX_FK = PREFIX + "fk_";

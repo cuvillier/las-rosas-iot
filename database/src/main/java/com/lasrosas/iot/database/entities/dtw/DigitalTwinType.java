@@ -49,14 +49,6 @@ public abstract class DigitalTwinType extends BaseEntity {
 	@Column(name=COL_NAME)
 	private String name;
 
-	public enum PublishOnthology {
-		NONE,
-		UNKNOWN,
-		ALL
-	}
-	@Column(name=COL_PUBLISH_ONTHOLOGY)
-	private PublishOnthology publishOnthology = PublishOnthology.UNKNOWN;
-
 	public String getName() {
 		return name;
 	}

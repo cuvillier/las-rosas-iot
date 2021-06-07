@@ -69,22 +69,23 @@ public class InfluxdbSession {
 		var twin = point.getTimeSerie().getTwin();
 
 		if(twin == null)
-			measurement= "thing.lora." + thing.getDeveui() + "." + point.getTimeSerie().getType().getSchema();
+			measurement= "thing-lora-" + thing.getDeveui() + "-" + point.getTimeSerie().getType().getSchema();
 		else
-			measurement= "twin." + twin.getType().getSpace().getName() + "." + twin.getType().getName() + "." + twin.getName();
+			measurement= "twin-" + twin.getType().getSpace().getName() + "-" + twin.getType().getName() + "-" + twin.getName();
 
 		if (point.getTimeSerie().getSensor() != null)
-			measurement += "." + point.getTimeSerie().getSensor();
+			measurement += "-" + point.getTimeSerie().getSensor();
 
 		var jsono = gson.fromJson(point.getValue(), JsonObject.class);
 
 		var timelong = Timestamp.valueOf(point.getTime()).getTime();
-		var influxdbPoint = Point.measurement(measurement).time(timelong, WritePrecision.MS);
+		var influxdbPoint = Point.measurement(measurement.replace(" ", "").replace('.', '-')).time(timelong, WritePrecision.MS);
 
 		addFields(influxdbPoint, "", jsono);
 
 		connectIfNeeded();
 		try (WriteApi writeApi = influxDB.getWriteApi()) {
+			log.info("Write point to InfluxDB measurement=" + measurement);
 			writeApi.writePoint(influxdbPoint);
 		} catch (Exception e) {
 			closeIfNeeded();

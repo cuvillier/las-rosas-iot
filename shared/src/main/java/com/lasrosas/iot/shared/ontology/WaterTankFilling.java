@@ -19,8 +19,8 @@ public class WaterTankFilling {
 		var json = new JsonObject();
 
 		if( volume != null) json.addProperty("volume", volume);
-		if( percentage != null) json.addProperty("percentage", volume);
-		if( waterFlow != null) json.addProperty("waterFlow", volume);
+		if( percentage != null) json.addProperty("percentage", percentage);
+		if( waterFlow != null) json.addProperty("waterFlow", waterFlow);
 		
 		return json;
 	}

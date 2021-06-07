@@ -112,7 +112,6 @@ public class MqttSession {
 					txManager.rollback(status);
 					log.error("Cannot process message.", e);
 				}
-
 			});
 		} catch (MqttException e) {
 			throw new RuntimeException(e);
