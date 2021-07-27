@@ -2,7 +2,7 @@ package com.lasrosas.iot.shared.ontology;
 
 import com.google.gson.JsonObject;
 
-public class WaterTankFilling {
+public class WaterTankFilling implements Ontology {
 	public static String SCHEMA = "com.lasrosas.iot.shared.ontology.WaterTankFilling";
 	private Double volume;
 	private Integer percentage;

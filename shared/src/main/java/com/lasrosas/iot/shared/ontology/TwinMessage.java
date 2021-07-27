@@ -2,7 +2,7 @@ package com.lasrosas.iot.shared.ontology;
 
 import java.time.LocalDateTime;
 
-public class TwinMessage {
+public class TwinMessage implements Ontology {
 	private String schema;
 	private LocalDateTime time;
 	private Object value;

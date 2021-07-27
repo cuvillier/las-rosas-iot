@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericFrame;
+import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericParser;
 
 public class ElsysErsParserTest {
 	private ElsysGenericParser parser = new ElsysGenericParser();

@@ -1,6 +1,6 @@
 package com.lasrosas.iot.shared.ontology;
 
-public class AirEnvironment {
+public class AirEnvironment implements Ontology {
 	public static final String SCHEMA = "AirEnvironment";
 
 	private Double temperature;

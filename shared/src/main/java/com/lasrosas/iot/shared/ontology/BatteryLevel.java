@@ -1,6 +1,6 @@
 package com.lasrosas.iot.shared.ontology;
 
-public class BatteryLevel extends Ontology {
+public class BatteryLevel implements Ontology {
 	public static final String SCHEMA = "BatteryLevel";
 	private Double voltage;
 	private Integer percentage;

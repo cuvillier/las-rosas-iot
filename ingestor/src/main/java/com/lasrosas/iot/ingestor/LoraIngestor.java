@@ -28,7 +28,7 @@ import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
-import com.lasrosas.iot.ingestor.parser.PayloadParsers;
+import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParsers;
 import com.lasrosas.iot.shared.ontology.BatteryLevel;
 import com.lasrosas.iot.shared.utils.GsonUtils;
 import com.lasrosas.iot.shared.utils.LocalTopic;
@@ -80,7 +80,7 @@ public class LoraIngestor {
 		private List<TimeSeriePoint> notification;
 	}
 
-	public List<TimeSeriePoint> handleLoraMessage(LoraServer loraServer, JsonObject loraMessage) {
+	public List<TimeSeriePoint> handleLoraMessage(JsonObject loraMessage) {
 
 		var result = new ArrayList<TimeSeriePoint>();
 

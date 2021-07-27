@@ -8,22 +8,22 @@ import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrameDecoder;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x01;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x02;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x05;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x07;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x40;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x41;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x48;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x49;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.ProvisioningMode;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.RegisterValue;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.Request2FStatus;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.Request33Status;
-import com.lasrosas.iot.ingestor.parser.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x30;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrameDecoder;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x01;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x02;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x05;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x07;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x40;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x41;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x48;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x49;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ProvisioningMode;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.RegisterValue;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.Request2FStatus;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.Request33Status;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x30;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisARF8180BAParserTest {

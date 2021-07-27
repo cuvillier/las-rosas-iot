@@ -1,6 +1,6 @@
 package com.lasrosas.iot.shared.ontology;
 
-public class VolumeVariation {
+public class VolumeVariation implements Ontology {
 	private Double volumeDerivative;
 	private Double percentageDerivation;
 

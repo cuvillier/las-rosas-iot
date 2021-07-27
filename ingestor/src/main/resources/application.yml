@@ -4,7 +4,7 @@ sql:
    password: lasrosasiot
 influxdb:
    server: localhost
-   token: i248NvmDv6tFI7mlFR0qu-KwzNoIYNqEqQQODHGbJUshbFNrDYz27wT1_yZZGzwr3OMj4XWvsLoaXvq_UGjDyw==
+   token: 8w5Nx_iY06tRkJuzjOPq1gR9j_rD5jAvOQBvIqxh3ThgegiJYJ9vu8sEiMBgewZpgetOqG0ZL1gwPkkdUQ0EoA==
    org: las-rosas.es
    bucket: lasrosasiot
 lora-servers:

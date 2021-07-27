@@ -1,7 +1,6 @@
 package com.lasrosas.iot.influxdb;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
-import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
 
 @ConfigurationProperties(prefix = "sql")
@@ -63,23 +61,11 @@ public class InfluxdbSession {
 	}
 
 	public void write(TimeSeriePoint point) {
-		String measurement;
-
-		var thing = (ThingLora) point.getTimeSerie().getThing();
-		var twin = point.getTimeSerie().getTwin();
-
-		if(twin == null)
-			measurement= "thing-lora-" + thing.getDeveui() + "-" + point.getTimeSerie().getType().getSchema();
-		else
-			measurement= "twin-" + twin.getType().getSpace().getName() + "-" + twin.getType().getName() + "-" + twin.getName();
-
-		if (point.getTimeSerie().getSensor() != null)
-			measurement += "-" + point.getTimeSerie().getSensor();
+		String measurement = point.getTimeSerie().getInfluxdbMeasurement();
 
 		var jsono = gson.fromJson(point.getValue(), JsonObject.class);
-
 		var timelong = Timestamp.valueOf(point.getTime()).getTime();
-		var influxdbPoint = Point.measurement(measurement.replace(" ", "").replace('.', '-')).time(timelong, WritePrecision.MS);
+		var influxdbPoint = Point.measurement(measurement).time(timelong, WritePrecision.MS);
 
 		addFields(influxdbPoint, "", jsono);
 
@@ -94,26 +80,6 @@ public class InfluxdbSession {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public void write(String measurement, LocalDateTime time, JsonObject jsono) {
-
-		long timestamp = Timestamp.valueOf(time).getTime();
-		var influxPoint = Point.measurement(measurement).time(timestamp, WritePrecision.MS);
-
-		addFields(influxPoint, "", jsono);
-
-		connectIfNeeded();
-		try (WriteApi writeApi = influxDB.getWriteApi()) {
-			writeApi.writePoint(influxPoint);
-
-		} catch (Exception e) {
-			closeIfNeeded();
-			if (e instanceof RuntimeException)
-				throw (RuntimeException) e;
-			throw new RuntimeException(e);
-		}
-	}
-
 	private void addFields(Point point, String prefix, JsonObject jsono) {
 
 		for (Map.Entry<String, JsonElement> entry : jsono.entrySet()) {
@@ -128,19 +94,18 @@ public class InfluxdbSession {
 				final var primitive = value.getAsJsonPrimitive();
 
 				// Influx does not taste . in keys while eating the point...
-				String keyInflux = key.replace('.', '-');
 				String strValue = primitive.getAsString();
 
 				if (primitive.isNumber()) {
 					var number = primitive.getAsNumber();
 
 					if (strValue.contains(".") || strValue.contains(","))
-						point.addField(keyInflux, primitive.getAsFloat());
+						point.addField(key, primitive.getAsFloat());
 					else
-						point.addField(keyInflux, number);
+						point.addField(key, number);
 
 				} else if (primitive.isString()) {
-					point.addField(keyInflux, strValue);
+					point.addField(key, strValue);
 				}
 			}
 		}

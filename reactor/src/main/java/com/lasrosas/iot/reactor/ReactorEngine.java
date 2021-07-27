@@ -3,16 +3,15 @@ package com.lasrosas.iot.reactor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.integration.core.MessageProducer;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -28,7 +27,7 @@ import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.influxdb.InfluxdbSession;
-import com.lasrosas.iot.mqtt.session.MqttSession;
+import com.lasrosas.iot.reactor.ReactorConfig.MqttOutputGateway;
 import com.lasrosas.iot.reactore.reactor.ReactorReceiverValue;
 import com.lasrosas.iot.reactore.reactor.TwinReactor;
 import com.lasrosas.iot.shared.ontology.IotMessage;
@@ -60,24 +59,19 @@ public class ReactorEngine {
 
 	@Autowired
 	private InfluxdbSession influxdb;
+	
+	private MqttOutputGateway mqttOutputGateway;
+	
+	private MqttPahoMessageDrivenChannelAdapter messageProducer;
 
-	@Autowired
-	private MqttSession mqtt;
-
-	public ReactorEngine(InfluxdbSession influxdb, MqttSession mqtt) {
+	public ReactorEngine(InfluxdbSession influxdb, MqttOutputGateway mqttOutputGateway, MqttPahoMessageDrivenChannelAdapter messageProducer) {
 		this.influxdb = influxdb;
-		this.mqtt = mqtt;
+		this.mqttOutputGateway = mqttOutputGateway;
+		this.messageProducer = messageProducer;
 	}
 
 	public void start() {
-		try {
-			mqtt.subscribe("thing/+/+/+", this::handleMessage);
-			mqtt.subscribe("digital-twin/+/+/+", this::handleMessage);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		messageProducer.start();
 	}
 
 	private static class TwinReactorKey {
@@ -131,7 +125,7 @@ public class ReactorEngine {
 	}
 
 	@Transactional
-	public void handleMessage(String topic, MqttMessage msg) {
+	public void handleMessage(String topic, boolean duplicate, int qos, String payload) {
 
 		var parts = topic.split("/");
 
@@ -154,7 +148,7 @@ public class ReactorEngine {
 		if(receivers.isEmpty() )
 			return;
 
-		var message = gson.fromJson(new String(msg.getPayload()), IotMessage.class);
+		var message = gson.fromJson(new String(payload), IotMessage.class);
 
 		/*
 		 * A sensor data may be used by multiple twins and multiple reactors.
@@ -236,8 +230,7 @@ public class ReactorEngine {
 		log.debug("Publish to mqtt topic " + topic);
 		log.debug(json);
 
-		var message = new MqttMessage(json.getBytes());
-		mqtt.publish(topic, message);
+		mqttOutputGateway.sendToMqtt(json, topic);
 
 		return tsp;
 	}

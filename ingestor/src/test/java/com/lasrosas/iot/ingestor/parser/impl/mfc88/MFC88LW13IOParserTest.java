@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
-import com.lasrosas.iot.ingestor.parser.mfc88.MFC88LW13IOFrameDecoder;
+import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrameDecoder;
+import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOParserTest {
