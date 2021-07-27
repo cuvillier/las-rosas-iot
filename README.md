@@ -1,6 +1,9 @@
 # las-rosas-iot
 Las Rosas IOT
 
+I use this code to manage the Lora sensors in my Finca in Andalousia.
+Some commit are working, other not. Not a problem, since I am the only dev working on this project.
+
 27/7/2021
 Start rewriting the code using Spring Integration to:
 - Separate the basic services from the message flux
