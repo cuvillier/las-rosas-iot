@@ -1,41 +1,11 @@
 package com.lasrosas.iot.reactor;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.integration.core.MessageProducer;
-import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.lasrosas.iot.database.entities.dtw.DigitalTwin;
-import com.lasrosas.iot.database.entities.dtw.TwinReactorReceiver;
-import com.lasrosas.iot.database.entities.tsr.TimeSerie;
-import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
-import com.lasrosas.iot.database.entities.tsr.TimeSerieType;
-import com.lasrosas.iot.database.repo.DigitalTwinRepo;
-import com.lasrosas.iot.database.repo.ThingRepo;
-import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
-import com.lasrosas.iot.database.repo.TimeSerieRepo;
-import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
-import com.lasrosas.iot.influxdb.InfluxdbSession;
-import com.lasrosas.iot.reactor.ReactorConfig.MqttOutputGateway;
-import com.lasrosas.iot.reactore.reactor.ReactorReceiverValue;
-import com.lasrosas.iot.reactore.reactor.TwinReactor;
-import com.lasrosas.iot.shared.ontology.IotMessage;
-import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class ReactorEngine {
 	public static final Logger log = LoggerFactory.getLogger(ReactorEngine.class);
-
+/*
 	@Autowired
 	private ApplicationContext beanContext;
 
@@ -148,14 +118,15 @@ public class ReactorEngine {
 		if(receivers.isEmpty() )
 			return;
 
-		var message = gson.fromJson(new String(payload), IotMessage.class);
-
+		var message = gson.fromJson(new String(payload), Telemetry.class);
+*/
 		/*
 		 * A sensor data may be used by multiple twins and multiple reactors.
 		 * Reactors are called for each (twin, reactor) tuple if the schema match.
 		 * This loop build the Twin / Reactor index.
 		 */
-		Map<TwinReactorKey, List<ReactorReceiverValue>> valuesByTwinAndReactor = new HashMap<>();
+/*
+	Map<TwinReactorKey, List<ReactorReceiverValue>> valuesByTwinAndReactor = new HashMap<>();
 		for(var receiver: receivers) {
 			var receiverType = receiver.getType();
 
@@ -234,4 +205,5 @@ public class ReactorEngine {
 
 		return tsp;
 	}
+*/
 }

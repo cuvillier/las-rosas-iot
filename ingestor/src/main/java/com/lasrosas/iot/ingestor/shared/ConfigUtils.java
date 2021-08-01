@@ -1,30 +1,31 @@
 package com.lasrosas.iot.ingestor.shared;
 
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
+import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
+import org.springframework.messaging.MessageChannel;
 
 import com.lasrosas.iot.shared.utils.MqttConfig;
 
 public class ConfigUtils {
 
-	public static MqttPahoClientFactory mqttClientFactory(MqttConfig config) {
-		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MessageChannel outputChannel) {
 
-		MqttConnectOptions options = new MqttConnectOptions();
-		options.setServerURIs(new String[] { config.getURL() });
-		if (config.getAutomaticReconnect() != null)
-			options.setAutomaticReconnect(config.getAutomaticReconnect());
-		if (config.getCleanSession() != null)
-			options.setCleanSession(config.getCleanSession());
-		if (config.getConnectionTimeout() != null)
-			options.setConnectionTimeout(config.getConnectionTimeout());
-		if (config.getMaxReconnectDelay() != null)
-			options.setMaxReconnectDelay(config.getMaxReconnectDelay());
-		if (config.getConnectionTimeout() != null)
-			options.setConnectionTimeout(config.getConnectionTimeout());
-		factory.setConnectionOptions(options);
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+				config.getClientId(),
+				clientFactory,
+				topic);
 
-		return factory;
+		adapter.setConverter(new DefaultPahoMessageConverter());
+		adapter.setOutputChannel(outputChannel);
+
+		// Set options from config
+		if( config.getCompletionTimeout() != null) adapter.setCompletionTimeout(config.getCompletionTimeout());
+		if( config.getQoss() != null) adapter.setQos(config.getQoss());
+		if( config.getDisconnectCompletionTimeout() != null) adapter.setDisconnectCompletionTimeout(config.getDisconnectCompletionTimeout());
+		if( config.getRecoveryInterval() != null) adapter.setRecoveryInterval(config.getRecoveryInterval());
+		if( config.getSendTimeout() != null) adapter.setSendTimeout(config.getSendTimeout());
+
+		return adapter;
 	}
 }

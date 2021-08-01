@@ -1,17 +1,10 @@
 package com.lasrosas.iot.ingestor.services.lora.api;
 
 public class LoraMessageJoin extends LoraMessage  {
-	private String deveui;
 	private String manufacturer;
 	private String model;
 	private String gatewayId;
 
-	public String getDeveui() {
-		return deveui;
-	}
-	public void setDeveui(String deveui) {
-		this.deveui = deveui;
-	}
 	public String getManufacturer() {
 		return manufacturer;
 	}

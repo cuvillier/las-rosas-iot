@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.BaseUplinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelConfiguration;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
@@ -113,7 +113,7 @@ public class AdeunisARF8170BAFrameDecoder {
 		registers.put(number, new Register(number, size, signed));
 	}
 
-	public ThingMessageHolder decode(byte[] payload) {
+	public ThingDataMessage decode(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
@@ -150,7 +150,7 @@ public class AdeunisARF8170BAFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		return new ThingMessageHolder("Adenuis.Temp.frame." + frame.getClass().getSimpleName(), null, frame);
+		return frame;
 	}
 
 	public long parseEpoch2013(ByteParser parser) {

@@ -1,7 +1,5 @@
 package com.lasrosas.iot.ingestor.parser.impl.elsys;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
@@ -20,12 +18,9 @@ public class ElsysErsParserTest {
 		String encoded = "AQDmAj8EAAoFAAcOEw";
 
 		var data = Base64.getDecoder().decode(encoded);
-		var result = parser.decode(data);
+		var result = parser.decodeUplink(data);
 		
-		assertEquals(1, result.size());
-		var holder = result.get(0);
-
-		var message = (ElsysGenericFrame)holder.getMessage();
+		var message = (ElsysGenericFrame)result;
 
 		var json = gson.toJson(message);
 		

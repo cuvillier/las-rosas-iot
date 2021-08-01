@@ -1,6 +1,9 @@
 package com.lasrosas.iot.ingestor.parser.impl.adenuis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
 import java.util.Date;
@@ -8,7 +11,6 @@ import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrameDecoder;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x01;
@@ -24,6 +26,7 @@ import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAF
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.Request2FStatus;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.Request33Status;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x30;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrameDecoder;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdenuisARF8180BAParserTest {
@@ -34,8 +37,8 @@ public class AdenuisARF8180BAParserTest {
 		var bytes = Base64.getDecoder().decode("MCAAIQAAAAAAAAA=");
 		var frame = decoder.decode(bytes);
 		
-		assertEquals(UplinkFrame0x30.class, frame.getMessage().getClass());
-		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame.getMessage();
+		assertEquals(UplinkFrame0x30.class, frame.getClass());
+		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame;
 		
 		assertEquals(1, frame0x30.getStatus().getFrameCounter());
 		assertFalse(frame0x30.getStatus().isConfig());

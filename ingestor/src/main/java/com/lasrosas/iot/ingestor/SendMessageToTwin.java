@@ -1,21 +1,7 @@
 package com.lasrosas.iot.ingestor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.lasrosas.iot.database.entities.tsr.TimeSeriePoint;
-import com.lasrosas.iot.mqtt.session.MqttSession;
-import com.lasrosas.iot.shared.ontology.IotMessage;
-
 public class SendMessageToTwin {
+/*
 	public static final Logger log = LoggerFactory.getLogger(SendMessageToTwin.class);
 
 	@Autowired
@@ -35,11 +21,11 @@ public class SendMessageToTwin {
 
 			String topic = "thing/" + thing.getType().getManufacturer() + "-" +  thing.getType().getModel() + "/" + thing.getTechid() + "/measurements";
 
-			var message = new IotMessage(System.nanoTime(), LocalDateTime.now());
+			var message = new Telemetry(System.nanoTime(), LocalDateTime.now());
 
 			for(var point: points) {
 				message.getPoints().add(
-						new IotMessage.Point(
+						new Telemetry.Point(
 								point.getTechid(), 
 								point.getTimeSerie().getType().getSchema(),
 								point.getValue()));
@@ -56,4 +42,5 @@ public class SendMessageToTwin {
 			throw new RuntimeException(e);
 		}
 	}
+*/
 }

@@ -5,8 +5,9 @@ import java.util.List;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
+import com.lasrosas.iot.shared.telemetry.Telemetry;
 
 public class ElsysErsParser implements PayloadParser {
 
@@ -14,8 +15,8 @@ public class ElsysErsParser implements PayloadParser {
 	private ElsysGenericParser parser;
 
 	@Override
-	public List<ThingMessageHolder> decodeUplink(byte[] data) {
-		return parser.decode(data);
+	public ThingDataMessage decodeUplink(byte[] data) {
+		return parser.decodeUplink(data);
 	}
 
 	@Override
@@ -24,8 +25,8 @@ public class ElsysErsParser implements PayloadParser {
 	}
 
 	@Override
-	public List<ThingMessageHolder> normalize(ThingMessageHolder decodedMessage) {
-		return parser.normalize(decodedMessage);
+	public List<Telemetry> telemetries(ThingDataMessage message) {
+		return parser.telemetries((ElsysGenericFrame)message);
 	}
 
 	public String getManufacturer() {

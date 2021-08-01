@@ -2,11 +2,12 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.mfc88;
 
 import java.time.LocalDateTime;
 
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrameDecoder.MFC88Version;
 
 public class MFC88LW13IOFrame {
 
-	public abstract static class BaseFrame {
+	public abstract static class BaseFrame extends ThingDataMessage {
 		private int code;
 
 		public BaseFrame(int code) {

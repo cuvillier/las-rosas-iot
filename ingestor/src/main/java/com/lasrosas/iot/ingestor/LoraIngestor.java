@@ -1,11 +1,9 @@
 package com.lasrosas.iot.ingestor;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,16 +26,15 @@ import com.lasrosas.iot.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
-import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParsers;
-import com.lasrosas.iot.shared.ontology.BatteryLevel;
+import com.lasrosas.iot.ingestor.services.sensors.impl.SensorServiceImpl;
+import com.lasrosas.iot.shared.telemetry.BatteryLevel;
 import com.lasrosas.iot.shared.utils.GsonUtils;
-import com.lasrosas.iot.shared.utils.LocalTopic;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class LoraIngestor {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
 
-	private PayloadParsers sensors;
+	private SensorServiceImpl sensors;
 
 	@Autowired
 	private Gson gson;
@@ -60,7 +57,7 @@ public class LoraIngestor {
 	@Autowired
 	private AlarmTypeRepo altRepo;
 
-	public LoraIngestor(PayloadParsers sensors) {
+	public LoraIngestor(SensorServiceImpl sensors) {
 		this.sensors = sensors;
 	}
 
@@ -83,7 +80,7 @@ public class LoraIngestor {
 	public List<TimeSeriePoint> handleLoraMessage(JsonObject loraMessage) {
 
 		var result = new ArrayList<TimeSeriePoint>();
-
+/*
 		var deveui = getAsString(loraMessage, "deveui", true);
 		var timestamp = Long.parseLong(getAsString(loraMessage, "timestamp", true));
 		LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
@@ -116,7 +113,7 @@ public class LoraIngestor {
 			if (thing.isLogDecodedMessages())
 				result.add(insertPoint(thing, time, decodedMessage, false));
 
-			var normalizedMessages = payloadParser.normalize(decodedMessage);
+			var normalizedMessages = payloadParser.telemetries(decodedMessage);
 
 			for (var normalizedMessage : normalizedMessages) {
 				var point = insertPoint(thing, time, normalizedMessage, true);
@@ -128,6 +125,7 @@ public class LoraIngestor {
 				result.add(point);
 			}
 		}
+*/
 		return result;
 	}
 

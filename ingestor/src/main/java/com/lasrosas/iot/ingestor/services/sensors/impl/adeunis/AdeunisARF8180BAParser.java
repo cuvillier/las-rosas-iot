@@ -5,23 +5,20 @@ import java.util.List;
 
 import org.hibernate.cfg.NotYetImplementedException;
 
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x30x43;
-import com.lasrosas.iot.shared.ontology.AirEnvironment;
-import com.lasrosas.iot.shared.ontology.BatteryLevel;
+import com.lasrosas.iot.shared.telemetry.AirEnvironment;
+import com.lasrosas.iot.shared.telemetry.BatteryLevel;
+import com.lasrosas.iot.shared.telemetry.Telemetry;
 
 public class AdeunisARF8180BAParser implements PayloadParser {
 	private AdeunisTempFrameDecoder decoder = new AdeunisTempFrameDecoder();
 
 	@Override
-	public List<ThingMessageHolder> decodeUplink(byte[] payload) {
-
-		var result = new ArrayList<ThingMessageHolder>();
-		result.add(decoder.decode(payload));
-
-		return result;
+	public ThingDataMessage decodeUplink(byte[] payload) {
+		return decoder.decode(payload);
 	}
 
 	@Override
@@ -31,9 +28,8 @@ public class AdeunisARF8180BAParser implements PayloadParser {
 
 
 	@Override
-	public List<ThingMessageHolder> normalize(ThingMessageHolder messageHolder) {
-		var result = new ArrayList<ThingMessageHolder>();
-		Object message = messageHolder.getMessage();
+	public List<Telemetry> telemetries(ThingDataMessage message) {
+		var result = new ArrayList<Telemetry>();
 
 		if(message instanceof Frame0x30x43 ) {
 			Frame0x30x43 frame = (Frame0x30x43)message;
@@ -44,7 +40,7 @@ public class AdeunisARF8180BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(new ThingMessageHolder(AirEnvironment.SCHEMA, "InternalSensor", norm));
+				result.add(norm);
 			}
 
 			temp10thdeg = frame.getValueExternalSensor10thDeg();
@@ -53,7 +49,7 @@ public class AdeunisARF8180BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(new ThingMessageHolder(AirEnvironment.SCHEMA, "ExternalSensor", norm));
+				result.add(norm);
 			}
 		}
 
@@ -61,7 +57,7 @@ public class AdeunisARF8180BAParser implements PayloadParser {
 			BaseFrame frame = (BaseFrame)message;
 			var normalized = new BatteryLevel(frame.getStatus().isLowBat());
 
-			result.add(new ThingMessageHolder(BatteryLevel.SCHEMA, null, normalized));
+			result.add(normalized);
 		}
 
 		return result;

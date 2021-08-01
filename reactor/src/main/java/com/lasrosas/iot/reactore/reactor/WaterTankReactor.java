@@ -19,8 +19,8 @@ import com.lasrosas.iot.database.repo.TimeSeriePointRepo;
 import com.lasrosas.iot.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.database.repo.TwinAlarmRepo;
-import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
-import com.lasrosas.iot.shared.ontology.WaterTankFilling;
+import com.lasrosas.iot.shared.telemetry.DistanceMeasurement;
+import com.lasrosas.iot.shared.telemetry.WaterTankFilling;
 import com.lasrosas.iot.shared.utils.Loggers;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 

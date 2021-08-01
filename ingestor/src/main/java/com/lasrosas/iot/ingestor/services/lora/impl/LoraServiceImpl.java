@@ -2,15 +2,11 @@ package com.lasrosas.iot.ingestor.services.lora.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lasrosas.iot.database.entities.thg.ThingGateway;
-import com.lasrosas.iot.database.entities.thg.ThingLora;
 import com.lasrosas.iot.database.repo.GatewayRepo;
 import com.lasrosas.iot.database.repo.ThingTypeRepo;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageJoin;
-import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUpload;
+import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraService;
-import com.lasrosas.iot.ingestor.shared.ThingMessage;
-import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class LoraServiceImpl implements LoraService {
 
@@ -23,8 +19,7 @@ public class LoraServiceImpl implements LoraService {
 	private boolean autocreate = true;
 
 	@Override
-	public ThingMessage handleUpload(LoraMessageUpload uploadMessage) {
-		// TODO Auto-generated method stub
+	public HandleUplinkResult handleUplink(LoraMessageUplink uploadMessage) {
 		return null;
 	}
 

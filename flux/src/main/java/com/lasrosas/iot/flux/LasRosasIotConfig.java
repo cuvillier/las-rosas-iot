@@ -11,19 +11,20 @@ import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
-import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.integration.mqtt.support.MqttHeaders;
-import org.springframework.integration.router.PayloadTypeRouter;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.validation.annotation.Validated;
 
-import com.lasrosas.iot.ingestor.services.lora.api.LoraMessage;
-import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUpload;
-import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249LoraTransformer;
-import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessagesService;
-import com.lasrosas.iot.ingestor.services.rak7249.impl.Rak7249MessagesServiceImpl;
+import com.lasrosas.iot.ingestor.services.lora.api.LoraHandler;
+import com.lasrosas.iot.ingestor.services.lora.api.LoraService;
+import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249FluxLoraTransformer;
+import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249Service;
+import com.lasrosas.iot.ingestor.services.rak7249.impl.Rak7249ServiceImpl;
+import com.lasrosas.iot.ingestor.services.sensors.api.DecodeThingMessageTransformer;
+import com.lasrosas.iot.ingestor.services.sensors.api.SensorService;
+import com.lasrosas.iot.ingestor.services.sensors.impl.SensorServiceImpl;
+import com.lasrosas.iot.ingestor.shared.ConfigUtils;
 import com.lasrosas.iot.shared.utils.MqttConfig;
 
 import retrofit2.http.Header;
@@ -34,9 +35,22 @@ public class LasRosasIotConfig {
 
 	public static final String rak7249Channel = "rak7249Channel";
 	public static final String loraChannel = "loraChannel";
+	public static final String thingEncodedDataChannel = "sensorRawDataChannel";
 	public static final String thingDataChannel = "thingDataChannel";
-	public static final String thingBatteryChannenl = "thingBatteryChannenl";
-	public static final String alarmChannenl = "alarmChannenl";
+	public static final String thingBatteryChannel = "thingBatteryChannel";
+	public static final String alarmChannel = "alarmChannel";
+	public static final String publishMqttChannel = "publishMqttChannel";
+	public static final String errorChannel = "errorChannel";
+
+	@Bean
+	public MessageChannel errorChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel rak7249Channel() {
+		return new PublishSubscribeChannel();
+	}
 
 	@Bean
 	@ConfigurationProperties(prefix = "rak7249.mqtt")
@@ -54,55 +68,16 @@ public class LasRosasIotConfig {
 
 	// MQTT connector to get the messages from the application/# topic
 	@Bean
-	public MqttPahoMessageDrivenChannelAdapter rak7249ChannelAdapter(MqttConfig rak7249MqttConfig, MqttPahoClientFactory rak7249MqttClientFactory) {
-
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-				rak7249MqttConfig.getClientId(),
-				rak7249MqttClientFactory,
-				"application/+/device/+/+");
-
-		adapter.setConverter(new DefaultPahoMessageConverter());
-		adapter.setOutputChannel(rak7249MqttChannel());
-
-		// Set options from config
-		if( rak7249MqttConfig.getCompletionTimeout() != null) adapter.setCompletionTimeout(rak7249MqttConfig.getCompletionTimeout());
-		if( rak7249MqttConfig.getQoss() != null) adapter.setQos(rak7249MqttConfig.getQoss());
-		if( rak7249MqttConfig.getDisconnectCompletionTimeout() != null) adapter.setDisconnectCompletionTimeout(rak7249MqttConfig.getDisconnectCompletionTimeout());
-		if( rak7249MqttConfig.getRecoveryInterval() != null) adapter.setRecoveryInterval(rak7249MqttConfig.getRecoveryInterval());
-		if( rak7249MqttConfig.getSendTimeout() != null) adapter.setSendTimeout(rak7249MqttConfig.getSendTimeout());
-
-		return adapter;
+	public MqttPahoMessageDrivenChannelAdapter rak7249ChannelAdapter(
+			MqttConfig rak7249MqttConfig, 
+			MqttPahoClientFactory rak7249MqttClientFactory, 
+			MessageChannel rak7249MqttChannel) {
+		return ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, rak7249MqttChannel);
 	}
 
 	@Bean
-	public MessageChannel rak7249MqttChannel() {
-		return new PublishSubscribeChannel();
-	}
-
-	@Bean
-	public Rak7249MessagesService rak7249MessagesService() {
-		return new Rak7249MessagesServiceImpl();
-	}
-
-	// To handle the messages passing through the channel
-	@Bean
-	@Transformer(inputChannel = rak7249Channel, outputChannel = "rak7249ToLoraMessageTransformer")
-	public Rak7249LoraTransformer rak7249ToLoraMessageTransformer(Rak7249MessagesService service) {
-		return new Rak7249LoraTransformer(service);
-	}
-
-	@Bean
-	public MessageChannel rak7249ToLoraMessageTransformer() {
-		return new DirectChannel();
-	}
-
-	@ServiceActivator(inputChannel = "rak7249ToLoraMessageTransformer")
-	@Bean
-	public PayloadTypeRouter router() {
-	    PayloadTypeRouter router = new PayloadTypeRouter();
-	    router.setChannelMapping(LoraMessage.class.getName(), "loraChannel");
-	    router.setChannelMapping(EncodedPayloadMessage.class.getName(), "payloadChannel");
-	    return router;
+	public Rak7249Service rak7249MessagesService() {
+		return new Rak7249ServiceImpl();
 	}
 
 	// Handle Lora normalized messages, independent if the type of gateway.
@@ -111,68 +86,82 @@ public class LasRosasIotConfig {
 		return new PublishSubscribeChannel();
 	}
 
+	// To handle the messages passing through the channel
+	@Bean
+	@Transformer(inputChannel = rak7249Channel, outputChannel = loraChannel)
+	public Rak7249FluxLoraTransformer rak7249ToLoraMessageTransformer(Rak7249Service service) {
+		return new Rak7249FluxLoraTransformer(service);
+	}
+
+	@MessagingGateway(defaultRequestChannel = rak7249Channel, errorChannel = errorChannel)
+	public interface rak7249MqttChannelGateway {
+		void send(String data);
+	}
+
 	// Handle Lora normalized messages, independent if the type of gateway.
 	@Bean
-	public MessageChannel sensorPayloadChannel() {
+	public MessageChannel sensorDataChannel() {
 		return new PublishSubscribeChannel();
 	}
 
 	@Bean
-	@ServiceActivator(inputChannel = "sensorPayloadChannel", outputChannel="sensorDataChannel")
-	public Message<?> parseSensorDataTransformer(Message<EncodedSensorPayload> ingestor) {
+	public SensorService sensorService() {
+		return new SensorServiceImpl();
 	}
 
-	@ServiceActivator(inputChannel = "thingDataChannel", outputChannel = "ThingMessage")
+	// To handle the messages passing through the channel
 	@Bean
-	public IotMessage normalizeSplit() {
+	public LoraHandler handleLoraMessage(
+			MessageChannel loraMetricChannel, MessageChannel thingEncodedDataChannel, LoraService service) {
+		return new LoraHandler(loraMetricChannel, thingEncodedDataChannel, service);
 	}
 
-	@Bean
-	public MessageChannel thingBatteryChannel() {
-		return new PublishSubscribeChannel();
-	}
-
+	// Handle Lora normalized messages, independent if the type of gateway.
 	@Bean
 	public MessageChannel thingDataChannel() {
 		return new PublishSubscribeChannel();
 	}
 
+	// To handle the messages passing through the channel
+	@Transformer(inputChannel = thingEncodedDataChannel, outputChannel = thingDataChannel)
+	public DecodeThingMessageTransformer decodeThingMessageTransformer(SensorService service) {
+		return new DecodeThingMessageTransformer(service);
+	}
+
 	@Bean
-	public MessageChannel alarmChannel() {
+	public MessageChannel telemetryChannel() {
 		return new PublishSubscribeChannel();
 	}
 
-	@MessagingGateway(defaultRequestChannel = "mqttLoraChannel")
-	public interface MqttLoraGateway {
-		void send(String data, @Header(MqttHeaders.TOPIC) String topic);
-	}
-
-	// IngestorOut goes to the local mqtt broker
+	/////////////////////////
 	@Bean
-	@ConfigurationProperties(prefix = "mqtt")
-	public MqttConfig mqttIngestorOutConfig() {
+	@ConfigurationProperties(prefix = "publish.mqtt")
+	public MqttConfig publishMqttConfig() {
 		return new MqttConfig();
 	}
 
+	// To connect to the RAK7249 mqtt broker
 	@Bean
-	private MqttPahoClientFactory mqttIngestorOutClientFactory(MqttConfig mqttIngestorOutConfig) {
-		return mqttClientFactory(mqttIngestorOutConfig);
+	private MqttPahoClientFactory publishMqttClientFactory(MqttConfig publishMqttConfig) {
+		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+		factory.setConnectionOptions(publishMqttConfig.getConnectOptions());
+		return factory;
 	}
 
 	@Bean
-	public MessageChannel mqttIngestorOutChannel() {
+	public MessageChannel publishMqttChannel() {
 		return new DirectChannel();
 	}
 
 	@Bean
-	@ServiceActivator(inputChannel = "mqttIngestorOutChannel")
-	public MessageHandler mqttOutbound(MqttPahoClientFactory mqttPahoClientFactory) {
-		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("mqttIngestorOut", mqttPahoClientFactory);
+	@ServiceActivator(inputChannel = publishMqttChannel)
+	public MessageHandler mqttPublisher(MqttPahoClientFactory publishMqttClientFactory) {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", publishMqttClientFactory);
 		messageHandler.setAsync(false);
 		return messageHandler;
 	}
 
-	@MessagingGateway(defaultRequestChannel = "mqttIngestorOutChannel")
+	@MessagingGateway(defaultRequestChannel = publishMqttChannel)
 	public interface MqttIngestorOutGateway {
 		void sendToMqtt(String data, @Header(MqttHeaders.TOPIC) String topic);
 	}

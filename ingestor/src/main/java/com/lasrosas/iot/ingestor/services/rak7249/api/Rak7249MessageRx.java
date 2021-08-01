@@ -44,11 +44,23 @@ public class Rak7249MessageRx extends Rak7249Message {
 	public String data;
 	public String dataEncode;
 
-	public class RxInfo {
+	public static class RxInfo {
 		public String gatewayID;
 		public Float loRaSNR;
 		public Integer rssi;
 		public LocalDateTime time;
+
+		public RxInfo() {
+		}
+
+		public RxInfo(String gatewayID, Float loRaSNR, Integer rssi, LocalDateTime time) {
+			super();
+			this.gatewayID = gatewayID;
+			this.loRaSNR = loRaSNR;
+			this.rssi = rssi;
+			this.time = time;
+		}
+
 		public String getGatewayID() {
 			return gatewayID;
 		}
@@ -76,10 +88,19 @@ public class Rak7249MessageRx extends Rak7249Message {
 	}
 
 	public RxInfo rxInfo;
-	
-	public class TxInfo {
+
+	public static class TxInfo {
 		public Long frequency;
 		public Integer dr;
+
+		public TxInfo(Long frequency, Integer dr) {
+			this.frequency = frequency;
+			this.dr = dr;
+		}
+
+		public TxInfo() {
+		}
+
 		public Long getFrequency() {
 			return frequency;
 		}

@@ -1,5 +1,7 @@
 package com.lasrosas.iot.ingestor.services.sensors.impl.adeunis;
 
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+
 public class AdeunisARF8180BAFrame {
 
 	public static class Status {
@@ -27,7 +29,7 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static class BaseFrame {
+	public static class BaseFrame extends ThingDataMessage {
 		private int code;
 		private Status status;
 

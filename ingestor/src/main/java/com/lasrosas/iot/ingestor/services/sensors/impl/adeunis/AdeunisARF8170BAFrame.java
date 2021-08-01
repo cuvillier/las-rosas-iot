@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.lasrosas.iot.ingestor.services.sensors.impl.ConfigFrame;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 
 public class AdeunisARF8170BAFrame {
 
@@ -47,7 +47,7 @@ public class AdeunisARF8170BAFrame {
 		}
 	}
 
-	public static class BaseFrame {
+	public static class BaseFrame extends ThingDataMessage {
 		private int code;
 
 		public BaseFrame(int code) {
@@ -149,7 +149,7 @@ public class AdeunisARF8170BAFrame {
 		}
 	}
 
-	public static class UplinkFrame0x10 extends BaseUplinkFrame implements ConfigFrame {
+	public static class UplinkFrame0x10 extends BaseUplinkFrame {
 
 		private int S300_TransmissionPeriodOfKeepAlive10sec;
 		private int S301_TransmissionPeriodOfPeriodicFrame10sec;
@@ -161,12 +161,6 @@ public class AdeunisARF8170BAFrame {
 		public UplinkFrame0x10() {
 			super(0x10);
 		}
-
-		@Override
-		public Object getConfig() {
-			return this;
-		}
-
 
 		public int getS300_TransmissionPeriodOfKeepAlive10sec() {
 			return S300_TransmissionPeriodOfKeepAlive10sec;
@@ -263,17 +257,12 @@ public class AdeunisARF8170BAFrame {
 
 	}
 
-	public static class UplinkFrame0x20 extends BaseUplinkFrame  implements ConfigFrame {
+	public static class UplinkFrame0x20 extends BaseUplinkFrame {
 		private LoraWanOptions S220_lorawanOptions;
 		private ProvisioningMode S221_ProvisioningMode;
 
 		public UplinkFrame0x20() {
 			super(0x20);
-		}
-
-		@Override
-		public Object getConfig() {
-			return this;
 		}
 
 		public LoraWanOptions getS220_lorawanOptions() {
@@ -358,7 +347,7 @@ public class AdeunisARF8170BAFrame {
 		}
 	}
 
-	public static class UplinkFrame0x30 extends BaseUplinkFrame implements ConfigFrame {
+	public static class UplinkFrame0x30 extends BaseUplinkFrame  {
 		private Integer channel1EventCounter;
 		private Integer channel2EventCounter;
 		private Integer channel3EventCounter;
@@ -371,11 +360,6 @@ public class AdeunisARF8170BAFrame {
 
 		public UplinkFrame0x30() {
 			super(0x30);
-		}
-
-		@Override
-		public Object getConfig() {
-			return this;
 		}
 
 		public Integer getChannel1EventCounter() {

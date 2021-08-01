@@ -47,13 +47,13 @@ public class SensorsConfig {
 
 	@Bean
 	@ConfigurationProperties(prefix = "lora-sensors")
-	public PayloadParsers LoraSensors(
+	public SensorServiceImpl LoraSensors(
 			AdeunisARF8180BAParser adenuisARF8180BAParser,
 			AdeunisARF8170BAParser adenuisARF8170BAParser,
 			ElsysErsParser elsysErsParser,
 			ElsysMB7389Parser elsysMB7389Parser,
 			MFC88LW13IOParser mfc88LW1310Parser) {
 
-		return new PayloadParsers(adenuisARF8180BAParser, adenuisARF8170BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
+		return new SensorServiceImpl(adenuisARF8180BAParser, adenuisARF8170BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
 	}
 }

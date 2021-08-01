@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
-import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkFrame;
-import com.lasrosas.iot.shared.ontology.AirEnvironment;
-import com.lasrosas.iot.shared.ontology.BatteryLevel;
-import com.lasrosas.iot.shared.ontology.DistanceMeasurement;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
+import com.lasrosas.iot.shared.telemetry.AirEnvironment;
+import com.lasrosas.iot.shared.telemetry.BatteryLevel;
+import com.lasrosas.iot.shared.telemetry.DistanceMeasurement;
+import com.lasrosas.iot.shared.telemetry.Telemetry;
 
 public class ElsysGenericParser {
 
@@ -54,8 +56,7 @@ public class ElsysGenericParser {
 		return num;
 	}
 
-
-	public List<ThingMessageHolder> decode(byte[] data) {
+	public ThingDataMessage decodeUplink(byte[] data) {
 	    var frame = new ElsysGenericFrame();
 
 	    for (int i = 0; i < data.length; i++) {
@@ -220,17 +221,11 @@ public class ElsysGenericParser {
 	        }
 	    }
 
-	    var result = new ArrayList<ThingMessageHolder>();
-
-	    var holder = new ThingMessageHolder("ElsysErsFrame", null, frame);
-	    result.add(holder);
-		return result;
+	    return frame;
 	}
 
-	public List<ThingMessageHolder> normalize(ThingMessageHolder decodedMessage) {
-		var result = new ArrayList<ThingMessageHolder>();
-
-		var message = (ElsysGenericFrame)decodedMessage.getMessage();
+	public List<Telemetry> telemetries(ElsysGenericFrame message) {
+		var result = new ArrayList<Telemetry>();
 
 		if(message.getTemperature() != null || message.getHumidity() != null || message.getLight() != null) {
 			var normalized = new AirEnvironment();
@@ -238,18 +233,18 @@ public class ElsysGenericParser {
 			if( message.getHumidity() != null) normalized.setHumidity(message.getHumidity() * 1.0);
 			if( message.getLight() != null)normalized.setLight(message.getLight() * 1.0);
 
-			result.add(new ThingMessageHolder(AirEnvironment.SCHEMA, null, normalized));
+			result.add(normalized);
 		}
 
 		if(message.getVdd() != null ) {
 			var normalized = new BatteryLevel(message.getVdd() / 1000.0, 0.0, 3.6);
-			result.add(new ThingMessageHolder(BatteryLevel.SCHEMA, null, normalized));
+			result.add(normalized);
 		}
 
 		if(message.getDistance() != null ) {
 			var distance = new DistanceMeasurement();
 			distance.setDistance(message.getDistance() / 1000.0);
-			result.add(new ThingMessageHolder(DistanceMeasurement.SCHEMA, null, distance));
+			result.add(distance);
 		}
 
 		return result;

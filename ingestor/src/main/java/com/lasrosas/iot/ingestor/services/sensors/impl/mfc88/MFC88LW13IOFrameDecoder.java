@@ -2,7 +2,7 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.mfc88;
 
 import java.time.LocalDateTime;
 
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkIOMessage;
@@ -19,7 +19,7 @@ import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOFrameDecoder {
 
-	public ThingMessageHolder decodeUplink(byte[] payload) {
+	public ThingDataMessage decodeUplink(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
@@ -36,7 +36,7 @@ public class MFC88LW13IOFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		return new ThingMessageHolder("MFC88.Temp.frame." + frame.getClass().getSimpleName(), null, frame);		
+		return frame;		
 	}
 
 	public static class MFC88Version {
