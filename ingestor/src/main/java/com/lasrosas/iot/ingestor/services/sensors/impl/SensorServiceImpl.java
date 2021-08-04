@@ -11,6 +11,7 @@ import com.lasrosas.iot.ingestor.services.sensors.api.SensorService;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.shared.telemetry.Telemetry;
+import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class SensorServiceImpl implements SensorService {
 
@@ -35,7 +36,13 @@ public class SensorServiceImpl implements SensorService {
 	public ThingDataMessage decodeUplink(ThingEncodedMessage message) {
 		var thing = thgRepo.getOne(message.getThingid());
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
-		return parser.decodeUplink(message.decodeData());
+		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
+		var result = parser.decodeUplink(message.decodeData());
+
+		result.setThingid(message.getThingid());
+		result.setTime(message.getTime());
+
+		return result;
 	}
 
 	@Override

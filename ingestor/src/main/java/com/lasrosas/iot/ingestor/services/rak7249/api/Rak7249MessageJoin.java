@@ -16,11 +16,11 @@ public class Rak7249MessageJoin extends Rak7249Message {
 	public String deviceName;
 	public String devEUI;
 	public String devAddr;
-	public String getApplicaitonID() {
+	public String getApplicationID() {
 		return applicationID;
 	}
-	public void setApplicaitonID(String applicaitonID) {
-		this.applicationID = applicaitonID;
+	public void setApplicationID(String applicationID) {
+		this.applicationID = applicationID;
 	}
 	public String getApplicationName() {
 		return applicationName;

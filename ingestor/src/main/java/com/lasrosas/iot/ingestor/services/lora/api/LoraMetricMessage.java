@@ -1,25 +1,27 @@
 package com.lasrosas.iot.ingestor.services.lora.api;
 
+import java.time.LocalDateTime;
+
 public class LoraMetricMessage {
-	public String deveui;
-	public long timestamp;
+	public long thingid;;
+	public LocalDateTime time;;
 	public int port;
 	public int cnt;
 	public Integer rssi;
 	public Float snr;
 	public Long frequency;
 
-	public String getDeveui() {
-		return deveui;
+	public long getThingid() {
+		return thingid;
 	}
-	public void setDeveui(String deveui) {
-		this.deveui = deveui;
+	public void setThingid(long thingid) {
+		this.thingid = thingid;
 	}
-	public long getTimestamp() {
-		return timestamp;
+	public LocalDateTime getTime() {
+		return time;
 	}
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setTime(LocalDateTime time) {
+		this.time = time;
 	}
 	public int getPort() {
 		return port;

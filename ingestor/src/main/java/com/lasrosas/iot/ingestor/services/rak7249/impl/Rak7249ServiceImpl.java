@@ -16,6 +16,7 @@ import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageAck;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249Service;
+import com.lasrosas.iot.shared.utils.TimeUtils;
 
 public class Rak7249ServiceImpl implements Rak7249Service {
 	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
@@ -47,7 +48,7 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 
 		// Map to LoraMessage independent of the Lora server used
 		var loraMessage = new LoraMessageUplink();
-		loraMessage.setTimestamp(rxMessage.getTimestamp());
+		loraMessage.setTime(TimeUtils.time(rxMessage.getTimestamp()));
 		loraMessage.setDeveui(deveui);
 		loraMessage.setData(rxMessage.getData());
 		loraMessage.setDataEncoding(rxMessage.getDataEncode());

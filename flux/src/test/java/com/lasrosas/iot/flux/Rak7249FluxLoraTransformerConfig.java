@@ -18,11 +18,6 @@ import com.lasrosas.iot.ingestor.services.rak7249.impl.Rak7249ServiceImpl;
 public class Rak7249FluxLoraTransformerConfig {
 	public static Logger log = LoggerFactory.getLogger(Rak7249FluxLoraTransformerConfig.class);
 
-	@MessagingGateway(defaultRequestChannel = "inputChannel")
-    public interface InputChannelGateway {
-        void send(String data);
-    }
-
     @Bean(name = PollerMetadata.DEFAULT_POLLER)
     public PollerMetadata poller() {                               // 11
     	return Pollers.fixedDelay(1000).get();

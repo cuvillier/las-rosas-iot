@@ -14,9 +14,10 @@ import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.validation.annotation.Validated;
 
-import com.lasrosas.iot.ingestor.services.lora.api.LoraHandler;
+import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraService;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249FluxLoraTransformer;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249Service;
@@ -26,8 +27,6 @@ import com.lasrosas.iot.ingestor.services.sensors.api.SensorService;
 import com.lasrosas.iot.ingestor.services.sensors.impl.SensorServiceImpl;
 import com.lasrosas.iot.ingestor.shared.ConfigUtils;
 import com.lasrosas.iot.shared.utils.MqttConfig;
-
-import retrofit2.http.Header;
 
 @ConfigurationProperties
 @Validated
@@ -111,9 +110,8 @@ public class LasRosasIotConfig {
 
 	// To handle the messages passing through the channel
 	@Bean
-	public LoraHandler handleLoraMessage(
-			MessageChannel loraMetricChannel, MessageChannel thingEncodedDataChannel, LoraService service) {
-		return new LoraHandler(loraMetricChannel, thingEncodedDataChannel, service);
+	public LoraMessageSplitter handleLoraMessage(LoraService service) {
+		return new LoraMessageSplitter(service);
 	}
 
 	// Handle Lora normalized messages, independent if the type of gateway.

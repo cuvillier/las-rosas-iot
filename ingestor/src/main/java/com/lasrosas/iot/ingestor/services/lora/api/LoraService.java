@@ -5,23 +5,22 @@ import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 public interface LoraService {
 
 	class HandleUplinkResult {
-		private ThingEncodedMessage thingEncodedMessage;
-		private LoraMetricMessage loraMetricMessage;
+		private final ThingEncodedMessage thingEncodedMessage;
+		private final LoraMetricMessage loraMetricMessage;
 
+		public HandleUplinkResult(ThingEncodedMessage thingEncodedMessage, LoraMetricMessage loraMetricMessage) {
+			super();
+			this.thingEncodedMessage = thingEncodedMessage;
+			this.loraMetricMessage = loraMetricMessage;
+		}
 		public ThingEncodedMessage getThingEncodedMessage() {
 			return thingEncodedMessage;
-		}
-		public void setThingEncodedMessage(ThingEncodedMessage thingEncodedMessage) {
-			this.thingEncodedMessage = thingEncodedMessage;
 		}
 		public LoraMetricMessage getLoraMetricMessage() {
 			return loraMetricMessage;
 		}
-		public void setLoraMetricMessage(LoraMetricMessage loraMetricMessage) {
-			this.loraMetricMessage = loraMetricMessage;
-		}
 	}
 
-	HandleUplinkResult handleUplink(LoraMessageUplink message);
-	void handleJoin(LoraMessageJoin message);
+	HandleUplinkResult splitUplink(LoraMessageUplink message);
+	void splitJoin(LoraMessageJoin message);
 }

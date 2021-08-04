@@ -17,12 +17,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUplink;
+import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx.RxInfo;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx.TxInfo;
+import com.lasrosas.iot.shared.utils.TimeUtils;
 import com.lasrosas.iot.shared.utils.UtilsConfig;
 
 @SpringBootTest
@@ -37,16 +38,8 @@ public class Rak7249FluxLoraTransformerTest {
 	@Autowired
 	private PollableChannel outputChannel;
 
-	private Gson gson = new GsonBuilder().create();
-
 	@Test
-	public void testRak7249FluxLoraTransformer() {
-		log.trace("trace");
-		log.debug("debug");
-		log.info("info");
-		log.warn("warn");
-		log.error("error");
-
+	public void Rak7249MessageRx() {
 		var rak = new Rak7249MessageRx();
 		rak.setDevEUI("deveui");
 		rak.setTimestamp(1234567L);
@@ -80,6 +73,27 @@ public class Rak7249FluxLoraTransformerTest {
 		assertEquals(rak.getFPort(), lora.getPort());
 		assertEquals(rak.getRxInfo().getRssi(), lora.getRssi());
 		assertEquals(rak.getRxInfo().getLoRaSNR(), lora.getSnr());
-		assertEquals(rak.getTimestamp(), lora.getTimestamp());
+		assertEquals(rak.getTimestamp(), TimeUtils.timestamp(lora.getTime()));
+	}
+
+	@Test
+	public void Rak7249MessageJoin() {
+
+		var rak = new Rak7249MessageJoin();
+		rak.setDevEUI("deveui");
+		rak.setTime(LocalDateTime.now());
+		rak.setApplicationName("applicationName");
+		rak.setDeviceName("deviceName");
+		rak.setDevEUI("DevEUI");
+
+		var message = MessageBuilder.withPayload(rak).build();
+
+		inputChannel.send(message);
+
+		@SuppressWarnings("unchecked")
+		var result = (Message<LoraMessageJoin>)outputChannel.receive(5000);
+		var lora = result.getPayload();
+
+		assertEquals(rak.getDevEUI(), lora.getDeveui());
 	}
 }
