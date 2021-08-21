@@ -113,7 +113,7 @@ public class AdeunisARF8170BAFrameDecoder {
 		registers.put(number, new Register(number, size, signed));
 	}
 
-	public ThingDataMessage decode(byte[] payload) {
+	public ThingDataMessage decodeUplink(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();

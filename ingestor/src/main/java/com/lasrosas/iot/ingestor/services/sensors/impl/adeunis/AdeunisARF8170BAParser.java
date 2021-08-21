@@ -11,8 +11,8 @@ import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x10;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.BaseFrame;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x30x43;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x30x43;
 import com.lasrosas.iot.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.shared.telemetry.BatteryLevel;
 import com.lasrosas.iot.shared.telemetry.Telemetry;
@@ -41,7 +41,7 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 
 	@Override
 	public ThingDataMessage decodeUplink(byte[] payload) {
-		return decoder.decode(payload);
+		return decoder.decodeUplink(payload);
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 	public List<Telemetry> telemetries(ThingDataMessage message) {
 		var result = new ArrayList<Telemetry>();
 
-		if(message instanceof Frame0x30x43 ) {
-			Frame0x30x43 frame = (Frame0x30x43)message;
+		if(message instanceof UplinkFrame0x30x43 ) {
+			UplinkFrame0x30x43 frame = (UplinkFrame0x30x43)message;
 
 			var temp10thdeg = frame.getValueInternalSensor10thDeg();
 			if(temp10thdeg != null) {
@@ -75,8 +75,8 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 			}
 		}
 
-		if(message instanceof Frame0x30x43 ) {
-			BaseFrame frame = (BaseFrame)message;
+		if(message instanceof UplinkFrame0x30x43 ) {
+			UplinkFrame frame = (UplinkFrame)message;
 			var normalized = new BatteryLevel(frame.getStatus().isLowBat());
 			result.add(normalized);
 		}

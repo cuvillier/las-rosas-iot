@@ -16,7 +16,7 @@ public class MqttConfig {
 	private Integer recoveryInterval;
 	private Long sendTimeout;
 	private boolean shouldTrack;
-	public MqttConnectOptions connectOptions;
+	public MqttConnectOptions connectOptions = new MqttConnectOptions();
 
 	public String getClientId() {
 		return clientId;

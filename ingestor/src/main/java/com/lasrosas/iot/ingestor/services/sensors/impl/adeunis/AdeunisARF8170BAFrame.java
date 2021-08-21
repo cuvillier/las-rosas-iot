@@ -767,7 +767,6 @@ public class AdeunisARF8170BAFrame {
 
 	}
 
-	// Downlink
 	public static class DownlinkFrame0x01 extends BaseDownlinkFrame {
 		public DownlinkFrame0x01() {
 			super(0x01);

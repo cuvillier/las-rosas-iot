@@ -5,19 +5,18 @@ import java.time.LocalDateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 public abstract class Telemetry {
 
-	@Expose(serialize = false, deserialize = true)
-	private LocalDateTime time;
+	@NotPartOfTelemetry
+	private LocalDateTime time = LocalDateTime.now();
 
-	@Expose(serialize = false, deserialize = true)
+	@NotPartOfTelemetry
 	private long thingId;
 
-	@Expose(serialize = false, deserialize = true)
+	@NotPartOfTelemetry
 	private long twinId;
 
 	public class RawJsonGsonAdapter extends TypeAdapter<String> {

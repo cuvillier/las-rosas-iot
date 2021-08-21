@@ -26,7 +26,7 @@ public class ElsysErsParser implements PayloadParser {
 
 	@Override
 	public List<Telemetry> telemetries(ThingDataMessage message) {
-		return parser.telemetries((ElsysGenericFrame)message);
+		return parser.telemetries((ElsysGenericUplinkFrame)message);
 	}
 
 	public String getManufacturer() {

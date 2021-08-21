@@ -1,31 +1,18 @@
 package com.lasrosas.iot.ingestor.services.lora.api;
 
-import java.time.LocalDateTime;
+import com.lasrosas.iot.shared.telemetry.Telemetry;
 
-public class LoraMetricMessage {
-	public long thingid;;
-	public LocalDateTime time;;
+public class LoraMetricMessage extends Telemetry {
 	public int port;
 	public int cnt;
 	public Integer rssi;
 	public Float snr;
 	public Long frequency;
 
-	public long getThingid() {
-		return thingid;
-	}
-	public void setThingid(long thingid) {
-		this.thingid = thingid;
-	}
-	public LocalDateTime getTime() {
-		return time;
-	}
-	public void setTime(LocalDateTime time) {
-		this.time = time;
-	}
 	public int getPort() {
 		return port;
 	}
+	
 	public void setPort(int port) {
 		this.port = port;
 	}

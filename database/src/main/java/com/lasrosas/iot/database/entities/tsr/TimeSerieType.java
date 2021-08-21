@@ -35,11 +35,9 @@ public class TimeSerieType extends BaseEntity {
 	private String schema;
 
 	public TimeSerieType() {
-		super();
 	}
 
 	public TimeSerieType(String schema) {
-		super();
 		this.schema = schema;
 	}
 

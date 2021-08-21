@@ -2,6 +2,8 @@ package com.lasrosas.iot.ingestor.services.rak7249.api;
 
 import java.time.LocalDateTime;
 
+import com.lasrosas.iot.shared.telemetry.TelemetryState;
+
 public class Rak7249MessageRx extends Rak7249Message {
 	/*
 		{
@@ -34,21 +36,23 @@ public class Rak7249MessageRx extends Rak7249Message {
 			}
 		}
 */
-	public Integer applicationID;
-	public String applicationName;
-	public String devEUI;
-	public String deviceName;
-	public long timestamp;
-	public int fCnt;
-	public int fPort;
-	public String data;
-	public String dataEncode;
+	private Integer applicationID;
+	private String applicationName;
+	private String devEUI;
+	private String deviceName;
+	private long timestamp;
+
+	private int fCnt;
+
+	private int fPort;
+	private String data;
+	private String dataEncode;
 
 	public static class RxInfo {
-		public String gatewayID;
-		public Float loRaSNR;
-		public Integer rssi;
-		public LocalDateTime time;
+		private String gatewayID;
+		private Float loRaSNR;
+		private Integer rssi;
+		private LocalDateTime time;
 
 		public RxInfo() {
 		}
@@ -87,11 +91,14 @@ public class Rak7249MessageRx extends Rak7249Message {
 		}
 	}
 
-	public RxInfo rxInfo;
+	@TelemetryState
+	private RxInfo rxInfo;
 
 	public static class TxInfo {
-		public Long frequency;
-		public Integer dr;
+
+		private Long frequency;
+
+		private Integer dr;
 
 		public TxInfo(Long frequency, Integer dr) {
 			this.frequency = frequency;
@@ -115,7 +122,8 @@ public class Rak7249MessageRx extends Rak7249Message {
 		}
 	}
 	
-	public TxInfo txInfo;
+	@TelemetryState
+	private TxInfo txInfo;
 
 	public Integer getApplicationID() {
 		return applicationID;

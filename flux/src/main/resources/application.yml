@@ -7,13 +7,12 @@ influxdb:
    token: 8w5Nx_iY06tRkJuzjOPq1gR9j_rD5jAvOQBvIqxh3ThgegiJYJ9vu8sEiMBgewZpgetOqG0ZL1gwPkkdUQ0EoA==
    org: las-rosas.es
    bucket: lasrosasiot
-lora-servers:
-  rak7249:
-     mqtt:
-       clientid: IngesterInDev
-       server: 192.168.1.3
-       persistFolder: target/mqtt-IngesterInDev
-out:
+rak7249:
+   mqtt:
+     clientid: IngesterInDev
+     server: loalhost
+     persistFolder: target/mqtt-IngesterInDev
+publish:
   mqtt:
      clientid: IngesterOutDev
      server: localhost

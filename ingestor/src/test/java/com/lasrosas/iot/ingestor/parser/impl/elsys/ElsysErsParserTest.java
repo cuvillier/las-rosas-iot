@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericFrame;
+import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericUplinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericParser;
 
 public class ElsysErsParserTest {
@@ -20,7 +20,7 @@ public class ElsysErsParserTest {
 		var data = Base64.getDecoder().decode(encoded);
 		var result = parser.decodeUplink(data);
 		
-		var message = (ElsysGenericFrame)result;
+		var message = (ElsysGenericUplinkFrame)result;
 
 		var json = gson.toJson(message);
 		

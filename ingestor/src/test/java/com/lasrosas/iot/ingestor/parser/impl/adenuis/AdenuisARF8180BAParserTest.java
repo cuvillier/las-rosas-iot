@@ -35,7 +35,7 @@ public class AdenuisARF8180BAParserTest {
 	@Test
 	public void decode() {
 		var bytes = Base64.getDecoder().decode("MCAAIQAAAAAAAAA=");
-		var frame = decoder.decode(bytes);
+		var frame = decoder.decodeUplink(bytes);
 		
 		assertEquals(UplinkFrame0x30.class, frame.getClass());
 		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame;

@@ -3,14 +3,14 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.adeunis;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.BaseFrame;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ConnectionMode;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ExternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x10;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x11;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x12;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x20;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x43;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x10;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x11;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x12;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x20;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.InternalSensorIdentifier;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ProductMode;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Status;
@@ -19,13 +19,13 @@ import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdeunisTempFrameDecoder {
 
-	public ThingDataMessage decode(byte[] payload) {
+	public ThingDataMessage decodeUplink(byte[] payload) {
 		ByteParser parser = new ByteParser(payload);
 
 		int code = parser.uint8();
 		Status status = parseStatus(parser);
 
-		BaseFrame frame = null;
+		UplinkFrame frame = null;
 		switch(code) {
 		case 0x10 :
 			frame = parse0x10(parser);
@@ -54,9 +54,9 @@ public class AdeunisTempFrameDecoder {
 		return frame;
 	}
 
-	public Frame0x10 parse0x10(ByteParser parser) {
+	public UplinkFrame0x10 parse0x10(ByteParser parser) {
 
-		Frame0x10 frame = new Frame0x10();
+		UplinkFrame0x10 frame = new UplinkFrame0x10();
 
 		frame.setS300_PeriodicityOfKeepAlive10mn(parser.uint8());
 		frame.setS301_PeriodicityOfTransmission10mn(parser.uint8());
@@ -71,8 +71,8 @@ public class AdeunisTempFrameDecoder {
 		return frame;
 	}
 
-	public Frame0x11 parse0x11(ByteParser parser) {
-		Frame0x11 frame = new Frame0x11();
+	public UplinkFrame0x11 parse0x11(ByteParser parser) {
+		UplinkFrame0x11 frame = new UplinkFrame0x11();
 
 		frame.setS309_HighThresholdOfTheInternalSensor(parser.uint16BI());
 		frame.setS310_HysteresisOfTheHighThresholdOfTheInternalSensor(parser.uint8());
@@ -83,8 +83,8 @@ public class AdeunisTempFrameDecoder {
 		return frame;
 	}
 
-	public Frame0x12 parse0x12(ByteParser parser) {
-		Frame0x12 frame = new Frame0x12();
+	public UplinkFrame0x12 parse0x12(ByteParser parser) {
+		UplinkFrame0x12 frame = new UplinkFrame0x12();
 
 		frame.setS313_HighThresholdOfTheExternalSensor(parser.uint16BI());
 		frame.setS314_HysteresisOfTheHighThresholdOfTheExternalSensor(parser.uint8());
@@ -94,16 +94,16 @@ public class AdeunisTempFrameDecoder {
 		return frame;
 	}
 
-	public Frame0x20 parse0x20(ByteParser parser) {
-		Frame0x20 frame = new Frame0x20();
+	public UplinkFrame0x20 parse0x20(ByteParser parser) {
+		UplinkFrame0x20 frame = new UplinkFrame0x20();
 
 		frame.setAdr(parser.uint8() == 1);
 		frame.setConectionMode(ConnectionMode.parse(parser.uint8()));
 		return frame;
 	}
 
-	public Frame0x43 parse0x300x43(ByteParser parser) {
-		Frame0x43 frame = new Frame0x43();
+	public UplinkFrame0x43 parse0x300x43(ByteParser parser) {
+		UplinkFrame0x43 frame = new UplinkFrame0x43();
 
 		frame.setInternalSensorIdentifier(InternalSensorIdentifier.parse(parser.uint4()));
 		frame.setS302_UserIdentifier(parser.uint4());

@@ -3,10 +3,15 @@ package com.lasrosas.iot.ingestor.services.lora.api;
 public class LoraMessageUplink extends LoraMessage {
 	public String data;
 	public String dataEncoding;
+
 	public int port;
+
 	public int cnt;
+
 	public Integer rssi;
+
 	public Float snr;
+
 	public Long frequency;
 
 	public Long getFrequency() {

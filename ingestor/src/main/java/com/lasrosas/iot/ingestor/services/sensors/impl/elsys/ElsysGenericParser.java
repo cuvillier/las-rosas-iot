@@ -57,7 +57,7 @@ public class ElsysGenericParser {
 	}
 
 	public ThingDataMessage decodeUplink(byte[] data) {
-	    var frame = new ElsysGenericFrame();
+	    var frame = new ElsysGenericUplinkFrame();
 
 	    for (int i = 0; i < data.length; i++) {
 
@@ -224,7 +224,7 @@ public class ElsysGenericParser {
 	    return frame;
 	}
 
-	public List<Telemetry> telemetries(ElsysGenericFrame message) {
+	public List<Telemetry> telemetries(ElsysGenericUplinkFrame message) {
 		var result = new ArrayList<Telemetry>();
 
 		if(message.getTemperature() != null || message.getHumidity() != null || message.getLight() != null) {

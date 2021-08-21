@@ -16,6 +16,9 @@ public class Rak7249FluxMqttHandler {
 	}
 
 	public Rak7249Message handle(String topic, Message<?> imessage) {
+
+		// CHECK Gateway timestamp. If the gateway timestamp look wrong,
+		// override with the system time and sens an error.
 		return service.fromJson(topic, (String)imessage.getPayload());
 	}
 }

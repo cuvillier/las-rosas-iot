@@ -29,11 +29,11 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static class BaseFrame extends ThingDataMessage {
+	public static class UplinkFrame extends ThingDataMessage {
 		private int code;
 		private Status status;
 
-		public BaseFrame(int code) {
+		public UplinkFrame(int code) {
 			this.code = code;
 		}
 
@@ -83,7 +83,7 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static class Frame0x10 extends BaseFrame {
+	public static class UplinkFrame0x10 extends UplinkFrame {
 		private int S300_PeriodicityOfKeepAlive10mn;
 		private int S301_PeriodicityOfTransmission10mn;
 		private int S302_ConfigurationOfTheInternalSensor;
@@ -94,7 +94,7 @@ public class AdeunisARF8180BAFrame {
 		private TypeOfExternalSensor typeOfExternalSensor;
 		private int S317_PeriodicityOfTheAcquisitionMn;
 
-		public Frame0x10() {
+		public UplinkFrame0x10() {
 			super(0x10);
 		}
 
@@ -155,14 +155,14 @@ public class AdeunisARF8180BAFrame {
 
 	}
 	
-	public static class Frame0x11 extends BaseFrame {
+	public static class UplinkFrame0x11 extends UplinkFrame {
 		private int S309_HighThresholdOfTheInternalSensor;
 		private int S310_HysteresisOfTheHighThresholdOfTheInternalSensor;
 		private int S311_LowThresholdOfTheInternalSensor;
 		private int S312_HysteresisOfTheLowThresholdOfTheInternalSensor;
 		private int S318_SuperSamplingFactor;
 
-		public Frame0x11() {
+		public UplinkFrame0x11() {
 			super(0x11);
 		}
 
@@ -200,13 +200,13 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static class Frame0x12 extends BaseFrame {
+	public static class UplinkFrame0x12 extends UplinkFrame {
 		private int S313_HighThresholdOfTheExternalSensor;
 		private int S314_HysteresisOfTheHighThresholdOfTheExternalSensor;
 		private int S315_LowThresholdOfTheExternalSensor;
 		private int S316_HysteresisOfTheLowThresholdOfTheExternalSensor;
 
-		public Frame0x12() {
+		public UplinkFrame0x12() {
 			super(0x12);
 		}
 
@@ -254,11 +254,11 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static class Frame0x20 extends BaseFrame {
+	public static class UplinkFrame0x20 extends UplinkFrame {
 		private boolean adr;
 		private ConnectionMode conectionMode;
 
-		public Frame0x20() {
+		public UplinkFrame0x20() {
 			super(0x20);
 		}
 
@@ -304,7 +304,7 @@ public class AdeunisARF8180BAFrame {
 		}
 	}
 
-	public static abstract class Frame0x30x43 extends BaseFrame {
+	public static abstract class UplinkFrame0x30x43 extends UplinkFrame {
 		private InternalSensorIdentifier internalSensorIdentifier;
 		private int S302_UserIdentifier;
 		private Integer valueInternalSensor10thDeg;
@@ -312,7 +312,7 @@ public class AdeunisARF8180BAFrame {
 		private int S304_UserIdentifier;
 		private Integer valueExternalSensor10thDeg;
 
-		public Frame0x30x43(int code) {
+		public UplinkFrame0x30x43(int code) {
 			super(code);
 		}
 
@@ -360,14 +360,14 @@ public class AdeunisARF8180BAFrame {
 		}
 	}	
 
-	public static class Frame0x30 extends Frame0x30x43 {
-		public Frame0x30() {
+	public static class UplinkFrame0x30 extends UplinkFrame0x30x43 {
+		public UplinkFrame0x30() {
 			super(0x30);
 		}
 	}
 
-	public static class Frame0x43 extends Frame0x30x43 {
-		public Frame0x43() {
+	public static class UplinkFrame0x43 extends UplinkFrame0x30x43 {
+		public UplinkFrame0x43() {
 			super(0x43);
 		}
 	}

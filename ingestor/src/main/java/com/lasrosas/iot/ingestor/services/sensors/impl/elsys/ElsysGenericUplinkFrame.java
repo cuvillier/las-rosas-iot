@@ -2,7 +2,7 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.elsys;
 
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 
-public class ElsysGenericFrame extends ThingDataMessage {
+public class ElsysGenericUplinkFrame extends ThingDataMessage {
     private Double Temperature;
     private Integer Humidity;
     private Integer AccelerationX;

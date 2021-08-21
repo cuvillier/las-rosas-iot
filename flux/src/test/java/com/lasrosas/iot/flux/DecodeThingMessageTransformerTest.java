@@ -26,7 +26,7 @@ import com.lasrosas.iot.database.IOTDatabaseConfig;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.SensorsConfig;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Frame0x43;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
 import com.lasrosas.iot.shared.utils.UtilsConfig;
 
 @EnableIntegration
@@ -62,7 +62,7 @@ public class DecodeThingMessageTransformerTest {
 
 		log.info(gson.toJson(result));
 
-		var frame0x30 = (Frame0x43)result.getPayload();
+		var frame0x30 = (UplinkFrame0x43)result.getPayload();
 
 		log.info(gson.toJson(frame0x30));
 /*		
