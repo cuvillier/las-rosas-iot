@@ -4,19 +4,23 @@ sql:
    password: lasrosasiot
 influxdb:
    server: localhost
-   token: 8w5Nx_iY06tRkJuzjOPq1gR9j_rD5jAvOQBvIqxh3ThgegiJYJ9vu8sEiMBgewZpgetOqG0ZL1gwPkkdUQ0EoA==
+   token: WUJU9p_1Cv6AmeF2NLAxwhlsRM-VIXlxwm0Jm5SMpWm7fwWsUd1BhF9mP2Gi0q07-2IwYqMSuHjSyu1kIIVgMQ==
    org: las-rosas.es
-   bucket: lasrosasiot
+   bucket: lasrosasiotUnitTest
 rak7249:
-   mqtt:
-     clientid: IngesterInDev
-     server: loalhost
-     persistFolder: target/mqtt-IngesterInDev
+  mqtt:
+     clientId: lasRosasFlux
+     persistFolder: target/mqtt-rak7249
+  connect:
+     serverURIs:
+       - tcp://@localhost:1883
 publish:
   mqtt:
-     clientid: IngesterOutDev
-     server: localhost
-     persistFolder: target/mqtt-IngesterOutDev
+     clientId: lasRosasFlux
+     persistFolder: target/mqtt-localbroker
+  connect:
+     serverURIs:
+       - tcp://@localhost:1883
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

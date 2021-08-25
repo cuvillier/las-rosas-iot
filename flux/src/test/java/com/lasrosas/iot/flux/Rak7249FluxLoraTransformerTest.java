@@ -23,6 +23,7 @@ import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx.RxInfo;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx.TxInfo;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
 import com.lasrosas.iot.shared.utils.TimeUtils;
 import com.lasrosas.iot.shared.utils.UtilsConfig;
 
@@ -46,11 +47,11 @@ public class Rak7249FluxLoraTransformerTest {
 		rak.setApplicationName("applicationName");
 		rak.setDeviceName("deviceName");
 		rak.setData("glop");
-		rak.setDataEncode("base64");
+		rak.setData_encode("base64");
 		rak.setDevEUI("DevEUI");
 		rak.setFCnt(123);
 		rak.setFPort(345);
-		rak.setRxInfo(new RxInfo("gatewayId", 123.456F, 123, LocalDateTime.now()));
+		rak.addRxInfo(new RxInfo("gatewayId", 123.456F, 123, LocalDateTime.now()));
 		rak.setTxInfo(new TxInfo(123L, 123));
 
 		var headers = new HashMap<String, String>();
@@ -68,12 +69,12 @@ public class Rak7249FluxLoraTransformerTest {
 		assertEquals(rak.getDevEUI(), lora.getDeveui());
 		assertEquals(rak.getFCnt(), lora.getCnt());
 		assertEquals(rak.getData(), lora.getData());
-		assertEquals(rak.getDataEncode(), lora.getDataEncoding());
+		assertEquals(rak.getData_encode(), lora.getDataEncoding());
 		assertEquals(rak.getTxInfo().getFrequency(), lora.getFrequency());
 		assertEquals(rak.getFPort(), lora.getPort());
-		assertEquals(rak.getRxInfo().getRssi(), lora.getRssi());
-		assertEquals(rak.getRxInfo().getLoRaSNR(), lora.getSnr());
-		assertEquals(rak.getTimestamp(), TimeUtils.timestamp(lora.getTime()));
+		assertEquals(rak.getRxInfo().get(0).getRssi(), lora.getRssi());
+		assertEquals(rak.getRxInfo().get(0).getLoRaSNR(), lora.getSnr());
+		assertEquals(LasRosasHeaders.time(message), LasRosasHeaders.time(result));
 	}
 
 	@Test

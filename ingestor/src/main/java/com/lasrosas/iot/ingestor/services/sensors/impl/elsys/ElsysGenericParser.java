@@ -3,9 +3,11 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.elsys;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
-import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.shared.telemetry.BatteryLevel;
 import com.lasrosas.iot.shared.telemetry.DistanceMeasurement;
@@ -56,7 +58,8 @@ public class ElsysGenericParser {
 		return num;
 	}
 
-	public ThingDataMessage decodeUplink(byte[] data) {
+	public Message<ElsysGenericUplinkFrame> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		var data = imessage.getPayload().decodeData();
 	    var frame = new ElsysGenericUplinkFrame();
 
 	    for (int i = 0; i < data.length; i++) {
@@ -221,11 +224,17 @@ public class ElsysGenericParser {
 	        }
 	    }
 
-	    return frame;
+	    return MessageBuilder.createMessage(frame, imessage.getHeaders());
 	}
 
-	public List<Telemetry> telemetries(ElsysGenericUplinkFrame message) {
-		var result = new ArrayList<Telemetry>();
+	public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+
+		if( !(imessage.getPayload() instanceof ElsysGenericUplinkFrame) )
+			throw new RuntimeException("Cannot process this type of message : " + imessage.getPayload().getClass());
+
+		var message = (ElsysGenericUplinkFrame)imessage.getPayload();
+		var result = new ArrayList<Message<Telemetry>>();
+
 
 		if(message.getTemperature() != null || message.getHumidity() != null || message.getLight() != null) {
 			var normalized = new AirEnvironment();
@@ -233,18 +242,18 @@ public class ElsysGenericParser {
 			if( message.getHumidity() != null) normalized.setHumidity(message.getHumidity() * 1.0);
 			if( message.getLight() != null)normalized.setLight(message.getLight() * 1.0);
 
-			result.add(normalized);
+			result.add(MessageBuilder.createMessage(normalized, imessage.getHeaders()));
 		}
 
 		if(message.getVdd() != null ) {
 			var normalized = new BatteryLevel(message.getVdd() / 1000.0, 0.0, 3.6);
-			result.add(normalized);
+			result.add(MessageBuilder.createMessage(normalized, imessage.getHeaders()));
 		}
 
 		if(message.getDistance() != null ) {
 			var distance = new DistanceMeasurement();
 			distance.setDistance(message.getDistance() / 1000.0);
-			result.add(distance);
+			result.add(MessageBuilder.createMessage(distance, imessage.getHeaders()));
 		}
 
 		return result;

@@ -1,9 +1,5 @@
 package com.lasrosas.iot.flux;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
@@ -25,8 +21,8 @@ import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.database.IOTDatabaseConfig;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.SensorsConfig;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
 import com.lasrosas.iot.shared.utils.UtilsConfig;
 
 @EnableIntegration
@@ -49,12 +45,14 @@ public class DecodeThingMessageTransformerTest {
 	public void DecodeThingMessageTransformer() {
 
 		var message = new ThingEncodedMessage();
-		message.setTime(LocalDateTime.now());
-		message.setThingid(7);
 		message.setEncodedData("MCAAIQAAAAAAAAA=");
 		message.setDataEncoding("base64");
 
-		var imessage = MessageBuilder.withPayload(message).build();
+		var imessage = MessageBuilder
+				.withPayload(message)
+				.setHeader(LasRosasHeaders.THING_ID, 7L)
+				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
+				.build();
 
 		inputChannel.send(imessage);
 

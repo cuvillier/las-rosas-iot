@@ -1,6 +1,9 @@
 package com.lasrosas.iot.ingestor.services.lora.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.lasrosas.iot.database.entities.thg.ThingGateway;
 import com.lasrosas.iot.database.entities.thg.ThingLora;
@@ -12,6 +15,7 @@ import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraService;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
 public class LoraServiceImpl implements LoraService {
@@ -28,54 +32,73 @@ public class LoraServiceImpl implements LoraService {
 	private boolean autocreate = true;
 
 	@Override
-	public HandleUplinkResult splitUplink(LoraMessageUplink uploadMessage) {
-		var thing = thingLoraRepo.getByDeveui(uploadMessage.getDeveui());
-		if(thing == null )
-			throw new NotFoundException("Thing deveui=" + uploadMessage.getDeveui());
+	public HandleUplinkResult splitUplink(Message<LoraMessageUplink> imessage) {
+		var uploadMessage = imessage.getPayload();
 
 		var loraMetric = new LoraMetricMessage();
-		loraMetric.setThingId(thing.getTechid());
 		loraMetric.setCnt(uploadMessage.getCnt());
 		loraMetric.setFrequency(uploadMessage.getFrequency());
 		loraMetric.setPort(uploadMessage.getPort());
 		loraMetric.setRssi(uploadMessage.getRssi());
 		loraMetric.setSnr(uploadMessage.getSnr());
-		loraMetric.setTime(uploadMessage.getTime());
 
 		var thingData = new ThingEncodedMessage();
-		thingData.setThingid(thing.getTechid());
-		thingData.setTime(uploadMessage.getTime());
 		thingData.setEncodedData(uploadMessage.getData());
 		thingData.setDataEncoding(uploadMessage.getDataEncoding());
 
-		return new HandleUplinkResult(thingData, loraMetric);
+		var thing = thingLoraRepo.getByDeveui(uploadMessage.getDeveui());
+		if(thing == null )
+			throw new NotFoundException("Thing deveui=" + uploadMessage.getDeveui());
+
+		return new HandleUplinkResult(
+
+			MessageBuilder
+				.withPayload(thingData)
+				.copyHeaders(imessage.getHeaders())
+				.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
+				.setHeader(LasRosasHeaders.THING_NATURAL_ID, "LOR" + thing.getDeveui())
+				.build(),
+
+			MessageBuilder
+				.withPayload(loraMetric)
+				.copyHeaders(imessage.getHeaders())
+				.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
+				.setHeader(LasRosasHeaders.THING_NATURAL_ID, "LOR" + thing.getDeveui())
+				.build()
+		);
 	}
 
 	@Override
-	public void splitJoin(LoraMessageJoin joinMessage) {
+	public void splitJoin(Message<LoraMessageJoin> imessage) {
 
-		/*
-		 * If the thing doesnot exists, try to create it.
-		 */
-		if( !autocreate )
-			throw new RuntimeException("Unknown Thing devEUI=" + joinMessage.getDeveui());
+		var joinMessage = imessage.getPayload();
 
-		String manufacturer = joinMessage.getManufacturer();
-		String model = joinMessage.getModel();
-		if(manufacturer == null || model == null) 
-			throw new RuntimeException("Cannot create thing, manufacturer=" + manufacturer + ", model=" + model);
+		var thing = thingLoraRepo.getByDeveui(joinMessage.getDeveui());
+		if(thing == null ) {
 
-		var tty = thingTypeRepo.getByManufacturerAndModel(manufacturer, model);
-		if (tty == null)
-			throw new NotFoundException("Thing type for device name=" + joinMessage.getDeveui());
-
-		ThingGateway gateway = gatewayRepo.findByNaturalId(joinMessage.getGatewayId());
-		if (gateway == null)
-			throw new NotFoundException("Gateway " + joinMessage.getGatewayId());
-
-		var thingLora = new ThingLora(gateway, tty, joinMessage.getDeveui());
-
-		thingLoraRepo.save(thingLora);
+			/*
+			 * If the thing doesnot exists, try to create it.
+			 */
+			if( !autocreate )
+				throw new RuntimeException("Unknown Thing devEUI=" + joinMessage.getDeveui());
+	
+			String manufacturer = joinMessage.getManufacturer();
+			String model = joinMessage.getModel();
+			if(manufacturer == null || model == null) 
+				throw new RuntimeException("Cannot create thing, manufacturer=" + manufacturer + ", model=" + model);
+	
+			var tty = thingTypeRepo.getByManufacturerAndModel(manufacturer, model);
+			if (tty == null)
+				throw new NotFoundException("Thing type for device name=" + joinMessage.getDeveui());
+	
+			ThingGateway gateway = gatewayRepo.findByNaturalId(joinMessage.getGatewayId());
+			if (gateway == null)
+				throw new NotFoundException("Gateway " + joinMessage.getGatewayId());
+	
+			var thingLora = new ThingLora(gateway, tty, joinMessage.getDeveui());
+	
+			thingLoraRepo.save(thingLora);
+		}
 	}
 
 }

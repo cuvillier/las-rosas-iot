@@ -3,9 +3,10 @@ package com.lasrosas.iot.ingestor.services.rak7249.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.ingestor.LoraIngestor;
 import com.lasrosas.iot.ingestor.services.lora.api.DeviceNameParser;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageAck;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageJoin;
@@ -16,10 +17,9 @@ import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageAck;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.ingestor.services.rak7249.api.Rak7249Service;
-import com.lasrosas.iot.shared.utils.TimeUtils;
 
 public class Rak7249ServiceImpl implements Rak7249Service {
-	public static Logger log = LoggerFactory.getLogger(LoraIngestor.class);
+	public static Logger log = LoggerFactory.getLogger(Rak7249ServiceImpl.class);
 	public static Logger payloadLog = LoggerFactory.getLogger("payload-rak7249");
 
 	@Autowired
@@ -27,44 +27,46 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 
 	private DeviceNameParser deviceNameParser = new DefaultDeviceNameParser();
 
+	@Override
 	public Rak7249Message fromJson(String topic, String json) {
 
 		if(topic.endsWith("/join")) 
-			gson.fromJson(json, Rak7249MessageJoin.class);
+			return gson.fromJson(json, Rak7249MessageJoin.class);
 		
 		if(topic.endsWith("/rx")) 
-			gson.fromJson(json, Rak7249MessageRx.class);
+			return gson.fromJson(json, Rak7249MessageRx.class);
 		
 		if(topic.endsWith("/ack")) 
-			gson.fromJson(json, Rak7249MessageAck.class);
+			return gson.fromJson(json, Rak7249MessageAck.class);
 
 		throw new RuntimeException("Unkknown topic " + topic + ". Fix the code here.");
 	}
 
-	public LoraMessageUplink convertRxToLoraMessage(Rak7249MessageRx rxMessage) {
+	@Override
+	public Message<LoraMessageUplink> convertRxToLoraMessage(Message<Rak7249MessageRx> imessage) {
+		var rxMessage = imessage.getPayload();
 		logPayload(rxMessage);
 
 		String deveui = rxMessage.getDevEUI();
 
 		// Map to LoraMessage independent of the Lora server used
 		var loraMessage = new LoraMessageUplink();
-		loraMessage.setTime(TimeUtils.time(rxMessage.getTimestamp()));
 		loraMessage.setDeveui(deveui);
 		loraMessage.setData(rxMessage.getData());
-		loraMessage.setDataEncoding(rxMessage.getDataEncode());
+		loraMessage.setDataEncoding(rxMessage.getData_encode());
 		loraMessage.setCnt(rxMessage.getFCnt());
 		loraMessage.setPort(rxMessage.getFPort());
 
 		if( rxMessage.getRxInfo() != null) {
-			loraMessage.setRssi(rxMessage.getRxInfo().getRssi());
-			loraMessage.setSnr(rxMessage.getRxInfo().getLoRaSNR());
+			loraMessage.setRssi(rxMessage.getRxInfo().get(0).getRssi());
+			loraMessage.setSnr(rxMessage.getRxInfo().get(0).getLoRaSNR());
 		}
 
 		if( rxMessage.getTxInfo() != null) {
 			loraMessage.setFrequency(rxMessage.getTxInfo().getFrequency());
 		}
 
-		return loraMessage;
+		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
 	}
 
 	private void logPayload(Rak7249Message message) {
@@ -78,7 +80,9 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 		}
 	}
 
-	public LoraMessageJoin convertJoinToLoraMessage(Rak7249MessageJoin joinMessage) {
+	@Override
+	public Message<LoraMessageJoin> convertJoinToLoraMessage(Message<Rak7249MessageJoin> imessage) {
+		var joinMessage = imessage.getPayload();
 		logPayload(joinMessage);
 
 		// Map to LoraMessage independent of the Lora server used
@@ -94,16 +98,19 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 			loraMessage.setManufacturer(deviceInfo.getModel());
 		}
 
-		return loraMessage;
+		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
 	}
 
-	public LoraMessageAck convertAckToLoraMessage(Rak7249MessageAck ackMessage) {
+	@Override
+	public Message<LoraMessageAck> convertAckToLoraMessage(Message<Rak7249MessageAck> imessage) {
+		var ackMessage = imessage.getPayload();
+
 		var loraMessage = new LoraMessageAck();
 
 		loraMessage.setDeveui(ackMessage.getDevEUI());
 		loraMessage.setGatewayId(ackMessage.getApplicationName());
 
-		return loraMessage;
+		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
 	}
 
 	public DeviceNameParser getDeviceNameParser() {

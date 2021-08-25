@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lasrosas.iot.database.repo.ThingRepo;
 import com.lasrosas.iot.ingestor.services.sensors.api.SensorService;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
 import com.lasrosas.iot.shared.telemetry.Telemetry;
 import com.lasrosas.iot.shared.utils.NotFoundException;
 
@@ -33,22 +36,59 @@ public class SensorServiceImpl implements SensorService {
 		return parsers.get(manufacturer + "/" + model);
 	}
 
-	public ThingDataMessage decodeUplink(ThingEncodedMessage message) {
-		var thing = thgRepo.getOne(message.getThingid());
+	@Override
+	@Transactional
+	public Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		var thingId = imessage.getHeaders().get(LasRosasHeaders.THING_ID, Long.class);
+		var thing = thgRepo.getOne(thingId);
+
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
-		var result = parser.decodeUplink(message.decodeData());
-
-		result.setThingid(message.getThingid());
-		result.setTime(message.getTime());
-
-		return result;
+		return parser.decodeUplink(imessage);
+		
+		// Handle battery level here.
 	}
 
+	/*
+	private void handleBatteryLevel(Thing thing, LocalDateTime time, BatteryLevel batteryLevel) {
+		boolean newAlarm = false;
+
+		var thingType = thing.getType();
+
+		if (batteryLevel.getAlarm() != null) {
+			newAlarm = batteryLevel.getAlarm();
+
+		} else if (batteryLevel.getPercentage() != null) {
+			var percentage = batteryLevel.getPercentage();
+
+			if (thingType.getBatteryMinPercentage() != null && percentage < thingType.getBatteryMinPercentage()) {
+				newAlarm = true;
+			}
+		}
+
+		var alarmType = altRepo.getByName(AlarmType.THING_BATTERY_ALARM);
+		var alarm = alrRepo.getByTypeAndThingAndStateNot(alarmType, thing, Alarm.State.Closed);
+
+		if (alarm == null && newAlarm) {
+
+			// Activate battery alarm
+			alarm = new ThingAlarm(thing, alarmType, time);
+			alrRepo.save(alarm);
+
+		} else if (alarm != null && !newAlarm) {
+
+			// Close the battery alarm
+			alarm.close(time);
+		}
+	}
+*/
 	@Override
-	public Collection<Telemetry> telemetries(ThingDataMessage message) {
-		var thing = thgRepo.getOne(message.getThingid());
+	public Collection<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+
+		var thingId = LasRosasHeaders.thingid(imessage);
+		var thing = thgRepo.getOne(thingId);
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
-		return parser.telemetries(message);
+
+		return parser.telemetries(imessage);
 	}
 }

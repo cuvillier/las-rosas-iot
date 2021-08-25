@@ -21,18 +21,18 @@ public class Rak7249FluxLoraTransformer extends AbstractTransformer {
 
 		var payload = message.getPayload();
 
-		LoraMessage loraMessage;
+		Message< ? extends LoraMessage> loraMessage;
 
 		if(payload instanceof Rak7249MessageJoin)
-			loraMessage = service.convertJoinToLoraMessage((Rak7249MessageJoin)payload);
+			loraMessage = service.convertJoinToLoraMessage((Message<Rak7249MessageJoin>)message);
 
 		else if(payload instanceof Rak7249MessageAck)
-			loraMessage = service.convertAckToLoraMessage((Rak7249MessageAck)payload);
+			loraMessage = service.convertAckToLoraMessage((Message<Rak7249MessageAck>)message);
 
 		else if(payload instanceof Rak7249MessageRx)
-			loraMessage = service.convertRxToLoraMessage((Rak7249MessageRx)payload);
+			loraMessage = service.convertRxToLoraMessage((Message<Rak7249MessageRx>)message);
 		else
-			throw new RuntimeException("Unknown message type: " + payload.getClass().getName());
+			throw new RuntimeException("Unknown message type: " + message.getPayload().getClass().getName());
 
 		log.info("doTransform loraMessage = " + loraMessage);
 		return loraMessage;

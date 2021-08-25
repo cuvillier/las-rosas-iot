@@ -1,26 +1,28 @@
 package com.lasrosas.iot.ingestor.services.lora.api;
 
+import org.springframework.messaging.Message;
+
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 
 public interface LoraService {
 
 	class HandleUplinkResult {
-		private final ThingEncodedMessage thingEncodedMessage;
-		private final LoraMetricMessage loraMetricMessage;
+		private final Message<ThingEncodedMessage> thingEncodedMessage;
+		private final Message<LoraMetricMessage> loraMetricMessage;
 
-		public HandleUplinkResult(ThingEncodedMessage thingEncodedMessage, LoraMetricMessage loraMetricMessage) {
+		public HandleUplinkResult(Message<ThingEncodedMessage> thingEncodedMessage, Message<LoraMetricMessage> loraMetricMessage) {
 			super();
 			this.thingEncodedMessage = thingEncodedMessage;
 			this.loraMetricMessage = loraMetricMessage;
 		}
-		public ThingEncodedMessage getThingEncodedMessage() {
+		public Message<ThingEncodedMessage> getThingEncodedMessage() {
 			return thingEncodedMessage;
 		}
-		public LoraMetricMessage getLoraMetricMessage() {
+		public Message<LoraMetricMessage> getLoraMetricMessage() {
 			return loraMetricMessage;
 		}
 	}
 
-	HandleUplinkResult splitUplink(LoraMessageUplink message);
-	void splitJoin(LoraMessageJoin message);
+	HandleUplinkResult splitUplink(Message<LoraMessageUplink> message);
+	void splitJoin(Message<LoraMessageJoin> message);
 }

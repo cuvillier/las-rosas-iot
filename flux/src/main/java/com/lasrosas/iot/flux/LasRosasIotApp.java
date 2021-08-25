@@ -5,9 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import com.lasrosas.iot.database.IOTDatabaseConfig;
+import com.lasrosas.iot.ingestor.services.sensors.api.SensorConfig;
 
 @SpringBootApplication(scanBasePackages="com.lasrosas.iot")
-@Import({IOTDatabaseConfig.class, LasRosasIotConfig.class})
+@Import({IOTDatabaseConfig.class, SensorConfig.class, LasRosasIotConfig.class})
 public class LasRosasIotApp {
 
 	public static final void main(String... args) {

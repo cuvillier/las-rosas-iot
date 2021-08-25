@@ -1,26 +1,29 @@
 package com.lasrosas.iot.ingestor.services.sensors.impl.adeunis;
 
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ConnectionMode;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ExternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.InternalSensorIdentifier;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ProductMode;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Status;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.TypeOfExternalSensor;
+import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x10;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x11;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x12;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x20;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.InternalSensorIdentifier;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.ProductMode;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.Status;
-import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.TypeOfExternalSensor;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class AdeunisTempFrameDecoder {
 
-	public ThingDataMessage decodeUplink(byte[] payload) {
-		ByteParser parser = new ByteParser(payload);
+	public Message<ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		ByteParser parser = new ByteParser(imessage.getPayload().decodeData());
 
 		int code = parser.uint8();
 		Status status = parseStatus(parser);
@@ -51,7 +54,7 @@ public class AdeunisTempFrameDecoder {
 
 		frame.setStatus(status);
 
-		return frame;
+		return MessageBuilder.createMessage(frame, imessage.getHeaders());
 	}
 
 	public UplinkFrame0x10 parse0x10(ByteParser parser) {

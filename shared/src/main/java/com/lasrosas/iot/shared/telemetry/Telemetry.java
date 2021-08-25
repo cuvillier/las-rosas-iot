@@ -10,15 +10,6 @@ import com.google.gson.stream.JsonWriter;
 
 public abstract class Telemetry {
 
-	@NotPartOfTelemetry
-	private LocalDateTime time = LocalDateTime.now();
-
-	@NotPartOfTelemetry
-	private long thingId;
-
-	@NotPartOfTelemetry
-	private long twinId;
-
 	public class RawJsonGsonAdapter extends TypeAdapter<String> {
 
 		@Override
@@ -93,35 +84,7 @@ public abstract class Telemetry {
 		}
 	}
 
-	public LocalDateTime getTime() {
-		return time;
-	}
-
-	public void setTime(LocalDateTime time) {
-		this.time = time;
-	}
-
-	public long getThingId() {
-		return thingId;
-	}
-
-	public void setThingId(long thingId) {
-		this.thingId = thingId;
-	}
-
-	public long getTwinId() {
-		return twinId;
-	}
-
-	public void setTwinId(long twinId) {
-		this.twinId = twinId;
-	}
-
 	public String toJson(Gson gson) {
 		return gson.toJson(this);
-	}
-
-	public static Telemetry fronJson(Gson gson, String json) {
-		return gson.fromJson(json, Telemetry.class);
 	}
 }

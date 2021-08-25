@@ -2,7 +2,11 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.mfc88;
 
 import java.time.LocalDateTime;
 
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkIOMessage;
@@ -19,8 +23,8 @@ import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOFrameDecoder {
 
-	public ThingDataMessage decodeUplink(byte[] payload) {
-		ByteParser parser = new ByteParser(payload);
+	public Message<ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		ByteParser parser = new ByteParser(imessage.getPayload().decodeData());
 
 		int code = parser.uint8();
 
@@ -36,7 +40,7 @@ public class MFC88LW13IOFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		return frame;		
+		return MessageBuilder.createMessage(frame, imessage.getHeaders());		
 	}
 
 	public static class MFC88Version {
@@ -143,7 +147,9 @@ public class MFC88LW13IOFrameDecoder {
 		return frame;
 	}
 
-	public byte[] encodeDownlink(DownlinkFrame frame) {
+	public byte[] encodeDownlink(Message<? extends DownlinkFrame> imessage) {
+		var frame = imessage.getPayload();
+
 		switch(frame.getCode()) {
 		case DownlinkTimeSyncAnswer.CODE:
 			return encodeDownlinkTimeSyncAnswer((DownlinkTimeSyncAnswer)frame);

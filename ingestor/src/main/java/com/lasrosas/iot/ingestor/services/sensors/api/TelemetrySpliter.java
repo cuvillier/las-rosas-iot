@@ -15,13 +15,13 @@ public class TelemetrySpliter extends AbstractMessageSplitter {
 	 * Decode Message from a Lora sensor, and normalize the data model.
 	 * return a collection of ThingMessages
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Object splitMessage(Message<?> imessage) {
-		var payload = imessage.getPayload();
 
-		if(!(payload instanceof ThingDataMessage)) return null;
+		if(imessage.getPayload() instanceof ThingDataMessage) 
+			return service.telemetries((Message<ThingDataMessage>)imessage);
 
-		var message = (ThingDataMessage)payload;
-		return service.telemetries(message);
+		return null;
 	}
 }

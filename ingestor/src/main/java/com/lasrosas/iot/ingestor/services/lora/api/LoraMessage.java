@@ -1,23 +1,12 @@
 package com.lasrosas.iot.ingestor.services.lora.api;
 
-import java.time.LocalDateTime;
-
-import com.lasrosas.iot.shared.telemetry.NotPartOfTelemetry;
+import com.lasrosas.iot.shared.telemetry.NotPartOfState;
 
 public abstract class LoraMessage {
 
-	@NotPartOfTelemetry
-	private LocalDateTime time;
-
-	@NotPartOfTelemetry
+	@NotPartOfState
 	private String deveui;
 
-	public LocalDateTime getTime() {
-		return time;
-	}
-	public void setTime(LocalDateTime time) {
-		this.time = time;
-	}
 	public String getDeveui() {
 		return deveui;
 	}

@@ -1,6 +1,8 @@
 package com.lasrosas.iot.ingestor.services.rak7249.api;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.lasrosas.iot.shared.telemetry.TelemetryState;
 
@@ -46,7 +48,7 @@ public class Rak7249MessageRx extends Rak7249Message {
 
 	private int fPort;
 	private String data;
-	private String dataEncode;
+	private String data_encode;
 
 	public static class RxInfo {
 		private String gatewayID;
@@ -92,7 +94,7 @@ public class Rak7249MessageRx extends Rak7249Message {
 	}
 
 	@TelemetryState
-	private RxInfo rxInfo;
+	private List<RxInfo> rxInfo = new ArrayList<>();
 
 	public static class TxInfo {
 
@@ -189,19 +191,23 @@ public class Rak7249MessageRx extends Rak7249Message {
 		this.data = data;
 	}
 
-	public String getDataEncode() {
-		return dataEncode;
+	public String getData_encode() {
+		return data_encode;
 	}
 
-	public void setDataEncode(String dataEncode) {
-		this.dataEncode = dataEncode;
+	public void setData_encode(String data_encode) {
+		this.data_encode = data_encode;
 	}
 
-	public RxInfo getRxInfo() {
+	public List<RxInfo> getRxInfo() {
 		return rxInfo;
 	}
 
-	public void setRxInfo(RxInfo rxInfo) {
+	public void addRxInfo(RxInfo rxInfo) {
+		this.rxInfo.add(rxInfo);
+	}
+
+	public void setRxInfo(List<RxInfo> rxInfo) {
 		this.rxInfo = rxInfo;
 	}
 

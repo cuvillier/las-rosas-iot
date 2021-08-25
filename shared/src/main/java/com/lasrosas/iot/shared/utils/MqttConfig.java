@@ -10,13 +10,17 @@ public class MqttConfig {
 
 	@NotNull
 	private String clientId;
+
 	private Long completionTimeout;
 	private Long disconnectCompletionTimeout;
 	private int[] qoss;
 	private Integer recoveryInterval;
 	private Long sendTimeout;
 	private boolean shouldTrack;
+
+	@NotNull
 	public MqttConnectOptions connectOptions = new MqttConnectOptions();
+	private String persistFolder;
 
 	public String getClientId() {
 		return clientId;
@@ -24,6 +28,14 @@ public class MqttConfig {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public String getPersistFolder() {
+		return persistFolder;
+	}
+
+	public void setPersistFolder(String persistFolder) {
+		this.persistFolder = persistFolder;
 	}
 
 	public MqttConnectOptions getConnectOptions() {

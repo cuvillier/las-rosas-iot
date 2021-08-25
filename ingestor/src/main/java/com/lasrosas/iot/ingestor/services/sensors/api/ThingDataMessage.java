@@ -2,8 +2,14 @@ package com.lasrosas.iot.ingestor.services.sensors.api;
 
 import java.time.LocalDateTime;
 
+import com.lasrosas.iot.shared.telemetry.NotPartOfState;
+
 public class ThingDataMessage {
+
+	@NotPartOfState
 	private long thingid;
+
+	@NotPartOfState
 	private LocalDateTime time;
 
 	public long getThingid() {

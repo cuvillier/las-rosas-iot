@@ -4,15 +4,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Month;
 
+import org.eclipse.paho.client.mqttv3.internal.websocket.Base64;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrameDecoder;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
+import com.lasrosas.iot.ingestor.services.sensors.impl.mfc88.MFC88LW13IOFrameDecoder;
 import com.lasrosas.iot.shared.utils.ByteParser;
 
 public class MFC88LW13IOParserTest {
+	public static final Logger log = LoggerFactory.getLogger(MFC88LW13IOParserTest.class);
+
 	private MFC88LW13IOFrameDecoder frameParser = new MFC88LW13IOFrameDecoder();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -25,18 +32,21 @@ public class MFC88LW13IOParserTest {
 		var byteParser = new ByteParser(new byte[] {0x01, (byte)0x83, (byte)0x98, 0x1c, 0x28, 0x00, 0x02, 0x07, 0x07, 0x01, 0x00});
 		var frame = frameParser.decodeUplinkTimeSyncRequest(byteParser);
 		 */
-		
+
 		//var bytes = new byte[] {0x0a, (byte)0xa6, (byte)0xb0, (byte)0x9c, 0x2a, 0x01, 00, 00, 00, 00, 00, 00, 00, 01, 00, 00, 00};
 		var bytes = new byte[] {0x01, 0x4c, 0x53, (byte)0xdc, 0x21, 0x00, 0x02, 0x07, 0x07, 0x01, 0x00};
-		var frame = frameParser.decodeUplink(bytes);
-		System.out.println(gson.toJson(frame));
+		var encoded = Base64.encodeBytes(bytes);
+		var message = new ThingEncodedMessage(encoded);
+		var imessage = MessageBuilder.withPayload(message).build();
+		var frame = frameParser.decodeUplink(imessage);
+		log.info(gson.toJson(frame));
 	}
 
 	@Test
 	public void parseUplinkTimeSyncRequest() {
 		var byteParser = new ByteParser(new byte[] {0x78, 0x7d, 0x3c, 0x25, 0x00, 0x02, 0x00, 0x02, 0x03, 0x01});
 		var frame = frameParser.decodeUplinkTimeSyncRequest(byteParser);		
-		System.out.println(gson.toJson(frame));
+		log.info(gson.toJson(frame));
 
 		assertEquals(0x01, frame.getCode());
 		assertEquals(0x787d3c25, frame.getSyncId());

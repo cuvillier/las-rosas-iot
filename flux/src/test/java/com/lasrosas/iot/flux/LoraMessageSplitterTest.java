@@ -2,8 +2,6 @@ package com.lasrosas.iot.flux;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -24,6 +23,7 @@ import com.lasrosas.iot.database.IOTDatabaseConfig;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
 import com.lasrosas.iot.shared.utils.UtilsConfig;
 
 @EnableIntegration
@@ -48,7 +48,6 @@ public class LoraMessageSplitterTest {
 	@Test
 	public void HandleLoraMessage() {
 		var message = new LoraMessageUplink();
-		message.setTime(LocalDateTime.now());
 		message.setData("data");
 		message.setDataEncoding("encoding");
 		message.setDeveui("1111111111111111");
@@ -70,14 +69,14 @@ public class LoraMessageSplitterTest {
 		assertEquals(message.getPort(), loraMetric.getPort());
 		assertEquals(message.getRssi(), loraMetric.getRssi());
 		assertEquals(message.getSnr(), loraMetric.getSnr());
-		assertEquals(message.getTime(), loraMetric.getTime());
 
-		var thingEncoded = (ThingEncodedMessage)thingEncodedChannel.receive(5000).getPayload();
+		@SuppressWarnings("unchecked")
+		var thingEncoded = (Message<ThingEncodedMessage>)thingEncodedChannel.receive(5000);
 
 		log.info(gson.toJson(thingEncoded));
 
-		assertEquals(message.getTime(), thingEncoded.getTime());
-		assertEquals(message.getData(), thingEncoded.getEncodedData());
-		assertEquals(message.getDataEncoding(), thingEncoded.getDataEncoding());
+		assertEquals(LasRosasHeaders.time(imessage), LasRosasHeaders.time(thingEncoded));
+		assertEquals(imessage.getPayload().getData(), thingEncoded.getPayload().getEncodedData());
+		assertEquals(imessage.getPayload().getDataEncoding(), thingEncoded.getPayload().getDataEncoding());
 	}
 }

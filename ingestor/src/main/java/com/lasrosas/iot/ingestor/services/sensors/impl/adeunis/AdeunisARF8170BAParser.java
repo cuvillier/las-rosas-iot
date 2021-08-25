@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.PayloadParser;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x10;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame;
@@ -40,18 +42,19 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 	}
 
 	@Override
-	public ThingDataMessage decodeUplink(byte[] payload) {
-		return decoder.decodeUplink(payload);
+	public Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		return decoder.decodeUplink(imessage);
 	}
 
 	@Override
-	public byte[] encodeDownlink(Object frame) {
+	public byte[] encodeDownlink(Message<?> frame) {
 		throw new NotYetImplementedException();
 	}
 
 	@Override
-	public List<Telemetry> telemetries(ThingDataMessage message) {
-		var result = new ArrayList<Telemetry>();
+	public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+		var result = new ArrayList<Message<Telemetry>>();
+		var message = imessage.getPayload();
 
 		if(message instanceof UplinkFrame0x30x43 ) {
 			UplinkFrame0x30x43 frame = (UplinkFrame0x30x43)message;
@@ -62,7 +65,7 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(norm);
+				result.add(MessageBuilder.createMessage(norm, imessage.getHeaders()));
 			}
 
 			temp10thdeg = frame.getValueExternalSensor10thDeg();
@@ -71,23 +74,25 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(norm);
+				result.add(MessageBuilder.createMessage(norm, imessage.getHeaders()));
 			}
 		}
 
 		if(message instanceof UplinkFrame0x30x43 ) {
 			UplinkFrame frame = (UplinkFrame)message;
 			var normalized = new BatteryLevel(frame.getStatus().isLowBat());
-			result.add(normalized);
+			result.add(MessageBuilder.createMessage(normalized, imessage.getHeaders()));
 		}
 
 		return result;
 	}
 
+	@Override
 	public String getManufacturer() {
 		return MANUFACTURER;
 	}
 
+	@Override
 	public String getModel() {
 		return MODEL;
 	}

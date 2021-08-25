@@ -11,13 +11,13 @@ public class DecodeThingMessageTransformer extends AbstractTransformer {
 		this.service = service;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Object doTransform(Message<?> imessage) {
-		var payload = imessage.getPayload();
 
-		if(!(payload instanceof ThingEncodedMessage)) return null;
+		if(imessage.getPayload() instanceof ThingEncodedMessage) 
+			return service.decodeUplink((Message<ThingEncodedMessage>)imessage);
 
-		var message = (ThingEncodedMessage)payload;
-		return service.decodeUplink(message);
+		return null;
 	}
 }

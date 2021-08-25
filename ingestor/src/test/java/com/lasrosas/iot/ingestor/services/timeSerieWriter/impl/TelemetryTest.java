@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.services.timeSerieWriter.impl;
 
-import com.lasrosas.iot.shared.telemetry.NotPartOfTelemetry;
+import com.lasrosas.iot.shared.telemetry.NotPartOfState;
 import com.lasrosas.iot.shared.telemetry.Telemetry;
 import com.lasrosas.iot.shared.telemetry.TelemetryState;
 
@@ -35,7 +35,7 @@ public class TelemetryTest extends Telemetry {
 	@TelemetryState
 	private ValuesHolder valuesHolder = new ValuesHolder();
 
-	@NotPartOfTelemetry
+	@NotPartOfState
 	private int notParOfTelemetry;
 
 	private String stringValue = "hello";

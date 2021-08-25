@@ -14,11 +14,13 @@ public class LoraMessageSplitter  extends AbstractMessageSplitter {
 
 	@Override
 	public Object splitMessage(Message<?> imessage) {
-		var result = new ArrayList<Object>();
+		var result = new ArrayList<Message<?>>();
 		var payload = (LoraMessage)imessage.getPayload();
 
 		if(payload instanceof LoraMessageUplink ) {
-			var splitResult = service.splitUplink((LoraMessageUplink) payload);
+
+			@SuppressWarnings("unchecked")
+			var splitResult = service.splitUplink((Message<LoraMessageUplink>)imessage);
 
 			result.add(splitResult.getLoraMetricMessage());
 			result.add(splitResult.getThingEncodedMessage());

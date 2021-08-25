@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Base64;
 import java.util.Date;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.support.MessageBuilder;
 
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelType;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.DownlinkFrame0x01;
@@ -34,11 +35,12 @@ public class AdenuisARF8180BAParserTest {
 
 	@Test
 	public void decode() {
-		var bytes = Base64.getDecoder().decode("MCAAIQAAAAAAAAA=");
-		var frame = decoder.decodeUplink(bytes);
-		
-		assertEquals(UplinkFrame0x30.class, frame.getClass());
-		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame;
+		var message = new ThingEncodedMessage("MCAAIQAAAAAAAAA=", "base64");
+		var imessage = MessageBuilder.withPayload(message).build();
+		var frame = decoder.decodeUplink(imessage);
+
+		assertEquals(UplinkFrame0x30.class, frame.getPayload().getClass());
+		UplinkFrame0x30 frame0x30 = (UplinkFrame0x30)frame.getPayload();
 		
 		assertEquals(1, frame0x30.getStatus().getFrameCounter());
 		assertFalse(frame0x30.getStatus().isConfig());

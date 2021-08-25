@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.Message;
 
 import com.influxdb.LogLevel;
 import com.influxdb.client.InfluxDBClient;
@@ -17,8 +18,8 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.lasrosas.iot.influxdb.InfluxDBConfig;
 import com.lasrosas.iot.ingestor.services.timeSerieWriter.api.WriteInfluxDB;
-import com.lasrosas.iot.shared.telemetry.NotPartOfTelemetry;
-import com.lasrosas.iot.shared.telemetry.Telemetry;
+import com.lasrosas.iot.ingestor.shared.LasRosasHeaders;
+import com.lasrosas.iot.shared.telemetry.NotPartOfState;
 import com.lasrosas.iot.shared.telemetry.TelemetryState;
 import com.lasrosas.iot.shared.utils.TimeUtils;
 
@@ -57,12 +58,18 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 		return influxDB;
 	}
 
-	public void writePoint(String measurement, Telemetry telemetry) {
-		var timestamp = TimeUtils.timestamp(telemetry.getTime());
-		var influxdbPoint = Point.measurement(measurement).time(timestamp, WritePrecision.MS);
+	@Override
+	public void writePoint(Message<?>  imessage) {
 
+		var timestamp = TimeUtils.timestamp(LasRosasHeaders.time(imessage));
+		var naturalId = LasRosasHeaders.thingNaturalId(imessage);
+		var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
+		var measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
+
+		var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
+	
 		var fields = new HashMap<String, Object>();
-		addFields(fields, telemetry, null);
+		addFields(fields, imessage.getPayload(), null);
 		influxdbPoint.addFields(fields);
 
 		var influxDB = influxDB();
@@ -85,9 +92,9 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 					if(Modifier.isStatic(field.getModifiers())) continue;
 
 					// Skip non persistent point data
-					if(field.isAnnotationPresent(NotPartOfTelemetry.class)) continue;
+					if(field.isAnnotationPresent(NotPartOfState.class)) continue;
 
-					if(!classInitited) field.setAccessible((true));
+					field.setAccessible(true);
 
 					var fieldName = prefix == null ? field.getName(): prefix + "_" + field.getName();
 					var value = field.get(values);
@@ -95,8 +102,13 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 					if(value != null) {
 						if(field.isAnnotationPresent(TelemetryState.class))
 							addFields(fields, value, fieldName);
-						else
-							if(!(value instanceof Character)) fields.put(fieldName, value);
+						else {
+							if( field.getType().isEnum() ) {
+								Enum<?> e = (Enum<?>)value;
+								fields.put(fieldName, e.ordinal());
+							} else
+								if(!(value instanceof Character)) fields.put(fieldName, value);
+						}
 					}
 				}
 			}

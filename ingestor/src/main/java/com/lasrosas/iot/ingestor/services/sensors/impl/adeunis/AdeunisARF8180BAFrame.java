@@ -1,6 +1,8 @@
 package com.lasrosas.iot.ingestor.services.sensors.impl.adeunis;
 
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+import com.lasrosas.iot.shared.telemetry.NotPartOfState;
+import com.lasrosas.iot.shared.telemetry.TelemetryState;
 
 public class AdeunisARF8180BAFrame {
 
@@ -31,6 +33,8 @@ public class AdeunisARF8180BAFrame {
 
 	public static class UplinkFrame extends ThingDataMessage {
 		private int code;
+
+		@TelemetryState
 		private Status status;
 
 		public UplinkFrame(int code) {

@@ -1,29 +1,26 @@
 package com.lasrosas.iot.ingestor.parser.impl.elsys;
 
-import java.util.Base64;
-
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericUplinkFrame;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.elsys.ElsysGenericParser;
 
 public class ElsysErsParserTest {
+	public static final Logger log = LoggerFactory.getLogger(ElsysErsParserTest.class);
 	private ElsysGenericParser parser = new ElsysGenericParser();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	@Test
 	public void test() {
-		String encoded = "AQDmAj8EAAoFAAcOEw";
-
-		var data = Base64.getDecoder().decode(encoded);
-		var result = parser.decodeUplink(data);
-		
-		var message = (ElsysGenericUplinkFrame)result;
-
-		var json = gson.toJson(message);
-		
-		System.out.println(json);
+		var message = new ThingEncodedMessage("AQDmAj8EAAoFAAcOEw", "base64");
+		var imessage = MessageBuilder.withPayload(message).build();
+		var result = parser.decodeUplink(imessage);
+		var json = gson.toJson(result);
+		log.info(json);
 	}
 }

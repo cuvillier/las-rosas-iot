@@ -3,9 +3,12 @@ package com.lasrosas.iot.ingestor.services.sensors.impl.adeunis;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.ingestor.ThingMessageHolder;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingDataMessage;
+import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.BaseFrame;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelConfiguration;
 import com.lasrosas.iot.ingestor.services.sensors.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
@@ -113,9 +116,8 @@ public class AdeunisARF8170BAFrameDecoder {
 		registers.put(number, new Register(number, size, signed));
 	}
 
-	public ThingDataMessage decodeUplink(byte[] payload) {
-		ByteParser parser = new ByteParser(payload);
-
+	public Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {
+		ByteParser parser = new ByteParser(imessage.getPayload().decodeData());
 		int code = parser.uint8();
 
 		BaseFrame frame = null;
@@ -150,7 +152,7 @@ public class AdeunisARF8170BAFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		return frame;
+		return MessageBuilder.createMessage(frame, imessage.getHeaders());
 	}
 
 	public long parseEpoch2013(ByteParser parser) {

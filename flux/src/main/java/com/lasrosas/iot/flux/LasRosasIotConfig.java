@@ -1,5 +1,7 @@
 package com.lasrosas.iot.flux;
 
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.Gateway;
@@ -15,6 +17,7 @@ import org.springframework.integration.config.AbstractSimpleMessageHandlerFactor
 import org.springframework.integration.handler.AbstractMessageHandler;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.integration.router.PayloadTypeRouter;
@@ -23,8 +26,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.lasrosas.iot.influxdb.InfluxDBConfig;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.ingestor.services.lora.api.LoraService;
@@ -36,8 +41,9 @@ import com.lasrosas.iot.ingestor.services.rak7249.impl.Rak7249ServiceImpl;
 import com.lasrosas.iot.ingestor.services.sensors.api.DecodeThingMessageTransformer;
 import com.lasrosas.iot.ingestor.services.sensors.api.SensorService;
 import com.lasrosas.iot.ingestor.services.sensors.api.ThingEncodedMessage;
-import com.lasrosas.iot.ingestor.services.sensors.impl.SensorServiceImpl;
 import com.lasrosas.iot.ingestor.services.timeSerieWriter.api.WriteInfluxDB;
+import com.lasrosas.iot.ingestor.services.timeSerieWriter.impl.WriteInfluxDBImpl;
+import com.lasrosas.iot.ingestor.shared.ConfigUtils;
 import com.lasrosas.iot.shared.telemetry.Telemetry;
 import com.lasrosas.iot.shared.utils.MqttConfig;
 
@@ -109,11 +115,19 @@ public class LasRosasIotConfig {
 	 */
 
 	@Bean
-	@ConfigurationProperties(prefix = "rak7249.mqtt")
-	public MqttConfig rak7249MqttConfig() {
-		return new MqttConfig();
+	@ConfigurationProperties(prefix = "rak7249.connect")
+	public MqttConnectOptions rak7249MqttConnectOptopns() {
+		return new MqttConnectOptions();
 	}
-/*
+
+	@Bean
+	@ConfigurationProperties(prefix = "rak7249.mqtt")
+	public MqttConfig rak7249MqttConfig(MqttConnectOptions publishMqttConnectOptopns) {
+		var config = new MqttConfig();
+		config.setConnectOptions(publishMqttConnectOptopns);
+		return config;
+	}
+
 	// To connect to the RAK7249 mqtt broker
 	@Bean
 	private MqttPahoClientFactory rak7249MqttClientFactory(MqttConfig rak7249MqttConfig) {
@@ -121,7 +135,6 @@ public class LasRosasIotConfig {
 		factory.setConnectionOptions(rak7249MqttConfig.getConnectOptions());
 		return factory;
 	}
-*/
 
 	@Bean
 	public Rak7249Service rak7249MessagesService() {
@@ -129,8 +142,8 @@ public class LasRosasIotConfig {
 	}
 
 	@Bean
-	public SensorService sensorService() {
-		return new SensorServiceImpl();
+	public MqttRak7249Converter mqttRak7249Converter() {
+		return new MqttRak7249Converter();
 	}
 
 	@Bean
@@ -138,16 +151,37 @@ public class LasRosasIotConfig {
 		return new LoraServiceImpl();
 	}
 
-	@ConfigurationProperties(prefix = "publish.mqtt")
-	public MqttConfig publishMqttConfig() {
-		return new MqttConfig();
+	@Bean
+	@ConfigurationProperties(prefix = "influxdb")
+	public InfluxDBConfig influxDBConfig() {
+		return new InfluxDBConfig();
 	}
 
-	// To connect to the RAK7249 mqtt broker
+	@Bean
+	public WriteInfluxDB WriteInfluxDB(InfluxDBConfig influxDBConfig) {
+		return new WriteInfluxDBImpl(influxDBConfig);
+	}
+
+	@Bean
+	@ConfigurationProperties(prefix = "publish.connect")
+	public MqttConnectOptions publishMqttConnectOptopns() {
+		return new MqttConnectOptions();
+	}
+
+	@Bean
+	@ConfigurationProperties(prefix = "publish.mqtt")
+	public MqttConfig publishMqttConfig(MqttConnectOptions publishMqttConnectOptopns) {
+		var config = new MqttConfig();
+		config.setConnectOptions(publishMqttConnectOptopns);
+		return config;
+	}
+
 	@Bean
 	private MqttPahoClientFactory publishMqttClientFactory(MqttConfig publishMqttConfig) {
 		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 		factory.setConnectionOptions(publishMqttConfig.getConnectOptions());
+		if(publishMqttConfig.getPersistFolder() != null)
+			factory.setPersistence(new MqttDefaultFilePersistence(publishMqttConfig.getPersistFolder()));
 		return factory;
 	}
 
@@ -155,17 +189,17 @@ public class LasRosasIotConfig {
 	 * Processing nodes
 	 */
 
-	/*
 	@Bean
+	@Transactional
 	public MqttPahoMessageDrivenChannelAdapter rak7249ChannelAdapter(
 			MqttConfig rak7249MqttConfig, 
 			MqttPahoClientFactory rak7249MqttClientFactory, 
-			MessageChannel rak7249MqttChannel) {
-		return ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, rak7249MqttChannel);
+			MessageChannel rak7249Channel,
+			MqttRak7249Converter mqttRak7249Converter) {
+		var adapter = ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, rak7249Channel, mqttRak7249Converter);
+		return adapter;
 	}
-	 */
 
-	// To handle the messages passing through the channel
 	@Bean
 	@Transformer(inputChannel = rak7249Channel, outputChannel = loraChannel)
 	public Rak7249FluxLoraTransformer rak7249ToLoraMessageTransformer(Rak7249Service service) {
@@ -197,23 +231,40 @@ public class LasRosasIotConfig {
 	    return router;
 	}
 
+	@Bean
 	@ServiceActivator(inputChannel = loraMetricChannel)
 	public MessageHandler writeLoraMetric(WriteInfluxDB influxDB) {
 		return new AbstractMessageHandler() {
 
 			@Override
-			protected void handleMessageInternal(Message<?> message) {
-				var payload = (Telemetry)message.getPayload();
-				var measurement = payload.getClass().getName().replaceAll("\\.", "_");
-				influxDB.writePoint(measurement, payload);
+			protected void handleMessageInternal(Message<?> imessage) {
+				influxDB.writePoint(imessage);
 			}
 		};
 	}
 
-	// To handle the messages passing through the channel
+	@Bean
 	@Transformer(inputChannel = thingEncodedDataChannel, outputChannel = thingDataChannel)
 	public DecodeThingMessageTransformer decodeThingMessageTransformer(SensorService service) {
 		return new DecodeThingMessageTransformer(service);
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = thingDataChannel)
+	public MessageHandler writeThingDataChannel(WriteInfluxDB influxDB) {
+		return new AbstractMessageHandler() {
+
+			@Override
+			protected void handleMessageInternal(Message<?> imessage) {
+				influxDB.writePoint(imessage);
+			}
+		};
+	}
+
+	@Bean
+	@Transformer(inputChannel = thingDataChannel, outputChannel = publishMqttChannel)
+	public ToGsonTransformer thingDataToJson() {
+	    return new ToGsonTransformer();
 	}
 
 	@Bean
@@ -221,6 +272,7 @@ public class LasRosasIotConfig {
 	public MessageHandler mqttPublisher(MqttPahoClientFactory publishMqttClientFactory) {
 		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", publishMqttClientFactory);
 		messageHandler.setAsync(false);
+		messageHandler.setDefaultTopic("lasrosas");
 		return messageHandler;
 	}
 
