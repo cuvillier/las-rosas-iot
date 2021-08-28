@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.lasrosas.iot</groupId>
-		<artifactId>iot</artifactId>
+		<groupId>com.lasrosas.iot.core</groupId>
+		<artifactId>iot.core</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
@@ -16,7 +16,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.lasrosas.iot</groupId>
+			<groupId>com.lasrosas.iot.core</groupId>
 			<artifactId>shared</artifactId>
 		</dependency>
 		<dependency>

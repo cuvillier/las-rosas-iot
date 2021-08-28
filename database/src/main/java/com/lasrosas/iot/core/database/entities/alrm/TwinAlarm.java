@@ -1,0 +1,43 @@
+package com.lasrosas.iot.core.database.entities.alrm;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
+
+@Entity
+@DiscriminatorValue(TwinAlarm.DISCRIMINATOR)
+public class TwinAlarm extends Alarm {
+
+	public static final String PREFIX = "twa_";
+	public static final String PREFIX_FK = PREFIX + "fk_";
+
+	public static final String DISCRIMINATOR = "twi";
+	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
+	public static final String PROP_TWIN = "twin";
+
+	@OneToOne
+	@JoinColumn(name=COL_TWIN_FK)
+	private DigitalTwin twin;
+
+	public TwinAlarm() {
+		super();
+	}
+
+	public TwinAlarm(DigitalTwin twin, AlarmType type, LocalDateTime time) {
+		super(type, time);
+		this.twin = twin;
+	}
+	
+	public DigitalTwin getTwin() {
+		return twin;
+	}
+
+	public void setTwin(DigitalTwin twin) {
+		this.twin = twin;
+	}
+}

@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.lasrosas.iot.shared.utils.UtilsConfig;
+import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @DataJpaTest()
 @AutoConfigureTestDatabase(replace = Replace.NONE)

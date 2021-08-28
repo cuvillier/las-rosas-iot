@@ -7,7 +7,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 
-import com.lasrosas.iot.database.finca.WaterTank;
+import com.lasrosas.iot.core.database.finca.WaterTank;
 
 public class WaterTankTest {
 

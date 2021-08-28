@@ -9,12 +9,12 @@
 		<version>2.2.9.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.lasrosas.iot</groupId>
-	<artifactId>iot</artifactId>
+	<groupId>com.lasrosas.iot.core</groupId>
+	<artifactId>iot.core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Las Rosas IOT base pom</name>
-	<description>Las Rosas IOT base pom</description>
+	<name>Las Rosas IOT core</name>
+	<description>Las Rosas IOT base project</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -24,22 +24,22 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.lasrosas.iot</groupId>
+				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>database</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.lasrosas.iot</groupId>
+				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>ingestor</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.lasrosas.iot</groupId>
+				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>reactor</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.lasrosas.iot</groupId>
+				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>shared</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
