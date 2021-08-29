@@ -3,6 +3,8 @@ package com.lasrosas.iot.core.reactor.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.Message;
@@ -15,6 +17,7 @@ import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class ReactorServiceImpl implements ReactorService {
+	public static final Logger log = LoggerFactory.getLogger(ReactorServiceImpl.class);
 
 	@Autowired
 	private ThingRepo thingRepo;
@@ -27,6 +30,8 @@ public class ReactorServiceImpl implements ReactorService {
 
 	@Override
 	public List<Message<? extends Telemetry>> react(Message<? extends Telemetry> imessage) {
+		log.debug("react");
+
 		var thingId = LasRosasHeaders.thingid(imessage);
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
@@ -38,13 +43,17 @@ public class ReactorServiceImpl implements ReactorService {
 			var receiverType = receiver.getType();
 			var schema = LasRosasHeaders.schema(imessage);
 
-			if(!schema.equals(receiverType.getSchema()))
+			if(!schema.equals(receiverType.getSchema())) {
+				log.debug("Receiver with different schema: " + receiverType.getSchema() + " != " + schema);
 				continue;
+			}
 
 			var beanName = receiverType.getReactorType().getBean();
 
 			var twin= receiver.getTwin();
 			var reactor = context.getBean(beanName, TwinReactor.class);
+
+			log.debug("Call reactor: " + beanName);
 
 			var resultPayloads= reactor.react(twin, receiver, imessage);
 			for(var resultPayload: resultPayloads) {
@@ -56,7 +65,9 @@ public class ReactorServiceImpl implements ReactorService {
 						.build());
 			}
 		}
-		
+
+		log.debug("Reactor return " + result.size() + " messages.");
+
 		return result;
 	}
 }

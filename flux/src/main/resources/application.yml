@@ -4,9 +4,9 @@ sql:
    password: lasrosasiot
 influxdb:
    server: localhost
-   token: WUJU9p_1Cv6AmeF2NLAxwhlsRM-VIXlxwm0Jm5SMpWm7fwWsUd1BhF9mP2Gi0q07-2IwYqMSuHjSyu1kIIVgMQ==
    org: las-rosas.es
-   bucket: lasrosasiotUnitTest
+   token: j0V-cXj8Po-GvH5XGlAOH3Tg53sc5dG3noH1S-iOzWlP8jSiWTPSV_vUU8l3omXo0Prmx0D7C5a6gd7gj8NyJw==
+   bucket: LasRosasIotUnitTest
 rak7249:
   mqtt:
      clientId: lasRosasFlux

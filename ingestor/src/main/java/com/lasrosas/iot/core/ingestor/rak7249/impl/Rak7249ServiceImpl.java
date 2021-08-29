@@ -19,7 +19,6 @@ import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Service;
 
 public class Rak7249ServiceImpl implements Rak7249Service {
-	public static final Logger messagesLog = LoggerFactory.getLogger("MessagesLog");
 	public static final Logger log = LoggerFactory.getLogger(Rak7249ServiceImpl.class);
 
 	@Autowired
@@ -40,8 +39,6 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 			message = gson.fromJson(json, Rak7249MessageAck.class);
 		else
 			throw new RuntimeException("Unkknown topic " + topic + ". Fix the code here.");
-		
-		logPayload(message);
 
 		return message;
 	}
@@ -49,7 +46,6 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 	@Override
 	public Message<LoraMessageUplink> convertRxToLoraMessage(Message<Rak7249MessageRx> imessage) {
 		var rxMessage = imessage.getPayload();
-		logPayload(rxMessage);
 
 		String deveui = rxMessage.getDevEUI();
 
@@ -73,21 +69,9 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
 	}
 
-	private void logPayload(Rak7249Message message) {
-		if( messagesLog.isInfoEnabled() ) {
-			try {
-				var json = gson.toJson(message);
-				messagesLog.info(message.getClass().getSimpleName() + " = " + json);
-			} catch(Exception e) {
-				messagesLog.error("Cannot log message", e);	// Should never be reached...
-			}
-		}
-	}
-
 	@Override
 	public Message<LoraMessageJoin> convertJoinToLoraMessage(Message<Rak7249MessageJoin> imessage) {
 		var joinMessage = imessage.getPayload();
-		logPayload(joinMessage);
 
 		// Map to LoraMessage independent of the Lora server used
 		var loraMessage = new LoraMessageJoin();

@@ -2,6 +2,8 @@ package com.lasrosas.iot.core.flux;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.Gateway;
@@ -14,8 +16,6 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.AbstractSimpleMessageHandlerFactoryBean;
-import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.handler.AbstractMessageHandler;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
@@ -31,6 +31,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.influxdb.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
@@ -49,22 +51,29 @@ import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteInfluxDBImpl;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteSQLImpl;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
+import com.lasrosas.iot.core.reactor.api.ReactorSpliter;
+import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 @ConfigurationProperties
 @Validated
 public class LasRosasIotConfig {
+	public static final Logger log = LoggerFactory.getLogger(LasRosasIotConfig.class);
+	public static final Logger messagesLog = LoggerFactory.getLogger("MessagesLog");
 
 	public static final String rak7249Channel = "rak7249Channel";
+	public static final String rak7249TxChannel = "rak7249TxChannel";
 	public static final String loraChannel = "loraChannel";
 	public static final String mixedLoraChannel = "mixedLoraChannel";
 	public static final String loraMetricChannel = "loraMetricChannel";
-	public static final String thingEncodedDataChannel = "sensorRawDataChannel";
+	public static final String thingEncodedDataChannel = "thingEncodedDataChannel";
 	public static final String thingDataChannel = "thingDataChannel";
 	public static final String thingBatteryChannel = "thingBatteryChannel";
 	public static final String telemetryChannel = "telemetryChannel";
 	public static final String alarmChannel = "alarmChannel";
 	public static final String publishMqttChannel = "publishMqttChannel";
+
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	/*
 	 * Channels
@@ -76,6 +85,11 @@ public class LasRosasIotConfig {
 
 	@Bean
 	public MessageChannel rak7249Channel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel rak7249TxChannel() {
 		return new PublishSubscribeChannel();
 	}
 
@@ -157,6 +171,11 @@ public class LasRosasIotConfig {
 	}
 
 	@Bean
+	public ReactorService ReactorService() {
+		return new ReactorServiceImpl();
+	}
+	
+	@Bean
 	@ConfigurationProperties(prefix = "influxdb")
 	public InfluxDBConfig influxDBConfig() {
 		return new InfluxDBConfig();
@@ -206,20 +225,52 @@ public class LasRosasIotConfig {
 			MessageChannel rak7249Channel,
 			MqttRak7249Converter mqttRak7249Converter) {
 		var adapter = ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, rak7249Channel, mqttRak7249Converter);
-
+		adapter.setOutputChannel(rak7249Channel);
 		return adapter;
 	}
 
-    @Bean
+	@Bean
+	@ServiceActivator(inputChannel = rak7249Channel)
+	public MessageHandler processMessageInTransaction(TransactionalGateway gate) {
+		return new AbstractMessageHandler() {
+
+			@Override
+			@Transactional
+			protected void handleMessageInternal(Message<?> imessage) {
+				log.info("");
+				log.info("");
+				log.info("=============== Processing message =================");
+
+				var json = gson.toJson(imessage);
+				messagesLog.info(imessage.getPayload().getClass().getSimpleName() + " = " + json);
+				try {
+					gate.sendIntransaction(imessage);
+					log.info("Message processed wihtout error");
+				} catch(Exception e) {
+					log.error("Error while processing the message", e);
+					log.info("Error in the message processing");
+				}
+			}
+		};
+	}
+
+	/*
+	 * This flow is used to execute the message processing in a single transaction.
+	 */
+/*
+	@Bean
     public IntegrationFlow mqttInFlow(MessageProducerSupport rak7249ChannelAdapter, TransactionalGateway gate) {
         return IntegrationFlows.from(rak7249ChannelAdapter)
                 .log()
-                .handle(msg -> gate.sendIntransaction(msg))
+                .handle(
+                		msg -> {
+                			gate.sendIntransaction(msg);
+                		} )
                 .get();
     }
-
+*/
     @Bean
-	@Transformer(inputChannel = rak7249Channel, outputChannel = loraChannel)
+	@Transformer(inputChannel = rak7249TxChannel, outputChannel = loraChannel)
 	public Rak7249FluxLoraTransformer rak7249ToLoraMessageTransformer(Rak7249Service service) {
 		return new Rak7249FluxLoraTransformer(service);
 	}
@@ -300,21 +351,13 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@Splitter(inputChannel = telemetryChannel)
-	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> normalize(ReactorService service, MessageChannel telemetryChannel) {
+	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactor(ReactorService service, MessageChannel telemetryChannel) {
 		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
 
 	        @Override
 			protected AbstractMessageSplitter createHandler() {
-	        	var splitter = new AbstractMessageSplitter() {
-
-					@SuppressWarnings("unchecked")
-					@Override
-					protected Object splitMessage(Message<?> message) {
-						return service.react((Message<? extends Telemetry>)message);
-					};
-				};
-
-				splitter.setOutputChannel(telemetryChannel);
+	        	var splitter = new ReactorSpliter(service);
+	        	splitter.setOutputChannel(telemetryChannel);
 	        	return splitter;
 	        }
 		};
@@ -362,7 +405,7 @@ public class LasRosasIotConfig {
 		void sendToMqtt(Telemetry telemetry, @Header(MqttHeaders.TOPIC) String topic);
 	}
 
-	@MessagingGateway(defaultRequestChannel = rak7249Channel)
+	@MessagingGateway(defaultRequestChannel = rak7249TxChannel)
 	interface TransactionalGateway {
 
 	    @Transactional

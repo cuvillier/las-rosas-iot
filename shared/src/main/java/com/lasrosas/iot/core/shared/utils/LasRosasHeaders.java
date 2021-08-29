@@ -12,6 +12,19 @@ public class LasRosasHeaders {
 	public static String TIME_RECEIVED = "TimeReceived";
 	public static String SENSOR = "Sensor";
 
+	/* Copy of IntegrationMessageHeaderAccessor */
+	public static final String CORRELATION_ID = "correlationId";
+	public static final String EXPIRATION_DATE = "expirationDate";
+	public static final String PRIORITY = "priority";
+	public static final String SEQUENCE_NUMBER = "sequenceNumber";
+	public static final String SEQUENCE_SIZE = "sequenceSize";
+	public static final String SEQUENCE_DETAILS = "sequenceDetails";
+	public static final String ROUTING_SLIP = "routingSlip";
+	public static final String DUPLICATE_MESSAGE = "duplicateMessage";
+	public static final String CLOSEABLE_RESOURCE = "closeableResource";
+	public static final String DELIVERY_ATTEMPT = "deliveryAttempt";
+	public static final String ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
+
 	public static String sensor(Message<?> message) {
 		return message.getHeaders().get(SENSOR, String.class);
 	}
@@ -38,5 +51,10 @@ public class LasRosasHeaders {
 
 	public static String schema(Message<?> message) {
 		return message.getPayload().getClass().getSimpleName();
+	}
+
+	public static String correlationId(Message<?> message) {
+		var correlationId = message.getHeaders().get(CORRELATION_ID, Object.class);
+		return correlationId == null?null: correlationId.toString();
 	}
 }

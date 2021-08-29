@@ -1,13 +1,15 @@
-package com.lasrosas.iot.core.ingestor.sensors.api;
+package com.lasrosas.iot.core.reactor.api;
 
 import org.springframework.integration.splitter.AbstractMessageSplitter;
 import org.springframework.messaging.Message;
 
-public class TelemetrySpliter extends AbstractMessageSplitter {
+import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
-	private SensorService service;
+public class ReactorSpliter extends AbstractMessageSplitter {
 
-	public TelemetrySpliter(SensorService service) {
+	private ReactorService service;
+
+	public ReactorSpliter(ReactorService service) {
 		this.service = service;
 	}
 
@@ -19,8 +21,8 @@ public class TelemetrySpliter extends AbstractMessageSplitter {
 	@Override
 	protected Object splitMessage(Message<?> imessage) {
 
-		if(imessage.getPayload() instanceof ThingDataMessage) {
-			var result = service.telemetries((Message<ThingDataMessage>)imessage);
+		if(imessage.getPayload() instanceof Telemetry) {
+			var result = service.react((Message<? extends Telemetry>)imessage);
 			return result;
 		}
 
