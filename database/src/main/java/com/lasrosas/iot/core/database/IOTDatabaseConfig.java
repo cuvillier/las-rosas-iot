@@ -11,8 +11,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.annotation.Validated;
 
-import com.lasrosas.iot.core.database.influxdb.InfluxdbSession;
-
 @ConfigurationProperties(prefix = "sql")
 @Validated
 @EnableTransactionManagement
@@ -39,12 +37,6 @@ public class IOTDatabaseConfig {
 		dataSource.setPassword(password);
 
 		return dataSource;
-	}
-
-	@ConfigurationProperties(prefix="influxdb")
-	@Bean
-	public InfluxdbSession InfluxdbSession() {
-		return new InfluxdbSession();
 	}
 
 	public String getUrl() {

@@ -11,13 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.influxdb.LogLevel;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
-import com.lasrosas.iot.core.database.influxdb.InfluxDBConfig;
+import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.shared.telemetry.NotPartOfState;
 import com.lasrosas.iot.core.shared.telemetry.PartOfState;
@@ -31,6 +33,7 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	private InfluxDBClient influxDB;
 	private boolean dryMode = false;
 	private Set<Class<?>> initedClasses = new HashSet<Class<?>>();
+	private Gson gson = new GsonBuilder().create();
 
 	public WriteInfluxDBImpl(InfluxDBConfig config) {
 		this.config = config;
@@ -62,7 +65,8 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	@Override
 	public void writePoint(Message<?>  imessage) {
 
-		var timestamp = TimeUtils.timestamp(LasRosasHeaders.time(imessage));
+		var time = LasRosasHeaders.time(imessage);
+		var timestamp = TimeUtils.timestamp(time);
 
 		String naturalId;
 		if(	LasRosasHeaders.twinNaturalId(imessage) != null )
@@ -75,6 +79,7 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 
 		var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
 
+/*
 		influxdbPoint.addTag("thingId", LasRosasHeaders.thingid(imessage)+"");
 		influxdbPoint.addTag("thingNaturalId", LasRosasHeaders.thingNaturalId(imessage));
 
@@ -83,16 +88,16 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 
 		if(	LasRosasHeaders.twinNaturalId(imessage) != null )
 			influxdbPoint.addTag("twinNaturalId", LasRosasHeaders.twinNaturalId(imessage));
-
 		if(	LasRosasHeaders.correlationId(imessage) != null )
 			influxdbPoint.addTag("correlationId", LasRosasHeaders.correlationId(imessage));
-
+*/
 		var fields = new HashMap<String, Object>();
 		addFields(fields, imessage.getPayload(), null);
 		influxdbPoint.addFields(fields);
 
 		var influxDB = influxDB();
 		try (WriteApi writeApi = influxDB.getWriteApi()) {
+			log.debug("Write Point to InfluxDB " + time.toString() + ", " + measurment + ",  " + gson.toJson(fields));
 			writeApi.writePoint(influxdbPoint);
 		}
 	}

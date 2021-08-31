@@ -1,6 +1,8 @@
 package com.lasrosas.iot.core.shared.utils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.TimeZone;
 
 import org.springframework.messaging.Message;
 
@@ -30,7 +32,8 @@ public class LasRosasHeaders {
 	}
 
 	public static LocalDateTime time(Message<?> message) {
-		return message.getHeaders().get(TIME_RECEIVED, LocalDateTime.class);
+		var timestamp = message.getHeaders().getTimestamp();
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TimeZone.getDefault().toZoneId());
 	}
 
 	public static Long thingid(Message<?> message) {

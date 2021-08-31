@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.database.influxdb;
+package com.lasrosas.iot.core.ingestor.timeSerieWriter.api;
 
 import javax.validation.constraints.NotNull;
 

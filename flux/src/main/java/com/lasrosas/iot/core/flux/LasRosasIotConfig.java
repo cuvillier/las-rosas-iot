@@ -33,7 +33,6 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.core.database.influxdb.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
@@ -46,6 +45,7 @@ import com.lasrosas.iot.core.ingestor.sensors.api.DecodeThingMessageTransformer;
 import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.api.TelemetrySpliter;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteInfluxDBImpl;
