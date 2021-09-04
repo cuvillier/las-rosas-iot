@@ -12,6 +12,7 @@ import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.shared.telemetry.BatteryLevel;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
@@ -45,8 +46,6 @@ public class SensorServiceImpl implements SensorService {
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
 		return parser.decodeUplink(imessage);
-		
-		// Handle battery level here.
 	}
 
 	/*
@@ -89,6 +88,14 @@ public class SensorServiceImpl implements SensorService {
 		var thing = thgRepo.getOne(thingId);
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 
-		return parser.telemetries(imessage);
+		var result = parser.telemetries(imessage);
+		
+		
+		// Handle battery level here.
+
+		// TODO. Just ignore the BatteryLevel messages
+		result.removeIf(e -> e.getPayload() instanceof BatteryLevel);
+
+		return result;
 	}
 }

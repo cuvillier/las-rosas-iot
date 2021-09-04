@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.reactor.base;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,7 +33,13 @@ public class ReactorServiceImpl implements ReactorService {
 	public List<Message<? extends Telemetry>> react(Message<? extends Telemetry> imessage) {
 		log.debug("react");
 
-		var thingId = LasRosasHeaders.thingid(imessage);
+		/*
+		 * Is the message come from another twin, skeep the message.
+		 * Will be fixed later when needed.
+		 */
+		if( LasRosasHeaders.twinId(imessage) != null ) return Collections.emptyList();
+
+		Long thingId = LasRosasHeaders.thingid(imessage);
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
 
@@ -42,8 +49,9 @@ public class ReactorServiceImpl implements ReactorService {
 			receiver.getType().getSchema();
 			var receiverType = receiver.getType();
 			var schema = LasRosasHeaders.schema(imessage);
+			var receiverSchema = receiverType.getSchema();
 
-			if(!schema.equals(receiverType.getSchema())) {
+			if(receiverSchema.isPresent() && !schema.equals(receiverSchema.orElseThrow())) {
 				log.debug("Receiver with different schema: " + receiverType.getSchema() + " != " + schema);
 				continue;
 			}

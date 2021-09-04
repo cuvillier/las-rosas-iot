@@ -34,6 +34,8 @@ public class WriteSQLImpl implements WriteSQL{
 
 	@Autowired
 	private TimeSeriePointRepo tspRepo;
+	
+	private boolean storeProxyTime = false;
 
 	@Override
 	@Transactional
@@ -72,7 +74,7 @@ public class WriteSQLImpl implements WriteSQL{
 		}
 
 		var newValue = point.getValue(gson);
-		var changes = GsonUtils.mergeJsonObjects(newValue, subjson, point.getTime());
+		var changes = GsonUtils.mergeJsonObjects(newValue, subjson, storeProxyTime?point.getTime(): null);
 		if (changes != 0)
 			proxy.setValues(gson.toJson(proxyValue));
 	}

@@ -1,21 +1,18 @@
 package com.lasrosas.iot.core.database.entities.dtw;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
-import com.lasrosas.iot.core.database.entities.thg.Thing;
 
 @Entity
 @Table(name = TwinReactorReceiverType.TABLE)
@@ -35,10 +32,10 @@ public class TwinReactorReceiverType extends BaseEntity {
 	@Column(name=COL_ROLE)
 	private String role;
 
-	@Column(name=COL_SCHEMA)
+	@Column(name=COL_SCHEMA, nullable = true)
 	private String schema;
 
-	@ManyToOne
+	@ManyToOne(optional = true)
 	@JoinColumn(name = COL_REACTOR_TYPE_FK)
 	private TwinReactorType reactorType;
 
@@ -53,12 +50,12 @@ public class TwinReactorReceiverType extends BaseEntity {
 		this.role = role;
 	}
 
-	public String getSchema() {
-		return schema;
+	public Optional<String> getSchema() {
+		return Optional.ofNullable(schema);
 	}
 
-	public void setSchema(String schema) {
-		this.schema = schema;
+	public void setSchema(Optional<String> schema) {
+		this.schema = schema.orElse(null);
 	}
 
 	public TwinReactorType getReactorType() {

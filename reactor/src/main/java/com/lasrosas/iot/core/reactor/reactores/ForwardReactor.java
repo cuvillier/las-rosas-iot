@@ -15,10 +15,9 @@ import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 public class ForwardReactor extends TwinReactor {
 	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<? extends Telemetry> react(DigitalTwin twin, TwinReactorReceiver receiver,
 			Message<? extends Telemetry> message) {
-		return (List<? extends Telemetry>) Arrays.asList(message);
+		return Arrays.asList(message.getPayload());
 	}
 }
