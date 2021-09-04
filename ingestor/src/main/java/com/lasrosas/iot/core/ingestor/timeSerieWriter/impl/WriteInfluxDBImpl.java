@@ -79,18 +79,6 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 
 		var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
 
-/*
-		influxdbPoint.addTag("thingId", LasRosasHeaders.thingid(imessage)+"");
-		influxdbPoint.addTag("thingNaturalId", LasRosasHeaders.thingNaturalId(imessage));
-
-		if(	LasRosasHeaders.twinId(imessage) != null )
-			influxdbPoint.addTag("twinId", LasRosasHeaders.twinId(imessage)+"");
-
-		if(	LasRosasHeaders.twinNaturalId(imessage) != null )
-			influxdbPoint.addTag("twinNaturalId", LasRosasHeaders.twinNaturalId(imessage));
-		if(	LasRosasHeaders.correlationId(imessage) != null )
-			influxdbPoint.addTag("correlationId", LasRosasHeaders.correlationId(imessage));
-*/
 		var fields = new HashMap<String, Object>();
 		addFields(fields, imessage.getPayload(), null);
 		influxdbPoint.addFields(fields);

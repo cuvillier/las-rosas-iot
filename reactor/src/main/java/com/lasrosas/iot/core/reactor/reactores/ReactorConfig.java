@@ -10,4 +10,9 @@ public class ReactorConfig {
 	public WaterTankReactor WaterTankReactor() {
 		return new WaterTankReactor();
 	}
+
+	@Bean
+	public ForwardReactor ForwardReactor() {
+		return new ForwardReactor();
+	}
 }
