@@ -36,7 +36,6 @@ public abstract class Thing extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_READABLE = PREFIX + "readable";
-	public static final String COL_CONFIGURATION = PREFIX + "configuration";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_MODE = PREFIX + "mode";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "type";
@@ -64,9 +63,6 @@ public abstract class Thing extends BaseEntity {
 	@OneToMany(mappedBy = TwinReactorReceiverFromThing.PROP_THING)
 	private List<TwinReactorReceiverFromThing> receivers;
 	
-	@Column(name = COL_CONFIGURATION)
-	private String configuration;
-
 	public enum Mode {
 		Enabled,
 		Disabled,
@@ -138,13 +134,5 @@ public abstract class Thing extends BaseEntity {
 
 	public void setProxy(ThingProxy proxy) {
 		this.proxy = proxy;
-	}
-
-	public String getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(String configuration) {
-		this.configuration = configuration;
 	}
 }

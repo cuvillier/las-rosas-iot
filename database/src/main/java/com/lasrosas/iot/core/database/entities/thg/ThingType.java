@@ -24,16 +24,12 @@ public class ThingType extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_READABLE = PREFIX + "readable";
-	public static final String COL_CONFIGURATION_SCHEMA = PREFIX + "configuration_schema";
 	public static final String COL_MODEL = PREFIX + "model";
 	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "battery_min_percentage";
 	public static final String COL_MANUFACTURER = PREFIX + "manufacturer";
 
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
 	private List<Thing> things;
-
-	@Column(name = COL_CONFIGURATION_SCHEMA)
-	private String configurationSchema;
 
 	@Column(name = COL_MANUFACTURER)
 	private String manufacturer;

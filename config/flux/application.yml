@@ -1,11 +1,14 @@
 sql:
-   url: jdbc:mariadb://localhost:3306/lasrosasiot
+   url: jdbc:mariadb://192.168.1.13:3306/lasrosasiot
    username: lasrosasiot
    password: lasrosasiot
+hibernate:
+  discriminator:
+    ignore_explicit_for_joined:true
 influxdb:
    server: localhost
    org: las-rosas.es
-   token: UO_uCDW6zOr8367zD7QiZm9KJrAwEJbubrYUQ0ihCpoX4NuyjILaDtqTBfKYi0pGDH04ac8_a-E-7_K9gzapBQ==
+   token: FiA6bCJR2nfreCm1XFgnYM5WGv5WNhbXYRvJmxkLP_pMcS-R23vQtaKNz_z19X0ubR_TLC01FfKb8OKKkIYX_w==
    bucket: LasRosasIotUnitTest
 rak7249:
   mqtt:
