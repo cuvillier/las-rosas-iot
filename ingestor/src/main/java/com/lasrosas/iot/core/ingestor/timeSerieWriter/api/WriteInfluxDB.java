@@ -2,6 +2,10 @@ package com.lasrosas.iot.core.ingestor.timeSerieWriter.api;
 
 import org.springframework.messaging.Message;
 
+import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
+
 public interface WriteInfluxDB {
-	void writePoint(Message<?>  imessage);
+
+	// Must be called after WriteSQL
+	void writePoint(TimeSerie tsr, Message<?>  imessage);
 }

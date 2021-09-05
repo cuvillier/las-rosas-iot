@@ -39,9 +39,10 @@ public class WriteSQLImpl implements WriteSQL{
 
 	@Override
 	@Transactional
-	public void writePoint(Message<?> imessage) {
+	public TimeSeriePoint writePoint(Message<?> imessage) {
 		var point = insertPoint(imessage);
 		updateProxy(point);
+		return point;
 	}
 
 	/* test friendly */ void updateProxy(TimeSeriePoint point) {

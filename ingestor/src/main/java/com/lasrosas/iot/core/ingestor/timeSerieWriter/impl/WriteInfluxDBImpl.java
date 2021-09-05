@@ -10,6 +10,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +21,7 @@ import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.shared.telemetry.NotPartOfState;
@@ -63,19 +66,32 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	}
 
 	@Override
-	public void writePoint(Message<?>  imessage) {
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void writePoint(TimeSerie tsr, Message<?>  imessage) {
 
 		var time = LasRosasHeaders.time(imessage);
 		var timestamp = TimeUtils.timestamp(time);
 
-		String naturalId;
-		if(	LasRosasHeaders.twinNaturalId(imessage) != null )
-			naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage);
-		else
-			naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage);
+		var measurment = tsr.getInfluxdbMeasurement();
 
-		var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
-		var measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
+		if( measurment == null) {
+
+			String naturalId;
+			if(	LasRosasHeaders.twinNaturalId(imessage) != null )
+				naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage);
+			else
+				naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage);
+
+			var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
+
+			measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
+			tsr.setInfluxdbMeasurement(measurment);
+		}
+
+		var sensor = tsr.getSensor();
+
+		if( sensor != null )
+			measurment += "_" + sensor;
 
 		var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
 

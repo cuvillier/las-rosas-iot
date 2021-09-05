@@ -308,8 +308,8 @@ public class LasRosasIotConfig {
 			@Override
 			@Transactional
 			protected void handleMessageInternal(Message<?> imessage) {
-				sql.writePoint(imessage);
-				influxDB.writePoint(imessage);
+				var tsp = sql.writePoint(imessage);
+				influxDB.writePoint(tsp.getTimeSerie(), imessage);
 			}
 		};
 	}
@@ -328,8 +328,8 @@ public class LasRosasIotConfig {
 			@Override
 			@Transactional
 			protected void handleMessageInternal(Message<?> imessage) {
-				sql.writePoint(imessage);
-				influxDB.writePoint(imessage);
+				var tsp = sql.writePoint(imessage);
+				influxDB.writePoint(tsp.getTimeSerie(), imessage);
 			}
 		};
 	}
@@ -371,8 +371,8 @@ public class LasRosasIotConfig {
 			@Override
 			@Transactional
 			protected void handleMessageInternal(Message<?> imessage) {
-				sql.writePoint(imessage);
-				influxDB.writePoint(imessage);
+				var tsp = sql.writePoint(imessage);
+				influxDB.writePoint(tsp.getTimeSerie(), imessage);
 			}
 		};
 	}

@@ -69,17 +69,11 @@ public class TimeSerie extends BaseEntity {
 		this.thing = thing;
 		this.type = type;
 		this.sensor = sensor;
-
-		this.influxdbMeasurement = "thing.lora." + thing.getIdentifier() + "." + type.getSchema();
-
-		if (sensor != null)
-			this.influxdbMeasurement += "-" + sensor;
 	}
 	
 	public TimeSerie(DigitalTwin twin, TimeSerieType type) {
 		this.twin= twin;
 		this.type = type;
-		this.influxdbMeasurement = "twin." + twin.getType().getSpace().getName() + "." + twin.getType().getName() + "." + twin.getName();
 	}
 
 	public Thing getThing() {
@@ -131,15 +125,6 @@ public class TimeSerie extends BaseEntity {
 	}
 
 	public String getInfluxdbMeasurement() {
-
-		// backward compatibility, for migration. Tobe removed
-		if(this.influxdbMeasurement == null) {
-			if(this.thing != null)
-				this.influxdbMeasurement = "thing.lora." + thing.getIdentifier() + "." + type.getSchema();
-			else
-				this.influxdbMeasurement = "twin." + twin.getType().getSpace().getName() + "." + twin.getType().getName() + "." + twin.getName();
-		}
-
 		return influxdbMeasurement;
 	}
 

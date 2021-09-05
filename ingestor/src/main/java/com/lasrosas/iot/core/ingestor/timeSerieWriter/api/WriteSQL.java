@@ -2,6 +2,8 @@ package com.lasrosas.iot.core.ingestor.timeSerieWriter.api;
 
 import org.springframework.messaging.Message;
 
+import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
+
 public interface WriteSQL {
-	void writePoint(Message<?>  imessage);
+	TimeSeriePoint writePoint(Message<?>  imessage);
 }
