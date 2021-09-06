@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.lasrosas.iot.core</groupId>
 	<artifactId>iot.core</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>2.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Las Rosas IOT core</name>
 	<description>Las Rosas IOT base project</description>
@@ -26,22 +26,22 @@
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>database</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>ingestor</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>reactor</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>shared</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mariadb.jdbc</groupId>
@@ -64,6 +64,7 @@
 	<modules>
 		<module>shared</module>
 		<module>database</module>
+		<module>alarm</module>
 		<module>ingestor</module>
 		<module>reactor</module>
 		<module>flux</module>

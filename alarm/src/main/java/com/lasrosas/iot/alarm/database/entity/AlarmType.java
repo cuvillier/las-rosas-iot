@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.database.entities.alrm;
+package com.lasrosas.iot.alarm.database.entity;
 
 import java.util.ArrayList;
 import java.util.List;

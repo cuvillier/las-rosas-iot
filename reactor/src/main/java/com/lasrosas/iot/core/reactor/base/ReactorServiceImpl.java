@@ -37,9 +37,9 @@ public class ReactorServiceImpl implements ReactorService {
 		 * Is the message come from another twin, skeep the message.
 		 * Will be fixed later when needed.
 		 */
-		if( LasRosasHeaders.twinId(imessage) != null ) return Collections.emptyList();
+		if( LasRosasHeaders.twinId(imessage).isPresent()) return Collections.emptyList();
 
-		Long thingId = LasRosasHeaders.thingid(imessage);
+		Long thingId = LasRosasHeaders.thingid(imessage).get();
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
 
@@ -48,7 +48,7 @@ public class ReactorServiceImpl implements ReactorService {
 		for(var receiver: receivers) {
 			receiver.getType().getSchema();
 			var receiverType = receiver.getType();
-			var schema = LasRosasHeaders.schema(imessage);
+			var schema = LasRosasHeaders.schema(imessage).get();
 			var receiverSchema = receiverType.getSchema();
 
 			if(receiverSchema.isPresent() && !schema.equals(receiverSchema.orElseThrow())) {

@@ -2,6 +2,7 @@ package com.lasrosas.iot.core.shared.utils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.springframework.messaging.Message;
@@ -36,24 +37,24 @@ public class LasRosasHeaders {
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TimeZone.getDefault().toZoneId());
 	}
 
-	public static Long thingid(Message<?> message) {
-		return message.getHeaders().get(THING_ID, Long.class);
+	public static Optional<Long> thingid(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(THING_ID, Long.class));
 	}
 
-	public static String thingNaturalId(Message<?> message) {
-		return message.getHeaders().get(THING_NATURAL_ID, String.class);
+	public static Optional<String> thingNaturalId(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(THING_NATURAL_ID, String.class));
 	}
 
-	public static Long twinId(Message<?> message) {
-		return message.getHeaders().get(TWIN_ID, Long.class);
+	public static Optional<Long> twinId(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(TWIN_ID, Long.class));
 	}
 
-	public static String twinNaturalId(Message<?> message) {
-		return message.getHeaders().get(TWIN_NATURAL_ID, String.class);
+	public static Optional<String> twinNaturalId(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(TWIN_NATURAL_ID, String.class));
 	}
 
-	public static String schema(Message<?> message) {
-		return message.getPayload().getClass().getSimpleName();
+	public static Optional<String> schema(Message<?> message) {
+		return Optional.ofNullable(message.getPayload().getClass().getSimpleName());
 	}
 
 	public static String correlationId(Message<?> message) {

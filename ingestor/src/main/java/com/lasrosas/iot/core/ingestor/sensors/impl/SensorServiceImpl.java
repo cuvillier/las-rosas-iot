@@ -84,7 +84,7 @@ public class SensorServiceImpl implements SensorService {
 	@Override
 	public Collection<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 
-		var thingId = LasRosasHeaders.thingid(imessage);
+		var thingId = LasRosasHeaders.thingid(imessage).get();
 		var thing = thgRepo.getOne(thingId);
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 

@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostPersist;
 import javax.persistence.Table;
 
 import com.google.gson.Gson;
@@ -52,11 +51,6 @@ public class TimeSeriePoint extends BaseEntity {
 		this.timeSerie = timeSerie;
 		this.time = time;
 		this.value = value;
-	}
-
-	@PostPersist()
-	public void postPersist() {
-		timeSerie.setCurrentValue(this);
 	}
 
 	public TimeSerie getTimeSerie() {

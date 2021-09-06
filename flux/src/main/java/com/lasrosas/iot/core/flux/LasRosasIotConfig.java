@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.Router;
@@ -316,11 +318,13 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@Transformer(inputChannel = thingEncodedDataChannel, outputChannel = thingDataChannel)
+	@DependsOn({"writeLoraMetric"})
 	public DecodeThingMessageTransformer decodeThingMessageTransformer(SensorService service) {
 		return new DecodeThingMessageTransformer(service);
 	}
 
 	@Bean
+	@Order(1)
 	@ServiceActivator(inputChannel = thingDataChannel)
 	public MessageHandler writeThingData(WriteInfluxDB influxDB, WriteSQL sql) {
 		return new AbstractMessageHandler() {
@@ -334,9 +338,10 @@ public class LasRosasIotConfig {
 		};
 	}
 
-
 	@Bean
 	@Splitter(inputChannel = thingDataChannel)
+	@Order(2)
+	@DependsOn({"writeThingData"})
 	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> normalize(SensorService service, MessageChannel telemetryChannel) {
 		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
 
@@ -349,19 +354,6 @@ public class LasRosasIotConfig {
 		};
 	}
 
-	@Bean
-	@Splitter(inputChannel = telemetryChannel)
-	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactor(ReactorService service, MessageChannel telemetryChannel) {
-		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
-
-	        @Override
-			protected AbstractMessageSplitter createHandler() {
-	        	var splitter = new ReactorSpliter(service);
-	        	splitter.setOutputChannel(telemetryChannel);
-	        	return splitter;
-	        }
-		};
-	}
 
 	@Bean
 	@ServiceActivator(inputChannel = telemetryChannel)
@@ -374,6 +366,21 @@ public class LasRosasIotConfig {
 				var tsp = sql.writePoint(imessage);
 				influxDB.writePoint(tsp.getTimeSerie(), imessage);
 			}
+		};
+	}
+
+	@Bean
+	@Splitter(inputChannel = telemetryChannel)
+	@DependsOn({"writeTelemetry"})
+	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactor(ReactorService service, MessageChannel telemetryChannel) {
+		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
+
+	        @Override
+			protected AbstractMessageSplitter createHandler() {
+	        	var splitter = new ReactorSpliter(service);
+	        	splitter.setOutputChannel(telemetryChannel);
+	        	return splitter;
+	        }
 		};
 	}
 

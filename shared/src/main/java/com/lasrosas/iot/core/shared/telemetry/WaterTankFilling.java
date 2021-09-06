@@ -3,7 +3,7 @@ package com.lasrosas.iot.core.shared.telemetry;
 import com.google.gson.JsonObject;
 
 public class WaterTankFilling extends Telemetry {
-	public static String SCHEMA = "com.lasrosas.iot.shared.ontology.WaterTankFilling";
+	public static String SCHEMA = "WaterTankFilling";
 	private Double volume;
 	private Integer percentage;
 	private Double waterFlow;
@@ -21,7 +21,7 @@ public class WaterTankFilling extends Telemetry {
 		if( volume != null) json.addProperty("volume", volume);
 		if( percentage != null) json.addProperty("percentage", percentage);
 		if( waterFlow != null) json.addProperty("waterFlow", waterFlow);
-		
+
 		return json;
 	}
 }
