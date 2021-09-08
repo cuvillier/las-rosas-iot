@@ -52,7 +52,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-	  <finalName>lasrosasiot-flux-2.1.1</finalName>
+	  <finalName>lasrosasiot-flux-2.1.2</finalName>
 
 	    <plugins>
 	      <plugin>

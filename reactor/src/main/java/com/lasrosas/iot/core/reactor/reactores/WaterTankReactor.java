@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.reactor.reactores;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -74,6 +75,7 @@ public class WaterTankReactor extends TwinReactor {
 						+ ", " + "time=" + time + ", " + "level=" + level + "m, " + "waterFlow="
 						+ waterTank.getWaterFlow() + " m3/h, " + "maxWaterFlow=" + waterTank.getMaxWaterFlow()
 						+ " m3/h");
+				return Collections.emptyList();
 			} else
 				volumeSet = true;
 		}
