@@ -1,0 +1,44 @@
+sql:
+   url: jdbc:mariadb://localhost:3306/lasrosasiot
+   username: lasrosasiot
+   password: lasrosasiot
+hibernate:
+  discriminator:
+    ignore_explicit_for_joined:true
+influxdb:
+   server: localhost
+   org: las-rosas.es
+   token: d1IdWa_cVbU42V16hIc1_94tGK-s3rHzfMz7ggaofAOrHx6CTHGt5JcAe_4qhy6UCZXcLLaGDtxlpKNfYcI5Bg==
+   bucket: lasrosasiot
+rak7249:
+  mqtt:
+     clientId: lasRosasFluxRak7249Dev
+     persistFolder: target/mqtt-rak7249
+  connect:
+     serverURIs:
+       - tcp://@192.168.1.3:1883
+publish:
+  mqtt:
+     clientId: lasRosasFluxLocal
+     persistFolder: target/mqtt-localbroker
+  connect:
+     serverURIs:
+       - tcp://@localhost:1883
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        physical_naming_strategy: com.lasrosas.iot.core.database.UpperCaseNamingStrategy
+logging:
+  level:
+    org.springframework.orm: INFO
+    org.springframework.transaction: INFO
+    org.hibernate.engine.transaction.internal.TransactionImpl: INFO
+    com.lasrosas.iot: DEBUG

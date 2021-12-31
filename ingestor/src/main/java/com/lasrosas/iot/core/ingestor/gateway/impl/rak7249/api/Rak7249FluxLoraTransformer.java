@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.rak7249.api;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +9,9 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessage;
 
 public class Rak7249FluxLoraTransformer extends AbstractTransformer {
 	public static Logger log = LoggerFactory.getLogger(Rak7249FluxLoraTransformer.class);
-	private Rak7249Service service;
+	private Rak7249Driver service;
 
-	public Rak7249FluxLoraTransformer(Rak7249Service service) {
+	public Rak7249FluxLoraTransformer(Rak7249Driver service) {
 		this.service = service;
 	}
 

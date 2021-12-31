@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.rak7249.impl;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,24 +7,28 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Message;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageAck;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.ingestor.lora.api.DeviceNameParser;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.impl.DefaultDeviceNameParser;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Message;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageAck;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageJoin;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Service;
 
-public class Rak7249ServiceImpl implements Rak7249Service {
-	public static final Logger log = LoggerFactory.getLogger(Rak7249ServiceImpl.class);
+public class Rak7249DriverImpl implements Rak7249Driver {
+	public static final Logger log = LoggerFactory.getLogger(Rak7249DriverImpl.class);
 
 	@Autowired
 	private Gson gson;
 
 	private DeviceNameParser deviceNameParser = new DefaultDeviceNameParser();
+
+	public Rak7249DriverImpl() {
+		super();
+	}
 
 	@Override
 	public Rak7249Message fromJson(String topic, String json) {
@@ -107,5 +111,11 @@ public class Rak7249ServiceImpl implements Rak7249Service {
 
 	public void setDeviceNameParser(DeviceNameParser deviceNameParser) {
 		this.deviceNameParser = deviceNameParser;
+	}
+
+	@Override
+	public String encodeDownlink(byte[] data) {
+		var hexData = javax.xml.bind.DatatypeConverter.printHexBinary(data);
+		return "{\"confirmed\": true, \"fPort\": 1, \"data\": \""+ hexData +"\"}";
 	}
 }

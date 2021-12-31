@@ -1,21 +1,24 @@
-package com.lasrosas.iot.core.ingestor.rak7249.api;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
-public class Rak7249MessageJoin extends Rak7249Message {
 /*
+	topic: "application/3/device/70b3d58ff10184b8/ack"
 	{
 		"applicationID": "3",
 		"applicationName": "las-rosas-iot",
 		"deviceName": "MFC88-LW13IO-70b3d58ff10184b8",
 		"devEUI": "70b3d58ff10184b8",
-		"devAddr": "02000008"
+		"acknowledged": true,
+		"fCnt": 54
 	}
  */
-
+public class Rak7249MessageAck extends Rak7249Message {
 	public String applicationID;
 	public String applicationName;
 	public String deviceName;
 	public String devEUI;
-	public String devAddr;
+	public boolean acknowledge;
+	public int fCnt;
+
 	public String getApplicationID() {
 		return applicationID;
 	}
@@ -40,10 +43,16 @@ public class Rak7249MessageJoin extends Rak7249Message {
 	public void setDevEUI(String devEUI) {
 		this.devEUI = devEUI;
 	}
-	public String getDevAddr() {
-		return devAddr;
+	public boolean isAcknowledge() {
+		return acknowledge;
 	}
-	public void setDevAddr(String devAddr) {
-		this.devAddr = devAddr;
+	public void setAcknowledge(boolean acknowledge) {
+		this.acknowledge = acknowledge;
+	}
+	public int getfCnt() {
+		return fCnt;
+	}
+	public void setfCnt(int fCnt) {
+		this.fCnt = fCnt;
 	}
 }

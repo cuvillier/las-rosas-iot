@@ -4,11 +4,10 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.integration.mqtt.support.MqttMessageConverter;
-import org.springframework.messaging.MessageChannel;
 
 public class ConfigUtils {
 
-	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MessageChannel outputChannel, MqttMessageConverter mqttMessageConverter) {
+	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MqttMessageConverter mqttMessageConverter) {
 
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
 				config.getClientId(),
@@ -16,7 +15,6 @@ public class ConfigUtils {
 				topic);
 
 		adapter.setConverter(mqttMessageConverter == null? new DefaultPahoMessageConverter(): mqttMessageConverter);
-//		adapter.setOutputChannel(outputChannel);
 
 		// Set options from config
 		if( config.getCompletionTimeout() != null) adapter.setCompletionTimeout(config.getCompletionTimeout());

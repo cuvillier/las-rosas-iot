@@ -17,6 +17,7 @@ import com.lasrosas.iot.core.ingestor.sensors.impl.adeunis.AdeunisARF8180BAFrame
 import com.lasrosas.iot.core.ingestor.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x30x43;
 import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.core.shared.telemetry.BatteryLevel;
+import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class AdeunisARF8170BAParser implements PayloadParser {
@@ -47,7 +48,7 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 	}
 
 	@Override
-	public byte[] encodeDownlink(Message<?> frame) {
+	public byte[] encodeOrder(Order order) {
 		throw new NotYetImplementedException();
 	}
 

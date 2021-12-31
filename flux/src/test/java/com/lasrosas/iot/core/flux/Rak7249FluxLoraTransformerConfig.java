@@ -11,9 +11,9 @@ import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.messaging.PollableChannel;
 
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249FluxLoraTransformer;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Service;
-import com.lasrosas.iot.core.ingestor.rak7249.impl.Rak7249ServiceImpl;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249FluxLoraTransformer;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl.Rak7249DriverImpl;
 
 public class Rak7249FluxLoraTransformerConfig {
 	public static Logger log = LoggerFactory.getLogger(Rak7249FluxLoraTransformerConfig.class);
@@ -34,13 +34,13 @@ public class Rak7249FluxLoraTransformerConfig {
 	}
 	
 	@Bean
-	public Rak7249Service rak7249MessagesService() {
-		return new Rak7249ServiceImpl();
+	public Rak7249Driver rak7249MessagesService() {
+		return new Rak7249DriverImpl();
 	}
 
 	@Bean
 	@Transformer(inputChannel = "inputChannel", outputChannel = "outputChannel")
-	public Rak7249FluxLoraTransformer rak7249FluxLoraTransformer(Rak7249Service service) {
+	public Rak7249FluxLoraTransformer rak7249FluxLoraTransformer(Rak7249Driver service) {
 		log.info("Ceate Rak7249FluxLoraTransformer");
 		return new Rak7249FluxLoraTransformer(service);
 	}

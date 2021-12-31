@@ -86,7 +86,7 @@ public abstract class Thing extends BaseEntity {
 		type.getThings().add(this);
 	}
 
-	public abstract String getIdentifier();
+	public abstract String getNaturalId();
 	public abstract String getKind();
 
 	public Mode getMode() {

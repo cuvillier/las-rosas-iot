@@ -77,10 +77,10 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 		if( measurment == null) {
 
 			String naturalId;
-			if(	LasRosasHeaders.twinNaturalId(imessage) != null )
-				naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage);
+			if(	LasRosasHeaders.twinNaturalId(imessage).isPresent() )
+				naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage).get();
 			else
-				naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage);
+				naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage).get();
 
 			var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
 

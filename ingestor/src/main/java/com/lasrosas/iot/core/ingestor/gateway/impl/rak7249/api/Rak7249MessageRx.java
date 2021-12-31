@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.rak7249.api;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

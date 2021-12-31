@@ -5,7 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.lasrosas.iot.core.database.entities.thg.Thing;
+import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 @Entity
 @DiscriminatorValue(TwinReactorReceiverFromThing.DISCRIMINATOR)
@@ -27,5 +31,12 @@ public class TwinReactorReceiverFromThing extends TwinReactorReceiver {
 
 	public void setThing(Thing thing) {
 		this.thing = thing;
+	}
+
+	@Override
+	public void addOrderHeaders(MessageBuilder<Order> builder) {
+		builder
+			.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
+			.setHeader(LasRosasHeaders.THING_NATURAL_ID, thing.getNaturalId());			
 	}
 }

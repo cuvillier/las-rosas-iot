@@ -9,13 +9,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Service;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 
 public class MqttRak7249Converter extends  DefaultPahoMessageConverter {
 	public static final Logger log = LoggerFactory.getLogger(MqttRak7249Converter.class);
 
 	@Autowired
-	private Rak7249Service service;
+	private Rak7249Driver service;
 
 	@Override
 	public MqttMessage fromMessage(Message<?> message, Class<?> targetClass) {

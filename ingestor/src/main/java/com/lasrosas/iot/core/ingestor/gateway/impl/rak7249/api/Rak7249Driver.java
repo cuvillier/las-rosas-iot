@@ -1,12 +1,14 @@
-package com.lasrosas.iot.core.ingestor.rak7249.api;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
 import org.springframework.messaging.Message;
 
+import com.lasrosas.iot.core.ingestor.gateway.api.GatewayDriver;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 
-public interface Rak7249Service {
+public interface Rak7249Driver extends GatewayDriver {
+	String DRIVER_NAME = "Rak7249";
 	Rak7249Message fromJson(String topic, String json);
 
 	Message<LoraMessageUplink> convertRxToLoraMessage(Message<Rak7249MessageRx> message);

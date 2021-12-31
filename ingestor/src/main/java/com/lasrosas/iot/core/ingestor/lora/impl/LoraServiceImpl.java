@@ -2,7 +2,6 @@ package com.lasrosas.iot.core.ingestor.lora.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.lasrosas.iot.core.database.entities.thg.ThingGateway;
@@ -15,6 +14,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.shared.telemetry.ThingConnectionState;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
 
@@ -69,7 +69,7 @@ public class LoraServiceImpl implements LoraService {
 	}
 
 	@Override
-	public void splitJoin(Message<LoraMessageJoin> imessage) {
+	public ThingConnectionState splitJoin(Message<LoraMessageJoin> imessage) {
 
 		var joinMessage = imessage.getPayload();
 
@@ -81,7 +81,7 @@ public class LoraServiceImpl implements LoraService {
 			 */
 			if( !autocreate )
 				throw new RuntimeException("Unknown Thing devEUI=" + joinMessage.getDeveui());
-	
+
 			String manufacturer = joinMessage.getManufacturer();
 			String model = joinMessage.getModel();
 			if(manufacturer == null || model == null) 
@@ -99,6 +99,7 @@ public class LoraServiceImpl implements LoraService {
 	
 			thingLoraRepo.save(thingLora);
 		}
-	}
 
+		return new ThingConnectionState(true, ThingConnectionState.CAUSE_NTW_CONNECT);
+	}
 }

@@ -15,11 +15,10 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
-import com.lasrosas.iot.core.flux.LasRosasIotConfig;
 import com.lasrosas.iot.core.flux.LasRosasIotConfig.LasRosasGateway;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx.RxInfo;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx.TxInfo;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.RxInfo;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.TxInfo;
 import com.lasrosas.iot.core.ingestor.sensors.impl.SensorsConfig;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
@@ -62,7 +61,7 @@ public class LasRosasConfigTest {
 			txInfo.setFrequency(123456L);
 			message.setTxInfo(txInfo);
 
-			LasRosasGateway.sendRak7149(message);
+			LasRosasGateway.sendRak7249(message);
 
 			log.info("Ok");
 		} catch (Exception e) {

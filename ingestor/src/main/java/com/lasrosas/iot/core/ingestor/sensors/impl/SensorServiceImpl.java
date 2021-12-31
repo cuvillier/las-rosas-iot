@@ -4,20 +4,28 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.BatteryLevel;
+import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
 
 public class SensorServiceImpl implements SensorService {
+	public static final Logger log = LoggerFactory.getLogger(SensorServiceImpl.class);
+
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	@Autowired
 	private ThingRepo thgRepo;
@@ -45,7 +53,11 @@ public class SensorServiceImpl implements SensorService {
 
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
-		return parser.decodeUplink(imessage);
+		var uplink = parser.decodeUplink(imessage);
+
+		log.info("Decoded message: " + gson.toJson(uplink));
+
+		return uplink;
 	}
 
 	/*
@@ -89,13 +101,25 @@ public class SensorServiceImpl implements SensorService {
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 
 		var result = parser.telemetries(imessage);
-		
-		
+
 		// Handle battery level here.
 
 		// TODO. Just ignore the BatteryLevel messages
 		result.removeIf(e -> e.getPayload() instanceof BatteryLevel);
 
+		for(var message: result)
+			log.info("Decoded message: " + gson.toJson(message));
+
 		return result;
+	}
+
+	@Override
+	public byte[] encodeOrder(Message<? extends Order> imessage) {
+		var thingId = imessage.getHeaders().get(LasRosasHeaders.THING_ID, Long.class);
+		var thing = thgRepo.getOne(thingId);
+
+		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
+		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
+		return parser.encodeOrder(imessage.getPayload());
 	}
 }

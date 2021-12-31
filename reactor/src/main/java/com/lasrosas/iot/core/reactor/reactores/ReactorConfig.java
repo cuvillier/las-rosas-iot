@@ -15,4 +15,9 @@ public class ReactorConfig {
 	public ForwardReactor ForwardReactor() {
 		return new ForwardReactor();
 	}
+	
+	@Bean
+	public MultiSwitchReactor PowerSwitchReactor() {
+		return new MultiSwitchReactor();
+	}
 }

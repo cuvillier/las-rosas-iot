@@ -220,9 +220,27 @@ public class MFC88LW13IOFrame {
 	public static class DownlinkIOMessage extends DownlinkFrame {
 		public static final int CODE = 0x0400;
 
+		private final boolean [] toBeEnabled = {false, false, false, false};
+		private final boolean [] toBeDisabled = {false, false, false, false};
+
 		public DownlinkIOMessage() {
 			super(CODE);
-		}		
+		}
+
+		public void requestChannelStateChange(int channel, boolean enable) {
+			if(enable)
+				toBeEnabled[channel] = true;
+			else
+				toBeDisabled[channel] = false;
+		}
+
+		public boolean isToBeDisabled(int channel) {
+			return toBeDisabled[channel];
+		}
+
+		public boolean isToBeEnabled(int channel) {
+			return toBeDisabled[channel];
+		}
 	}
 
 	public static class DownlinkSetPeriod extends DownlinkFrame {

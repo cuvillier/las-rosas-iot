@@ -14,6 +14,10 @@ public class LasRosasHeaders {
 	public static String TWIN_NATURAL_ID = "TwinNaturalId";
 	public static String TIME_RECEIVED = "TimeReceived";
 	public static String SENSOR = "Sensor";
+	public static String ORIGIN_ID = "OriginId";
+	public static String ORIGIN_TYPE = "OriginType";
+	public static String ORIGIN_THING = "thg";
+	public static String ORIGIN_TWIN = "twi";
 
 	/* Copy of IntegrationMessageHeaderAccessor */
 	public static final String CORRELATION_ID = "correlationId";
@@ -27,6 +31,7 @@ public class LasRosasHeaders {
 	public static final String CLOSEABLE_RESOURCE = "closeableResource";
 	public static final String DELIVERY_ATTEMPT = "deliveryAttempt";
 	public static final String ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
+	public static final String GATEWAY_NAURAL_ID = "gatewayNaturalId";
 
 	public static String sensor(Message<?> message) {
 		return message.getHeaders().get(SENSOR, String.class);
@@ -47,6 +52,10 @@ public class LasRosasHeaders {
 
 	public static Optional<Long> twinId(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(TWIN_ID, Long.class));
+	}
+
+	public static Optional<String> gatewayNaturalId(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(GATEWAY_NAURAL_ID, String.class));
 	}
 
 	public static Optional<String> twinNaturalId(Message<?> message) {

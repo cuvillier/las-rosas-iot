@@ -8,6 +8,7 @@ import org.springframework.messaging.Message;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.sensors.impl.PayloadParser;
+import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class ElsysErsParser implements PayloadParser {
@@ -20,7 +21,7 @@ public class ElsysErsParser implements PayloadParser {
 	}
 
 	@Override
-	public byte[] encodeDownlink(Message<?> frame) {
+	public byte[] encodeOrder(Order order) {
 		throw new NotYetImplementedException();
 	}
 

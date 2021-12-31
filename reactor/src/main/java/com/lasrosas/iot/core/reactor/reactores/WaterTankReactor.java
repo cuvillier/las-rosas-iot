@@ -1,21 +1,16 @@
 package com.lasrosas.iot.core.reactor.reactores;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.core.database.HibernateUtils;
-import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.finca.WaterTank;
 import com.lasrosas.iot.core.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.core.database.repo.TimeSerieTypeRepo;
+import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.reactor.base.TwinReactor;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
@@ -23,7 +18,7 @@ import com.lasrosas.iot.core.shared.telemetry.WaterTankFilling;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.Loggers;
 
-public class WaterTankReactor extends TwinReactor {
+public class WaterTankReactor implements TwinReactor {
 	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
 
 	@Autowired
@@ -39,12 +34,13 @@ public class WaterTankReactor extends TwinReactor {
 	}
 
 	@Override
-	public List<? extends Telemetry> react(DigitalTwin twin, TwinReactorReceiver receiver, Message<? extends Telemetry> imessage) {
+	public void react(TwinReactorReceiver receiver, Message<? extends Telemetry> imessage) {
 
 		if (!receiver.getType().getRole().equals("level"))
 			throw new RuntimeException("Unexpected receiver role " + receiver.getType().getRole());
 
-		WaterTank waterTank = HibernateUtils.unProxyToClass(twin, WaterTank.class);
+		// WaterTank waterTank = HibernateUtils.unProxyToClass(twin, WaterTank.class);
+		var waterTank = receiver.<WaterTank>getTwin();
 		var distanceMeasurement = (DistanceMeasurement)imessage.getPayload();
 
 		var level = distanceMeasurement.getDistance();
@@ -52,7 +48,7 @@ public class WaterTankReactor extends TwinReactor {
 
 		// Get the current WaterTankFilling value
 		var wfTst = tstRepo.findBySchema(WaterTankFilling.SCHEMA);
-		var wfTsr = wfTst == null ? null : tsrRepo.findByTwinAndType(twin, wfTst);
+		var wfTsr = wfTst == null ? null : tsrRepo.findByTwinAndType(waterTank, wfTst);
 		var wfCurrentPoint = wfTsr == null ? null : wfTsr.getCurrentValue();
 
 		boolean volumeSet = false;
@@ -75,7 +71,7 @@ public class WaterTankReactor extends TwinReactor {
 						+ ", " + "time=" + time + ", " + "level=" + level + "m, " + "waterFlow="
 						+ waterTank.getWaterFlow() + " m3/h, " + "maxWaterFlow=" + waterTank.getMaxWaterFlow()
 						+ " m3/h");
-				return Collections.emptyList();
+				return;
 			} else
 				volumeSet = true;
 		}
@@ -95,9 +91,6 @@ public class WaterTankReactor extends TwinReactor {
 
 		var wtf = new WaterTankFilling(volume, percentage, waterFlow);
 
-		var result = new ArrayList<Telemetry>();
-		result.add(wtf);
-
-		return result;
+		ReactContext.addTelemetry(wtf);
 	}
 }

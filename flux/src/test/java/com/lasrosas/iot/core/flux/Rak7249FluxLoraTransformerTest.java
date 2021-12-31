@@ -17,12 +17,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.RxInfo;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.TxInfo;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageJoin;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx.RxInfo;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx.TxInfo;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.TimeUtils;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;

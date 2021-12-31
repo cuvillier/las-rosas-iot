@@ -24,8 +24,10 @@ import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.MqttHeaders;
+import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.integration.router.PayloadTypeRouter;
 import org.springframework.integration.splitter.AbstractMessageSplitter;
+import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
@@ -35,18 +37,21 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
+import com.lasrosas.iot.core.ingestor.gateway.impl.GatewayServiceImpl;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249FluxLoraTransformer;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Message;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl.Rak7249DriverImpl;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249FluxLoraTransformer;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Message;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249Service;
-import com.lasrosas.iot.core.ingestor.rak7249.impl.Rak7249ServiceImpl;
-import com.lasrosas.iot.core.ingestor.sensors.api.DecodeThingMessageTransformer;
+import com.lasrosas.iot.core.ingestor.sensors.api.DownlinkEncoderTransformer;
 import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.api.TelemetrySpliter;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.sensors.api.UplinkDecoderTransformer;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
@@ -56,6 +61,7 @@ import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.api.ReactorSpliter;
 import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
+import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 @ConfigurationProperties
 @Validated
@@ -63,8 +69,9 @@ public class LasRosasIotConfig {
 	public static final Logger log = LoggerFactory.getLogger(LasRosasIotConfig.class);
 	public static final Logger messagesLog = LoggerFactory.getLogger("MessagesLog");
 
-	public static final String rak7249Channel = "rak7249Channel";
-	public static final String rak7249TxChannel = "rak7249TxChannel";
+	public static final String rak7249UplinkChannel = "rak7249UplinkChannel";
+	public static final String rak7249UplinkTxChannel = "rak7249UplinkTxChannel";
+	public static final String rak7249DownlinkChannel = "rak7249DownlinkChannel";
 	public static final String loraChannel = "loraChannel";
 	public static final String mixedLoraChannel = "mixedLoraChannel";
 	public static final String loraMetricChannel = "loraMetricChannel";
@@ -74,6 +81,9 @@ public class LasRosasIotConfig {
 	public static final String telemetryChannel = "telemetryChannel";
 	public static final String alarmChannel = "alarmChannel";
 	public static final String publishMqttChannel = "publishMqttChannel";
+	public static final String twinOutputChannel = "twinOutputChannel";
+	public static final String orderChannel = "downlinkChannel";
+	public static final String downlinkChannel = "downlinkChannel";
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -86,7 +96,7 @@ public class LasRosasIotConfig {
 	}
 
 	@Bean
-	public MessageChannel rak7249Channel() {
+	public MessageChannel rak7249UplinkChannel() {
 		return new DirectChannel();
 	}
 
@@ -103,6 +113,25 @@ public class LasRosasIotConfig {
 	@Bean
 	public MessageChannel loraMetricChannel() {
 		return new PublishSubscribeChannel();
+	}
+
+	@Bean
+	public MessageChannel orderChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel downlinkChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel rak7249DownlinkChannel() {
+		return new DirectChannel();
+	}
+	@Bean
+	public MessageChannel twinOutputChannel() {
+		return new DirectChannel();
 	}
 
 	@Bean
@@ -158,8 +187,8 @@ public class LasRosasIotConfig {
 	}
 
 	@Bean
-	public Rak7249Service rak7249MessagesService() {
-		return new Rak7249ServiceImpl();
+	public Rak7249Driver rak7249Driver() {
+		return new Rak7249DriverImpl();
 	}
 
 	@Bean
@@ -170,6 +199,11 @@ public class LasRosasIotConfig {
 	@Bean
 	public LoraService loraService() {
 		return new LoraServiceImpl();
+	}
+
+	@Bean
+	public GatewayService gatewayService(Rak7249Driver rak7249) {
+		return new GatewayServiceImpl(rak7249);
 	}
 
 	@Bean
@@ -219,20 +253,19 @@ public class LasRosasIotConfig {
 	/*
 	 * Processing nodes
 	 */
-
 	@Bean
 	public MessageProducerSupport rak7249ChannelAdapter(
 			MqttConfig rak7249MqttConfig, 
 			MqttPahoClientFactory rak7249MqttClientFactory, 
-			MessageChannel rak7249Channel,
+			MessageChannel rak7249UplinkChannel,
 			MqttRak7249Converter mqttRak7249Converter) {
-		var adapter = ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, rak7249Channel, mqttRak7249Converter);
-		adapter.setOutputChannel(rak7249Channel);
+		var adapter = ConfigUtils.mqttChannelAdapter("application/+/device/+/+", rak7249MqttConfig, rak7249MqttClientFactory, mqttRak7249Converter);
+		adapter.setOutputChannel(rak7249UplinkChannel);
 		return adapter;
 	}
 
 	@Bean
-	@ServiceActivator(inputChannel = rak7249Channel)
+	@ServiceActivator(inputChannel = rak7249UplinkChannel)
 	public MessageHandler processMessageInTransaction(TransactionalGateway gate) {
 		return new AbstractMessageHandler() {
 
@@ -256,24 +289,9 @@ public class LasRosasIotConfig {
 		};
 	}
 
-	/*
-	 * This flow is used to execute the message processing in a single transaction.
-	 */
-/*
-	@Bean
-    public IntegrationFlow mqttInFlow(MessageProducerSupport rak7249ChannelAdapter, TransactionalGateway gate) {
-        return IntegrationFlows.from(rak7249ChannelAdapter)
-                .log()
-                .handle(
-                		msg -> {
-                			gate.sendIntransaction(msg);
-                		} )
-                .get();
-    }
-*/
     @Bean
-	@Transformer(inputChannel = rak7249TxChannel, outputChannel = loraChannel)
-	public Rak7249FluxLoraTransformer rak7249ToLoraMessageTransformer(Rak7249Service service) {
+	@Transformer(inputChannel = rak7249UplinkTxChannel, outputChannel = loraChannel)
+	public Rak7249FluxLoraTransformer rak7249ToLoraMessageTransformer(Rak7249Driver service) {
 		return new Rak7249FluxLoraTransformer(service);
 	}
 
@@ -319,8 +337,8 @@ public class LasRosasIotConfig {
 	@Bean
 	@Transformer(inputChannel = thingEncodedDataChannel, outputChannel = thingDataChannel)
 	@DependsOn({"writeLoraMetric"})
-	public DecodeThingMessageTransformer decodeThingMessageTransformer(SensorService service) {
-		return new DecodeThingMessageTransformer(service);
+	public UplinkDecoderTransformer decodeThingMessageTransformer(SensorService service) {
+		return new UplinkDecoderTransformer(service);
 	}
 
 	@Bean
@@ -372,16 +390,56 @@ public class LasRosasIotConfig {
 	@Bean
 	@Splitter(inputChannel = telemetryChannel)
 	@DependsOn({"writeTelemetry"})
-	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactor(ReactorService service, MessageChannel telemetryChannel) {
+	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactor(ReactorService service, MessageChannel twinOutputChannel) {
 		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
 
 	        @Override
 			protected AbstractMessageSplitter createHandler() {
 	        	var splitter = new ReactorSpliter(service);
-	        	splitter.setOutputChannel(telemetryChannel);
+	        	splitter.setOutputChannel(twinOutputChannel);
 	        	return splitter;
 	        }
 		};
+	}
+
+	@Bean
+	@Router(inputChannel = twinOutputChannel)
+	public PayloadTypeRouter twinOutputRouter() {
+
+		var router = new PayloadTypeRouter();
+	    router.setChannelMapping(Order.class.getName(), orderChannel);
+	    router.setChannelMapping(Telemetry.class.getName(), loraMetricChannel);
+
+	    return router;
+	}
+
+	@Bean
+	@Transformer(inputChannel = orderChannel, outputChannel = downlinkChannel)
+	public AbstractTransformer encodeOrder(SensorService sensorService, GatewayService gatewayService) {
+		return new DownlinkEncoderTransformer(sensorService, gatewayService);
+	}
+
+	@Bean
+	@Router(inputChannel = downlinkChannel)
+	public HeaderValueRouter gatewayDownlinkRouter() {
+
+		var router = new HeaderValueRouter(LasRosasHeaders.GATEWAY_NAURAL_ID);
+	    router.setChannelMapping("rak7249", rak7249DownlinkChannel);
+	    router.setResolutionRequired(true);
+
+	    return router;
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = rak7249DownlinkChannel)
+	public MessageHandler rak7249DownlinkPublisher(MqttPahoClientFactory rak7249MqttClientFactory) {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("LasRosasIotDownlink", rak7249MqttClientFactory);
+		messageHandler.setAsync(false);
+
+		// Chripstack mqtt channel
+		// https://forum.chirpstack.io/t/problem-with-sending-downlink-via-mqtt/4263
+		messageHandler.setTopicExpressionString("'application/1/device/' + headers['ThingNaturalId'] + '/tx'");
+		return messageHandler;
 	}
 
 	@Bean
@@ -392,11 +450,22 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@ServiceActivator(inputChannel = publishMqttChannel)
-	public MessageHandler mqttPublisher(MqttPahoClientFactory publishMqttClientFactory) {
-		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", publishMqttClientFactory);
+	public MessageHandler mqttPublisher(MqttPahoClientFactory rak7249MqttClientFactory) {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", rak7249MqttClientFactory);
 		messageHandler.setAsync(false);
-		messageHandler.setDefaultTopic("lasrosas");
+		messageHandler.setTopicExpressionString("'device/' + headers['ThingNaturalId'] + '/uplink'");
 		return messageHandler;
+	}
+
+	@Bean
+	public MessageProducerSupport localChannelAdapter(
+			MqttConfig publishMqttConfig, 
+			MqttPahoClientFactory publishMqttClientFactory, 
+			MessageChannel orderChannel,
+			GatewayService gatewayService) {
+		var adapter = ConfigUtils.mqttChannelAdapter("order", publishMqttConfig, publishMqttClientFactory, new OrderConverter(gatewayService));
+		adapter.setOutputChannel(orderChannel);
+		return adapter;
 	}
 
 	/*
@@ -405,14 +474,17 @@ public class LasRosasIotConfig {
 	@MessagingGateway
 	public static interface LasRosasGateway {
 
-		@Gateway(requestChannel = rak7249Channel)
-		void sendRak7149(Rak7249Message message);
+		@Gateway(requestChannel = rak7249UplinkChannel)
+		void sendRak7249(Rak7249Message message);
 
 		@Gateway(requestChannel = publishMqttChannel)
 		void sendToMqtt(Telemetry telemetry, @Header(MqttHeaders.TOPIC) String topic);
+
+		@Gateway(requestChannel = orderChannel)
+		void sendOrder(Message<? extends Order> order);
 	}
 
-	@MessagingGateway(defaultRequestChannel = rak7249TxChannel)
+	@MessagingGateway(defaultRequestChannel = rak7249UplinkTxChannel)
 	interface TransactionalGateway {
 
 	    @Transactional

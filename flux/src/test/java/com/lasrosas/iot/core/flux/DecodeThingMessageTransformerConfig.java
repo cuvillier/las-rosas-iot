@@ -6,7 +6,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.messaging.PollableChannel;
 
-import com.lasrosas.iot.core.ingestor.sensors.api.DecodeThingMessageTransformer;
+import com.lasrosas.iot.core.ingestor.sensors.api.UplinkDecoderTransformer;
 import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.impl.SensorServiceImpl;
 
@@ -23,7 +23,7 @@ public class DecodeThingMessageTransformerConfig {
 
 	@Bean
 	@Transformer(inputChannel = "inputChannel", outputChannel = "outputChannel")
-	public DecodeThingMessageTransformer splitLoraMessage(SensorService sensorService) {
-		return new DecodeThingMessageTransformer(sensorService);
+	public UplinkDecoderTransformer splitLoraMessage(SensorService sensorService) {
+		return new UplinkDecoderTransformer(sensorService);
 	}
 }

@@ -1,7 +1,6 @@
 package com.lasrosas.iot.core.reactor.base;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,21 +29,20 @@ public class ReactorServiceImpl implements ReactorService {
 	private ApplicationContext context;
 
 	@Override
-	public List<Message<? extends Telemetry>> react(Message<? extends Telemetry> imessage) {
-		log.debug("react");
+	public List<Message<?>> react(Message<? extends Telemetry> imessage) {
+		var result = new ArrayList<Message<?>>();
 
 		/*
 		 * Is the message come from another twin, skeep the message.
 		 * Will be fixed later when needed.
 		 */
-		if( LasRosasHeaders.twinId(imessage).isPresent()) return Collections.emptyList();
+		if( LasRosasHeaders.twinId(imessage).isPresent()) return result;
 
 		Long thingId = LasRosasHeaders.thingid(imessage).get();
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
 
 		// Find reactors to be triggered
-		var result = new ArrayList<Message<? extends Telemetry>>();
 		for(var receiver: receivers) {
 			receiver.getType().getSchema();
 			var receiverType = receiver.getType();
@@ -63,14 +61,35 @@ public class ReactorServiceImpl implements ReactorService {
 
 			log.debug("Call reactor: " + beanName);
 
-			var resultPayloads= reactor.react(twin, receiver, imessage);
-			for(var resultPayload: resultPayloads) {
-				result.add(
-						MessageBuilder.withPayload(resultPayload)
+			try {
+				ReactContext.push();
+
+				reactor.react(receiver, imessage);
+	
+				var context = ReactContext.peek();
+
+				for(var telemetry: context.getTelemetries()) {
+					result.add(
+							MessageBuilder.withPayload(telemetry)
+							.copyHeaders(imessage.getHeaders())
+							.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
+							.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())
+							.build());
+				}
+
+				for(var order: context.getOrders()) {
+					var builder = MessageBuilder.withPayload(order)
 						.copyHeaders(imessage.getHeaders())
-						.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
-						.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())
-						.build());
+						.setHeader(LasRosasHeaders.ORIGIN_TWIN, twin.getTechid())
+						.setHeader(LasRosasHeaders.ORIGIN_TYPE, LasRosasHeaders.ORIGIN_TWIN);
+
+					receiver.addOrderHeaders(builder);
+
+					result.add(builder.build());
+				}
+
+			} finally {
+				ReactContext.pop();
 			}
 		}
 

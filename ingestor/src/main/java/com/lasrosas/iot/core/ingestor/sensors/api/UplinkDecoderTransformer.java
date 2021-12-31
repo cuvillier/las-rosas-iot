@@ -3,11 +3,11 @@ package com.lasrosas.iot.core.ingestor.sensors.api;
 import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 
-public class DecodeThingMessageTransformer extends AbstractTransformer {
+public class UplinkDecoderTransformer extends AbstractTransformer {
 
 	private SensorService service;
 
-	public DecodeThingMessageTransformer(SensorService service) {
+	public UplinkDecoderTransformer(SensorService service) {
 		this.service = service;
 	}
 

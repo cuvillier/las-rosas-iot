@@ -145,6 +145,10 @@ public class ByteParser {
 		return suint(32, ByteOrder.BI, false);
 	}
 
+	public long uint32LI() {
+		return suint(32, ByteOrder.LI, false);
+	}
+
 	public int uint4() {
 		return uint(4);
 	}

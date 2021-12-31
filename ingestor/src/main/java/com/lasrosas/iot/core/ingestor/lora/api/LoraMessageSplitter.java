@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.integration.splitter.AbstractMessageSplitter;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
 public class LoraMessageSplitter  extends AbstractMessageSplitter {
 	private final LoraService service;
@@ -24,6 +25,15 @@ public class LoraMessageSplitter  extends AbstractMessageSplitter {
 
 			result.add(splitResult.getLoraMetricMessage());
 			result.add(splitResult.getThingEncodedMessage());
+
+		} else if(payload instanceof LoraMessageJoin ) {
+
+			@SuppressWarnings("unchecked")
+			var splitResult = service.splitJoin((Message<LoraMessageJoin>)imessage);
+
+			result.add(MessageBuilder.withPayload(splitResult)
+					.copyHeaders(imessage.getHeaders())
+					.build());
 		}
 
 		return result;

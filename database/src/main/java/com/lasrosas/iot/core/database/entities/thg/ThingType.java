@@ -27,6 +27,7 @@ public class ThingType extends BaseEntity {
 	public static final String COL_MODEL = PREFIX + "model";
 	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "battery_min_percentage";
 	public static final String COL_MANUFACTURER = PREFIX + "manufacturer";
+	public static final String COL_VOLATILE_STATE = PREFIX + "volatile_state";
 
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
 	private List<Thing> things;
@@ -43,9 +44,12 @@ public class ThingType extends BaseEntity {
 	@Column(name = COL_BATTERY_MIN_PERCENTAGE)
 	private Double batteryMinPercentage;
 
-	protected ThingType() {
-	}
+	// true is the state is lost when the power is off. For sensor without battery.
+	@Column(name = COL_VOLATILE_STATE)
+	private boolean volatileState;
 
+	public ThingType() {
+	}
 
 	public ThingType(String manufacturer, String model) {
 		super();
@@ -94,5 +98,13 @@ public class ThingType extends BaseEntity {
 
 	public void setBatteryMinPercentage(Double batteryMinPercentage) {
 		this.batteryMinPercentage = batteryMinPercentage;
+	}
+
+	public boolean isVolatileState() {
+		return volatileState;
+	}
+
+	public void setVolatileState(boolean volatileState) {
+		this.volatileState = volatileState;
 	}
 }

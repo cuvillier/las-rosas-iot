@@ -12,7 +12,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.lasrosas.iot.core.ingestor.rak7249.api.Rak7249MessageRx;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 
 public class Rak7249MessageTest {
 

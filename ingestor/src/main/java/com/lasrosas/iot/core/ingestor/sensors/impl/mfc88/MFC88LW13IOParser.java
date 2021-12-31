@@ -1,6 +1,6 @@
 package com.lasrosas.iot.core.ingestor.sensors.impl.mfc88;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.messaging.Message;
@@ -11,8 +11,9 @@ import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.sensors.impl.PayloadParser;
-import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkFrame;
-import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.DownlinkIOMessage;
+import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkIO;
+import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.telemetry.Switched;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class MFC88LW13IOParser implements PayloadParser {
@@ -28,27 +29,23 @@ public class MFC88LW13IOParser implements PayloadParser {
 			return decoder.decodeUplink(imessage);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public byte[] encodeDownlink(Message<?> imessage) {
-			return decoder.encodeDownlink((Message<DownlinkFrame>)imessage);
+		public byte[] encodeOrder(Order order) {
+			return decoder.encodeOrder(order);
 		}
 
 		@Override
 		public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
-			return Collections.emptyList();
-		}
+			var result = new ArrayList<Message<Telemetry>>();
 
-		public byte[] switchOn() {
-			var frame = new DownlinkIOMessage();
-			// TODO: Set values
-			return decoder.encodeDownlink(MessageBuilder.withPayload(frame).build());
-		}
+			var payload = imessage.getPayload();
+			if( payload instanceof UplinkIO) {
+				var uplinkIO = (UplinkIO)payload;
+				var switchOnOff = new Switched(uplinkIO.getOutputs() != 0?1: 0);
+				result.add(MessageBuilder.withPayload((Telemetry)switchOnOff).copyHeaders(imessage.getHeaders()).build());
+			}
 
-		public byte[] switchOn(int seconds) {
-			var frame = new DownlinkIOMessage();
-			// TODO: Set values
-			return decoder.encodeDownlink(MessageBuilder.withPayload(frame).build());
+			return result;
 		}
 
 		@Override

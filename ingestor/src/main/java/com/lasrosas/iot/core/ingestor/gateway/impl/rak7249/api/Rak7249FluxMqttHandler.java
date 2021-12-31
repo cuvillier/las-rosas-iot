@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.rak7249.api;
+package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -9,9 +9,9 @@ import org.springframework.messaging.Message;
 public class Rak7249FluxMqttHandler {
 
 	@Autowired
-	private Rak7249Service service;
+	private Rak7249Driver service;
 
-	public Rak7249FluxMqttHandler(Rak7249Service service) {
+	public Rak7249FluxMqttHandler(Rak7249Driver service) {
 		this.service = service;
 	}
 

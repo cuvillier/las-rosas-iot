@@ -19,6 +19,9 @@ import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.Uplink
 import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkLengthError;
 import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest;
 import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
+import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.telemetry.RestartOrder;
+import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
 import com.lasrosas.iot.core.shared.utils.ByteParser;
 
 public class MFC88LW13IOFrameDecoder {
@@ -72,7 +75,11 @@ public class MFC88LW13IOFrameDecoder {
 		frame.setSyncId(parser.uint32BI());
 		frame.setVersion(decodeVersion(parser));
 		frame.setApplicationType(parser.uint16BI());
-		frame.setOption(parser.uint8() == 1 ? UplinkTimeSyncRequestOption.AFTER_BOOT: UplinkTimeSyncRequestOption.GOING_DOWN);
+
+		var option = parser.uint8();
+		if( option == 1 ) frame.setOption(UplinkTimeSyncRequestOption.AFTER_BOOT);
+		else if ( option == 2) frame.setOption(UplinkTimeSyncRequestOption.GOING_DOWN);
+
 		frame.setRfu(parser.bytes());
 
 		return frame;
@@ -111,9 +118,9 @@ public class MFC88LW13IOFrameDecoder {
 		var frame = new UplinkIO();
 
 		frame.setDateTime(decodeDateTime(parser));
-		frame.setInputs(parser.uint(4));
-		frame.setOutputs(parser.uint(4));
-		frame.setEvents(parser.uint(4));
+		frame.setInputs(parser.uint32LI());
+		frame.setOutputs(parser.uint32LI());
+		frame.setEvents(parser.uint32LI());
 
 		return frame;
 	}
@@ -147,8 +154,23 @@ public class MFC88LW13IOFrameDecoder {
 		return frame;
 	}
 
-	public byte[] encodeDownlink(Message<? extends DownlinkFrame> imessage) {
-		var frame = imessage.getPayload();
+	public byte[] encodeOrder(Order order) {
+
+		if( order instanceof MultiSwitchOrder) {
+			var onOffOrder = (MultiSwitchOrder)order;
+			var downlink = new DownlinkIOMessage();
+			var channel = Integer.parseInt(onOffOrder.getPart());
+			downlink.requestChannelStateChange(channel, onOffOrder.getState() == 1);
+			return encodeDownlinkIOMessage(downlink);
+
+		} else if( order instanceof RestartOrder) {
+			return encodeDownlinkOffCommand(new DownlinkOffCommand());
+
+		} else
+			throw new RuntimeException("Order type " + order.getClass().getSimpleName() + "  not supported");
+	}
+
+	public byte[] encodeDownlink(DownlinkFrame frame) {
 
 		switch(frame.getCode()) {
 		case DownlinkTimeSyncAnswer.CODE:
@@ -169,7 +191,17 @@ public class MFC88LW13IOFrameDecoder {
 	}
 
 	public byte[] encodeDownlinkIOMessage(DownlinkIOMessage frame) {
-		return null;
+		var bytes = new byte[10];
+
+		bytes[0] = 0x04;		// Downlink ID
+		bytes[1] = 0x00;		// option
+
+		for(var channel = 0; channel < 4; channel++) {
+			bytes[channel + 2] = (byte)(frame.isToBeEnabled(channel)? 1: 0);
+			bytes[channel + 2 + 4] = (byte)(frame.isToBeDisabled(channel)? 1: 0);
+		}
+
+		return bytes;
 	}
 
 	public byte[] encodeDownlinkSetPeriod(DownlinkSetPeriod frame) {
@@ -177,6 +209,6 @@ public class MFC88LW13IOFrameDecoder {
 	}
 
 	public byte[] encodeDownlinkOffCommand(DownlinkOffCommand frame) {
-		return null;
+		return new byte[] {0x04, (byte)0xFF, 0x00};
 	}
 }

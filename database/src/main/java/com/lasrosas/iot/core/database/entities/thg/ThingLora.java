@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(ThingLora.DISCRIMINATOR)
 public class ThingLora extends Thing {
+	public static final String KIND = "lora";
 	public static final String PREFIX = "lor_";
 	public static final String DISCRIMINATOR = "lor";
 
@@ -38,12 +39,12 @@ public class ThingLora extends Thing {
 	}
 
 	@Override
-	public String getIdentifier() {
+	public String getNaturalId() {
 		return this.deveui;
 	}
 
 	@Override
 	public String getKind() {
-		return "lora";
+		return KIND;
 	}
 }

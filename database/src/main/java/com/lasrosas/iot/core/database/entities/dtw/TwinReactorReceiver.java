@@ -11,7 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.messaging.support.MessageBuilder;
+
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
+import com.lasrosas.iot.core.shared.telemetry.Order;
 
 @Entity
 @Table(name = TwinReactorReceiver.TABLE)
@@ -40,8 +43,9 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	@JoinColumn(name=COL_TYPE_FK)
 	private TwinReactorReceiverType type;
 
-	public DigitalTwin getTwin() {
-		return twin;
+	@SuppressWarnings("unchecked")
+	public <T extends DigitalTwin> T getTwin() {
+		return (T)twin;
 	}
 
 	public void setTwin(DigitalTwin twin) {
@@ -55,4 +59,6 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	public void setType(TwinReactorReceiverType type) {
 		this.type = type;
 	}
+
+	public abstract void addOrderHeaders(MessageBuilder<Order> builder);
 }

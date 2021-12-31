@@ -3,6 +3,7 @@ package com.lasrosas.iot.core.ingestor.lora.api;
 import org.springframework.messaging.Message;
 
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.shared.telemetry.ThingConnectionState;
 
 public interface LoraService {
 
@@ -24,5 +25,8 @@ public interface LoraService {
 	}
 
 	HandleUplinkResult splitUplink(Message<LoraMessageUplink> message);
-	void splitJoin(Message<LoraMessageJoin> message);
+
+	default ThingConnectionState splitJoin(Message<LoraMessageJoin> message) {
+		return null;
+	}
 }

@@ -44,7 +44,7 @@ CREATE TABLE t_dtw_water_tank (
   wat_sensor_alt double NOT NULL,
   wat_level double DEFAULT NULL,
   wat_volume double DEFAULT NULL,
-  wat_percentage int(3) DEFAULT NULL,
+  wat_percentage double DEFAULT NULL,
   wat_water_flow double  NULL,
   wat_max_water_flow double  NULL,
   PRIMARY KEY (twi_techid),
@@ -64,6 +64,7 @@ CREATE TABLE t_thg_gateway
 (
 	gtw_techid INT UNSIGNED AUTO_INCREMENT,
 	gtw_natural_id VARCHAR(50),
+	gtw_typeName VARCHAR(50),
 	gtw_protocol VARCHAR(50) DEFAULT NULL,
 	gtw_url VARCHAR(50) DEFAULT NULL,
 	gtw_login VARCHAR(50) DEFAULT NULL,
@@ -80,6 +81,7 @@ CREATE TABLE t_thg_thing_type
 	tty_version VARCHAR(16),
 	tty_max_hours_invisible REAL DEFAULT NULL,
 	tty_battery_min_percentage REAL DEFAULT 25,
+	tty_volatile_state INT DEFAULT 0,
 	bty_rssi_1_meter INTEGER,
 
 	PRIMARY KEY (tty_techid)

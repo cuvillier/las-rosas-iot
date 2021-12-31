@@ -50,7 +50,7 @@ public class WaterTank extends DigitalTwin {
 	private Double volume;
 
 	@Column(name=COL_PERCENTAGE)
-	private Integer percentageFill;
+	private Double percentageFill;
 
 	@Column(name=COL_WATER_FLOW)
 	private Double waterFlow;
@@ -94,17 +94,17 @@ public class WaterTank extends DigitalTwin {
 		
 	}
 
-	public Integer computeFillPercent() {
+	public Double computeFillPercent() {
 		if( level == null)
 			return null;
 		else {
-			var percentage = (int)(100*(this.volume/ getVolumeMax()) + 0.5);
+			var percentage = 100D * (this.volume/ getVolumeMax());
 			log.info("WaterTank volume=" + this.volume + " volumeMax=" + getVolumeMax() + " %=" + percentage);
 			return percentage;
 		}
 	}
 
-	public Integer getPercentageFill() {
+	public Double getPercentageFill() {
 		return percentageFill;
 	}
 
