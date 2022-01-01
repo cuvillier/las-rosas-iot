@@ -24,7 +24,6 @@ import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
-import com.lasrosas.iot.core.shared.utils.TimeUtils;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @SpringBootTest
@@ -58,7 +57,11 @@ public class Rak7249FluxLoraTransformerTest {
 		headers.put("name1", "value1");
 		headers.put("name2", "value2");
 
-		var message = MessageBuilder.withPayload(rak).copyHeaders(headers).build();
+		var message = MessageBuilder
+				.withPayload(rak)
+				.copyHeaders(headers)
+				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
+				.build();
 
 		inputChannel.send(message);
 
@@ -74,7 +77,7 @@ public class Rak7249FluxLoraTransformerTest {
 		assertEquals(rak.getFPort(), lora.getPort());
 		assertEquals(rak.getRxInfo().get(0).getRssi(), lora.getRssi());
 		assertEquals(rak.getRxInfo().get(0).getLoRaSNR(), lora.getSnr());
-		assertEquals(LasRosasHeaders.time(message), LasRosasHeaders.time(result));
+		assertEquals(LasRosasHeaders.timeReceived(message), LasRosasHeaders.timeReceived(result));
 	}
 
 	@Test

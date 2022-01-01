@@ -18,14 +18,14 @@ import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
 @PrimaryKeyJoinColumn(name=MultiSwitch.COL_TECHID)
 @DiscriminatorValue(MultiSwitch.DISCRIMINATOR)
 public class MultiSwitch extends DigitalTwin {
-	public static final Logger log = LoggerFactory.getLogger(WaterTank.class);
+	public static final Logger log = LoggerFactory.getLogger(MultiSwitch.class);
 
 	public static final int OFF = 0;
 	public static final int ON = 1;
 
-	public static final String TABLE = "t_dtw_power_switch";
-	public static final String PREFIX = "swi_";
-	public static final String DISCRIMINATOR = "swi";
+	public static final String TABLE = "t_dtw_multiswitch";
+	public static final String PREFIX = "msw_";
+	public static final String DISCRIMINATOR = "msw";
 	public static final String COL_STATE = PREFIX + "state";
 	public static final String COL_EXPECTED_STATE = PREFIX + "expectedState";
 	public static final String COL_CONNECTED = PREFIX + "connected";

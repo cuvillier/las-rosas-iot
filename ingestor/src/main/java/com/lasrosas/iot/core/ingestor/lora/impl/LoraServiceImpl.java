@@ -28,7 +28,7 @@ public class LoraServiceImpl implements LoraService {
 
 	@Autowired
 	private GatewayRepo gatewayRepo;
-	
+
 	private boolean autocreate = true;
 
 	@Override

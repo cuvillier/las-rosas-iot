@@ -7,20 +7,20 @@ import javax.persistence.Entity;
 import com.lasrosas.iot.core.database.entities.dtw.DigitalTwinType;
 
 @Entity
-@DiscriminatorValue(PowerSwitchType.DISCRIMINATOR)
-public class PowerSwitchType extends DigitalTwinType {
-	public static final String DISCRIMINATOR = "swt";
+@DiscriminatorValue(MultiSwitchType.DISCRIMINATOR)
+public class MultiSwitchType extends DigitalTwinType {
+	public static final String DISCRIMINATOR = "mst";
 
-	public static final String PREFIX = "swt_";
+	public static final String PREFIX = "mst_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
 	public static final String COL_MAX_STATE = PREFIX + "maxState";
 	public static final String COL_TECHID = PREFIX + "techid";
 
 	@Column(name=COL_MAX_STATE)
-	private int maxState = 2;
+	private Integer maxState = 2;
 
 	public int getMaxState() {
-		return maxState;
+		return maxState == null? 2: maxState;
 	}
 
 	public void setMaxState(int maxState) {

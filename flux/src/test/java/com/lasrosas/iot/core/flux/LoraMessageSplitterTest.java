@@ -1,6 +1,9 @@
 package com.lasrosas.iot.core.flux;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -57,7 +60,10 @@ public class LoraMessageSplitterTest {
 		message.setRssi(321);
 		message.setSnr(1.3F);
 
-		var imessage = MessageBuilder.withPayload(message).build();
+		var imessage = MessageBuilder
+					.withPayload(message)
+					.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
+					.build();
 
 		inputChannel.send(imessage);
 
@@ -75,7 +81,8 @@ public class LoraMessageSplitterTest {
 
 		log.info(gson.toJson(thingEncoded));
 
-		assertEquals(LasRosasHeaders.time(imessage), LasRosasHeaders.time(thingEncoded));
+		assertNotNull(LasRosasHeaders.timeReceived(thingEncoded));
+		assertEquals(LasRosasHeaders.timeReceived(imessage), LasRosasHeaders.timeReceived(thingEncoded));
 		assertEquals(imessage.getPayload().getData(), thingEncoded.getPayload().getEncodedData());
 		assertEquals(imessage.getPayload().getDataEncoding(), thingEncoded.getPayload().getDataEncoding());
 	}

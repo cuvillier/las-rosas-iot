@@ -19,7 +19,6 @@ import com.lasrosas.iot.core.database.entities.thg.ThingType;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerieType;
-import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteSQLImpl;
 
 public class WriteSQLTest {
 	public static final Logger log = LoggerFactory.getLogger(WriteSQLTest.class);
@@ -33,6 +32,7 @@ public class WriteSQLTest {
 
 		var point = createPoint(thg, "{ i: 1 }", "UnitTest", null);
 		var cut = new WriteSQLImpl();
+		cut.setStoreProxyTime(true);
 		cut.updateProxy(point);
 
 		var proxy = thg.getProxy();

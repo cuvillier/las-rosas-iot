@@ -69,7 +69,7 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void writePoint(TimeSerie tsr, Message<?>  imessage) {
 
-		var time = LasRosasHeaders.time(imessage);
+		var time = LasRosasHeaders.timeReceived(imessage);
 		var timestamp = TimeUtils.timestamp(time);
 
 		var measurment = tsr.getInfluxdbMeasurement();

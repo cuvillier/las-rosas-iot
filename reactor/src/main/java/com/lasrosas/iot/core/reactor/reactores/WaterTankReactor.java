@@ -44,7 +44,7 @@ public class WaterTankReactor implements TwinReactor {
 		var distanceMeasurement = (DistanceMeasurement)imessage.getPayload();
 
 		var level = distanceMeasurement.getDistance();
-		var time = LasRosasHeaders.time(imessage);
+		var time = LasRosasHeaders.timeReceived(imessage);
 
 		// Get the current WaterTankFilling value
 		var wfTst = tstRepo.findBySchema(WaterTankFilling.SCHEMA);

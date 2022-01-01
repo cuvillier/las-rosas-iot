@@ -41,6 +41,15 @@ public class WriteSQLImpl implements WriteSQL {
 	
 	private boolean storeProxyTime = false;
 
+	
+	public boolean isStoreProxyTime() {
+		return storeProxyTime;
+	}
+
+	public void setStoreProxyTime(boolean storeProxyTime) {
+		this.storeProxyTime = storeProxyTime;
+	}
+
 	@Override
 	@Transactional
 	public TimeSeriePoint writePoint(Message<?> imessage) {
@@ -122,7 +131,7 @@ public class WriteSQLImpl implements WriteSQL {
 
 		String json = gson.toJson(imessage.getPayload());
 
-		var time = LasRosasHeaders.time(imessage);
+		var time = LasRosasHeaders.timeReceived(imessage);
 		var tsp = new TimeSeriePoint(tsr, time, json);
 
 		tsr.setCurrentValue(tsp);

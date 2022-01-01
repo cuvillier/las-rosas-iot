@@ -1,5 +1,7 @@
 package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.impl.DefaultDeviceNameParser;
+import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class Rak7249DriverImpl implements Rak7249Driver {
 	public static final Logger log = LoggerFactory.getLogger(Rak7249DriverImpl.class);
@@ -70,7 +73,23 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 			loraMessage.setFrequency(rxMessage.getTxInfo().getFrequency());
 		}
 
-		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
+		return buildMessage(loraMessage, imessage);
+	}
+
+	/**
+	 * Insure the message timeReceived is set or propagated.
+	 * @param <T>
+	 * @param payload
+	 * @param imessage
+	 * @return
+	 */
+	private <T> Message<T> buildMessage(T payload, Message<?> imessage) {
+		var time = LasRosasHeaders.timeReceived(imessage);
+		if( time == null ) time = LocalDateTime.now();
+		return MessageBuilder.withPayload(payload)
+				.copyHeaders(imessage.getHeaders())
+				.setHeader(LasRosasHeaders.TIME_RECEIVED, time)
+				.build();		
 	}
 
 	@Override
@@ -90,7 +109,7 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 			loraMessage.setManufacturer(deviceInfo.getModel());
 		}
 
-		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
+		return buildMessage(loraMessage, imessage);
 	}
 
 	@Override
@@ -102,7 +121,7 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 		loraMessage.setDeveui(ackMessage.getDevEUI());
 		loraMessage.setGatewayId(ackMessage.getApplicationName());
 
-		return MessageBuilder.createMessage(loraMessage, imessage.getHeaders());
+		return buildMessage(loraMessage, imessage);
 	}
 
 	public DeviceNameParser getDeviceNameParser() {
