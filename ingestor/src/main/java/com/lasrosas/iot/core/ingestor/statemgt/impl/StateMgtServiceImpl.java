@@ -32,31 +32,7 @@ public class StateMgtServiceImpl implements StateMgtService {
 		timeoutThingTask.timeoutThing();
 		log.info("=== End of batch timeoutThings");
 	}
-/*
-	/**
-	 * Use a method to be transactional
-	 * @param thing
-	 * /
-	@Transactional(propagation = Propagation.REQUIRED)
-	public void timeoutThings() {
-		var things = thingRepo.findTimeouted();
-		for(var thing: things) {
-			if( thing.needToDisconnect() ) {
-				thing.getProxy().setConnected(false);
 
-				var notification = new ConnectionState(false, ConnectionState.CAUSE_NTW_TIMEOUT);
-
-				var imessage = MessageBuilder.withPayload(notification)
-					.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
-					.setHeader(LasRosasHeaders.THING_NATURAL_ID, thing.getNaturalId())
-					.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
-					.build();
-
-				stateNotifictionCallback.notifiyState(imessage);
-			}
-		}
-	}
-*/
 	@Override
 	public ConnectionState handleStateMessage(Message<StateMessage> message) {
 		var thingId = LasRosasHeaders.thingid(message).get();
@@ -71,18 +47,17 @@ public class StateMgtServiceImpl implements StateMgtService {
 		if( payload instanceof ConnectionState) {
 			var connectionState = (ConnectionState)payload;
 
-			if(connectionState.getConnected() != proxy.getConnected()) {
-				proxy.setConnected(connectionState.getConnected());
-			}
-			notification = connectionState;
+			var remind = connectionState.getConnected() == proxy.getConnected()?1:0;
+			notification = new ConnectionState(connectionState.getConnected(), connectionState.getCause(), remind);
+
+			proxy.setConnected(connectionState.getConnected());
 
 			log.info("Thing " + thing.getNaturalId() + " is now " + (proxy.isConnected()? "connected": "disconnected"));
 
 		} else if( payload instanceof StillAlive) {
-			if(!proxy.isConnected()) {
-				proxy.setConnected(1);
-			}
-			notification = new ConnectionState(1, ConnectionState.CAUSE_ALIVE);
+			var remind = proxy.isConnected()?1:0;
+			notification = new ConnectionState(1, ConnectionState.CAUSE_ALIVE, remind);
+			proxy.setConnected(1);
 		} else
 			throw new RuntimeException("Cannot handle this payload type: " + payload.getClass().getName());
 

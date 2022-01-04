@@ -30,14 +30,13 @@ public class TimeoutThingTask {
 		this.stateNotifictionCallback = stateNotifictionCallback;
 	}
 
-
 	@Transactional
 	public void timeoutThing() {
 		var things = thingRepo.findTimeouted();
 		for(var thing: things) {
 			if( thing.needToDisconnect() ) {
-				thing.getProxy().setConnected(0);
 				var notification = new ConnectionState(0, ConnectionState.CAUSE_NTW_TIMEOUT);
+				thing.getProxy().setConnected(0);
 
 				var imessage = MessageBuilder.withPayload(notification)
 					.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())

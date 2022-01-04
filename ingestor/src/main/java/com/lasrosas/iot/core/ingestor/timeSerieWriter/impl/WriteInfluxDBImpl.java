@@ -139,7 +139,8 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 								Enum<?> e = (Enum<?>)value;
 								fields.put(fieldName, e.ordinal());
 							} else
-								if(!(value instanceof Character)) fields.put(fieldName, value);
+								if(!(value instanceof Character)) 
+									fields.put(fieldName, value);
 						}
 					}
 				}
