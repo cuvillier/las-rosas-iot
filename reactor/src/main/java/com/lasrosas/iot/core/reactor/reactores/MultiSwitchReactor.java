@@ -12,7 +12,6 @@ import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchValue;
 import com.lasrosas.iot.core.shared.telemetry.Switched;
-import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class MultiSwitchReactor implements TwinReactor {
 	public static final String RECEIVER_SWITCH_STATE = "state";
@@ -31,7 +30,7 @@ public class MultiSwitchReactor implements TwinReactor {
 	 *	SwitchOff
 	 */
 	@Override
-	public void react(TwinReactorReceiver receiver, Message<? extends Telemetry> imessage) {
+	public void react(TwinReactorReceiver receiver, Message<?> imessage) {
 
 		// Only Thing receivers are supported
 		var switchTwin = receiver.<MultiSwitch>getTwin();
@@ -41,6 +40,12 @@ public class MultiSwitchReactor implements TwinReactor {
 
 		if( payload instanceof Switched ) {
 
+			// wweired, but the sensor is connected
+			if( !switchTwin.isConnected() ) {
+				log.warn("Multiswitch state change, but is not connected. Force connected to true");
+				switchTwin.setConnected(1);
+			}
+
 			var switched = (Switched)payload;
 			switchTwin.setState(switched.getState());
 			switchTwin.setExpectedState(switched.getState());
@@ -49,15 +54,15 @@ public class MultiSwitchReactor implements TwinReactor {
 
 			var connectionState = (ConnectionState)payload;
 			if( switchTwin.isConnected() == connectionState.isConnected()) return;
-
-			switchTwin.setConnected(connectionState.isConnected());
+	
+			switchTwin.setConnected(connectionState.getConnected());
 
 			if( switchTwin.isConnected() && switchTwin.getStateWhenConnect().isPresent()) {
 
 				// If isOffWhenDisconnected and connected, restore switch the switch to on to restore the excpected state
 				var newState = switchTwin.getStateWhenConnect().get();
 				ReactContext.addOrder(new MultiSwitchOrder(newState));
-
+	
 				switchTwin.setState(newState);
 				switchTwin.setExpectedState(newState);
 			}

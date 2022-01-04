@@ -26,12 +26,17 @@ import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.integration.router.PayloadTypeRouter;
+import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.integration.splitter.AbstractMessageSplitter;
 import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -52,6 +57,9 @@ import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
 import com.lasrosas.iot.core.ingestor.sensors.api.TelemetrySpliter;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.sensors.api.UplinkDecoderTransformer;
+import com.lasrosas.iot.core.ingestor.statemgt.api.StateMgtService;
+import com.lasrosas.iot.core.ingestor.statemgt.impl.StateMgtServiceImpl;
+import com.lasrosas.iot.core.ingestor.statemgt.impl.TimeoutThingTask;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
@@ -60,11 +68,15 @@ import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteSQLImpl;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.api.ReactorSpliter;
 import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
+import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
+import com.lasrosas.iot.core.shared.telemetry.StateMessage;
+import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 @ConfigurationProperties
 @Validated
+@EnableScheduling
 public class LasRosasIotConfig {
 	public static final Logger log = LoggerFactory.getLogger(LasRosasIotConfig.class);
 	public static final Logger messagesLog = LoggerFactory.getLogger("MessagesLog");
@@ -73,6 +85,8 @@ public class LasRosasIotConfig {
 	public static final String rak7249UplinkTxChannel = "rak7249UplinkTxChannel";
 	public static final String rak7249DownlinkChannel = "rak7249DownlinkChannel";
 	public static final String loraChannel = "loraChannel";
+	public static final String errorChannel = "errorChannel";
+	public static final String stateChannel = "stateChannel";
 	public static final String mixedLoraChannel = "mixedLoraChannel";
 	public static final String loraMetricChannel = "loraMetricChannel";
 	public static final String thingEncodedDataChannel = "thingEncodedDataChannel";
@@ -87,12 +101,43 @@ public class LasRosasIotConfig {
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+	@Bean(name = PollerMetadata.DEFAULT_POLLER)
+	public PollerMetadata defaultPoller() {
+
+	    PollerMetadata pollerMetadata = new PollerMetadata();
+	    pollerMetadata.setTrigger(new PeriodicTrigger(1000));
+	    return pollerMetadata;
+	}
+
+	@Bean
+	public TimeoutThingTask timeoutThingTask(LasRosasGateway gateway) {
+		return new TimeoutThingTask((c) -> {
+				log.info("Start Handling disconnection");
+				gateway.sendTelemetry(c);
+				log.info("Stop Handling disconnection");
+			});
+
+	}
+
 	/*
 	 * Channels
 	 */
 	@Bean
-	public QueueChannel errorChannel() {
-	    return new QueueChannel(500);
+	public MessageChannel errorChannel() {
+	    var queue = new QueueChannel(500);
+
+	    queue.addInterceptor(new ChannelInterceptor() {
+	    	@Override
+			public Message<?> preSend(Message<?> message, MessageChannel channel) {
+				log.error("");
+				log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				log.error(message.getPayload().getClass().getName());
+				log.error(gson.toJson(message.getPayload()));
+	    		return message;
+	    	}
+	    });
+
+	    return queue;
 	}
 
 	@Bean
@@ -108,6 +153,11 @@ public class LasRosasIotConfig {
 	@Bean
 	public MessageChannel loraChannel() {
 		return new PublishSubscribeChannel();
+	}
+
+	@Bean
+	public MessageChannel loraJoinChannel() {
+		return new DirectChannel();
 	}
 
 	@Bean
@@ -152,6 +202,11 @@ public class LasRosasIotConfig {
 
 	@Bean
 	public MessageChannel telemetryChannel() {
+		return new PublishSubscribeChannel();
+	}
+
+	@Bean
+	public MessageChannel connectionChannel() {
 		return new PublishSubscribeChannel();
 	}
 
@@ -204,6 +259,11 @@ public class LasRosasIotConfig {
 	@Bean
 	public GatewayService gatewayService(Rak7249Driver rak7249) {
 		return new GatewayServiceImpl(rak7249);
+	}
+
+	@Bean
+	public StateMgtService stateMgtService() {
+		return new StateMgtServiceImpl();
 	}
 
 	@Bean
@@ -297,16 +357,10 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@Splitter(inputChannel = loraChannel)
-	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> loraSplitter(LoraService service, MessageChannel mixedLoraChannel) {
-		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
-
-			@Override
-	        protected AbstractMessageSplitter createHandler() {
-	        	var splitter = new LoraMessageSplitter(service);
-	        	splitter.setOutputChannel(mixedLoraChannel);
-	        	return splitter;
-	        }
-		};
+	public LoraMessageSplitter loraMessageSplitter(LoraService service) {
+		var splitter = new LoraMessageSplitter(service);
+    	splitter.setOutputChannelName(mixedLoraChannel);
+    	return splitter;
 	}
 
 	@Bean
@@ -316,6 +370,9 @@ public class LasRosasIotConfig {
 		var router = new PayloadTypeRouter();
 	    router.setChannelMapping(ThingEncodedMessage.class.getName(), thingEncodedDataChannel);
 	    router.setChannelMapping(LoraMetricMessage.class.getName(), loraMetricChannel);
+	    router.setChannelMapping(ConnectionState.class.getName(), stateChannel);
+	    router.setChannelMapping(StillAlive.class.getName(), stateChannel);
+	    router.setDefaultOutputChannelName(errorChannel);
 
 	    return router;
 	}
@@ -372,6 +429,21 @@ public class LasRosasIotConfig {
 		};
 	}
 
+	@Bean
+	@Transformer(inputChannel = stateChannel, outputChannel = telemetryChannel)
+	public AbstractTransformer handleStateMessage(StateMgtService service) {
+
+		var handler = new AbstractTransformer() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			protected Object doTransform(Message<?> imessage) {
+				return service.handleStateMessage((Message<StateMessage>)imessage);
+			}
+		};
+
+		return handler;
+	}
 
 	@Bean
 	@ServiceActivator(inputChannel = telemetryChannel)
@@ -477,6 +549,9 @@ public class LasRosasIotConfig {
 		@Gateway(requestChannel = rak7249UplinkChannel)
 		void sendRak7249(Rak7249Message message);
 
+		@Gateway(requestChannel = telemetryChannel)
+		void sendTelemetry(Message<?> c);
+
 		@Gateway(requestChannel = publishMqttChannel)
 		void sendToMqtt(Telemetry telemetry, @Header(MqttHeaders.TOPIC) String topic);
 
@@ -490,4 +565,16 @@ public class LasRosasIotConfig {
 	    @Transactional
 	    void sendIntransaction(Message<?> msg);
 	}
+
+	/*
+	 * Scheduler
+	 */
+	@Bean
+    public ThreadPoolTaskScheduler taskScheduler() {
+
+		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(3);
+        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+        return threadPoolTaskScheduler;
+    }
 }

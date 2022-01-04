@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.List;
 
 import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.telemetry.StateMessage;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class ReactContext {
@@ -18,8 +19,9 @@ public class ReactContext {
 		}
 	};
 
-	private final List<Telemetry> telemetries = new ArrayList<Telemetry>();
-	private final List<Order> orders = new ArrayList<Order>();
+	private final List<Telemetry> telemetries = new ArrayList<>();
+	private final List<StateMessage> stateMessages = new ArrayList<>();
+	private final List<Order> orders = new ArrayList<>();
 
 	public static void push() {
 		threadScopedContext.get().push(new ReactContext());
@@ -37,12 +39,20 @@ public class ReactContext {
 		peek().telemetries.add(telemery);
 	}
 
+	public static void addStateMessage(StateMessage stateMessage) {
+		peek().stateMessages.add(stateMessage);
+	}
+
 	public static void addOrder(Order order) {
 		peek().orders.add(order);
 	}
 
 	public List<Telemetry> getTelemetries() {
 		return telemetries;
+	}
+
+	public List<StateMessage> getStateMessages() {
+		return stateMessages;
 	}
 
 	public List<Order> getOrders() {

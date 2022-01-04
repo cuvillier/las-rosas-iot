@@ -41,8 +41,8 @@ public class MFC88LW13IOParser implements PayloadParser {
 			var payload = imessage.getPayload();
 			if( payload instanceof UplinkIO) {
 				var uplinkIO = (UplinkIO)payload;
-				var switchOnOff = new Switched(uplinkIO.getOutputs() != 0?1: 0);
-				result.add(MessageBuilder.withPayload((Telemetry)switchOnOff).copyHeaders(imessage.getHeaders()).build());
+				var switched = new Switched(uplinkIO.getOutputs() != 0?1: 0);
+				result.add(MessageBuilder.withPayload((Telemetry)switched).copyHeaders(imessage.getHeaders()).build());
 			}
 
 			return result;

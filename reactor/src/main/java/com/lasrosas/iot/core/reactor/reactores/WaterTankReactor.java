@@ -13,7 +13,6 @@ import com.lasrosas.iot.core.database.repo.TimeSerieTypeRepo;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.reactor.base.TwinReactor;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;
-import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.telemetry.WaterTankFilling;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.Loggers;
@@ -34,7 +33,7 @@ public class WaterTankReactor implements TwinReactor {
 	}
 
 	@Override
-	public void react(TwinReactorReceiver receiver, Message<? extends Telemetry> imessage) {
+	public void react(TwinReactorReceiver receiver, Message<?> imessage) {
 
 		if (!receiver.getType().getRole().equals("level"))
 			throw new RuntimeException("Unexpected receiver role " + receiver.getType().getRole());

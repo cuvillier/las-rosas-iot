@@ -13,7 +13,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.core.database.repo.TwinReactorReceiverFromThingRepo;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
-import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class ReactorServiceImpl implements ReactorService {
@@ -29,7 +28,7 @@ public class ReactorServiceImpl implements ReactorService {
 	private ApplicationContext context;
 
 	@Override
-	public List<Message<?>> react(Message<? extends Telemetry> imessage) {
+	public List<Message<?>> react(Message<?> imessage) {
 		var result = new ArrayList<Message<?>>();
 
 		/*
@@ -71,6 +70,15 @@ public class ReactorServiceImpl implements ReactorService {
 				for(var telemetry: context.getTelemetries()) {
 					result.add(
 							MessageBuilder.withPayload(telemetry)
+							.copyHeaders(imessage.getHeaders())
+							.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
+							.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())
+							.build());
+				}
+
+				for(var stateMessage: context.getStateMessages()) {
+					result.add(
+							MessageBuilder.withPayload(stateMessage)
 							.copyHeaders(imessage.getHeaders())
 							.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
 							.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())

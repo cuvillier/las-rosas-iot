@@ -17,12 +17,11 @@ public class ReactorSpliter extends AbstractMessageSplitter {
 	 * Decode Message from a Lora sensor, and normalize the data model.
 	 * return a collection of ThingMessages
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Object splitMessage(Message<?> imessage) {
 
 		if(imessage.getPayload() instanceof Telemetry) {
-			var result = service.react((Message<? extends Telemetry>)imessage);
+			var result = service.react(imessage);
 			return result;
 		}
 

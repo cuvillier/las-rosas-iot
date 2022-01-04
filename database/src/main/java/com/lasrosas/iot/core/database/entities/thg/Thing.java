@@ -1,5 +1,6 @@
 package com.lasrosas.iot.core.database.entities.thg;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -19,6 +20,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiverFromThing;
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
@@ -30,6 +34,8 @@ import com.sun.istack.NotNull;
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = Thing.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = Thing.COL_DISCRIMINATOR)
 public abstract class Thing extends BaseEntity {
+	public static final Logger log = LoggerFactory.getLogger(Thing.class);
+
 	public static final String TABLE = "t_thg_thing";
 	public static final String PREFIX = "thg_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
@@ -38,6 +44,7 @@ public abstract class Thing extends BaseEntity {
 	public static final String COL_READABLE = PREFIX + "readable";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_MODE = PREFIX + "mode";
+	public static final String COL_CONNECTION_TIMEOUT = PREFIX + "connectionTimeout";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "type";
 	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "gateway";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
@@ -57,9 +64,12 @@ public abstract class Thing extends BaseEntity {
 	@Column(name = COL_READABLE)
 	private String readable;
 
+	@Column(name = COL_CONNECTION_TIMEOUT)
+	private Integer connectionTimeout;
+
 	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ThingProxy proxy;
-
+	
 	@OneToMany(mappedBy = TwinReactorReceiverFromThing.PROP_THING)
 	private List<TwinReactorReceiverFromThing> receivers;
 	
@@ -88,6 +98,14 @@ public abstract class Thing extends BaseEntity {
 
 	public abstract String getNaturalId();
 	public abstract String getKind();
+
+	public Integer getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Integer connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
 
 	public Mode getMode() {
 		return mode;
@@ -134,5 +152,22 @@ public abstract class Thing extends BaseEntity {
 
 	public void setProxy(ThingProxy proxy) {
 		this.proxy = proxy;
+	}
+
+	public boolean needToDisconnect() {
+
+		if(this.connectionTimeout == null) return false;
+		if( !this.proxy.isConnected()) return false;
+		if( this.proxy.getLastSeen() == null ) return proxy.isConnected();
+
+		var lastSeen = this.proxy.getLastSeen();
+		var connectedUpTo = lastSeen.plusSeconds(this.connectionTimeout);
+
+		var now = LocalDateTime.now();
+		log.debug("now " + now);
+		log.debug("connectedUpTo " + connectedUpTo);
+		log.debug("connectedUpTo.after " + connectedUpTo.isAfter(now));
+		log.debug("connectedUpTo.before" + connectedUpTo.isBefore(now));
+		return (connectedUpTo.isBefore(now));
 	}
 }

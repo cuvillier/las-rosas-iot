@@ -93,6 +93,7 @@ CREATE TABLE t_thg_thing
 (
 	thg_techid INT UNSIGNED AUTO_INCREMENT,
 	thg_readable VARCHAR(50) DEFAULT NULL,
+	thg_connectionTimeout INT(6) DEFAULT NULL,
 	thg_discriminator VARCHAR(3) NOT NULL,
 	thg_fk_tty_type INT UNSIGNED NOT NULL,
 	thg_fk_gtw_gateway INT UNSIGNED,
@@ -111,7 +112,7 @@ CREATE TABLE t_thg_thing_proxy
 (
 	thp_techid INT UNSIGNED AUTO_INCREMENT,
 	thp_battery_state INT UNSIGNED DEFAULT 0,
-	thp_connection_state INT UNSIGNED DEFAULT 0,
+	thp_connected INT UNSIGNED DEFAULT 0,
 	thp_battery_level INT UNSIGNED DEFAULT NULL,
 	thp_last_seen TIMESTAMP(6) NULL DEFAULT NULL,
 	thp_config VARCHAR(4000) DEFAULT NULL,

@@ -23,7 +23,7 @@ public class ThingProxy extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_BATTERY_STATE = PREFIX + "battery_state";
-	public static final String COL_CONNECTION_STATE = PREFIX + "connection_state";
+	public static final String COL_CONNECTED = PREFIX + "connected";
 	public static final String COL_BATTERY_LEVEL = PREFIX + "battery_level";
 	public static final String COL_LAST_SEEN = PREFIX + "last_seen";
 	public static final String COL_CONFIG = PREFIX + "config";
@@ -41,9 +41,12 @@ public class ThingProxy extends BaseEntity {
 	@Column(name=COL_BATTERY_LEVEL)
 	private Integer batteryLevel;
 
-	@Column(name=COL_CONNECTION_STATE)
-	private boolean connectionState;
-	
+	public static final int CONNECTED = 1;
+	public static final int DISCONNECTED = 0;
+
+	@Column(name=COL_CONNECTED)
+	private int connected;
+
 	@Column(name=COL_LAST_SEEN)
 	private LocalDateTime lastSeen;
 
@@ -55,6 +58,14 @@ public class ThingProxy extends BaseEntity {
 
 	public Thing getThing() {
 		return thing;
+	}
+
+	public int getConnected() {
+		return connected;
+	}
+
+	public void setConnected(int connected) {
+		this.connected = connected;
 	}
 
 	public void setThing(Thing thing) {
@@ -75,14 +86,6 @@ public class ThingProxy extends BaseEntity {
 
 	public void setBatteryLevel(Integer batteryLevel) {
 		this.batteryLevel = batteryLevel;
-	}
-
-	public boolean isConnectionState() {
-		return connectionState;
-	}
-
-	public void setConnectionState(boolean connectionState) {
-		this.connectionState = connectionState;
 	}
 
 	public LocalDateTime getLastSeen() {
@@ -107,5 +110,9 @@ public class ThingProxy extends BaseEntity {
 
 	public void setValues(String values) {
 		this.values = values;
+	}
+
+	public boolean isConnected() {
+		return connected == CONNECTED;
 	}
 }

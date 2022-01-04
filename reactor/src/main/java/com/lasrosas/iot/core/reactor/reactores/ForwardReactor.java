@@ -13,7 +13,8 @@ public class ForwardReactor implements TwinReactor {
 	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
 
 	@Override
-	public void react(TwinReactorReceiver receiver, Message<? extends Telemetry> message) {
-		ReactContext.addTelemetry(message.getPayload());
+	public void react(TwinReactorReceiver receiver, Message<?> message) {
+		var payload = message.getPayload();
+		if(payload instanceof Telemetry) ReactContext.addTelemetry((Telemetry)payload);
 	}
 }

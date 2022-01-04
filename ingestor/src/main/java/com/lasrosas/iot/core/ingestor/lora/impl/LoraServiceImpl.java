@@ -14,7 +14,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.shared.telemetry.ThingConnectionState;
+import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
 
@@ -69,7 +69,7 @@ public class LoraServiceImpl implements LoraService {
 	}
 
 	@Override
-	public ThingConnectionState splitJoin(Message<LoraMessageJoin> imessage) {
+	public Message<ConnectionState> splitJoin(Message<LoraMessageJoin> imessage) {
 
 		var joinMessage = imessage.getPayload();
 
@@ -100,6 +100,11 @@ public class LoraServiceImpl implements LoraService {
 			thingLoraRepo.save(thingLora);
 		}
 
-		return new ThingConnectionState(true, ThingConnectionState.CAUSE_NTW_CONNECT);
+		return MessageBuilder
+			.withPayload(new ConnectionState(1, ConnectionState.CAUSE_NTW_JOIN))
+			.copyHeaders(imessage.getHeaders())
+			.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
+			.setHeader(LasRosasHeaders.THING_NATURAL_ID, "LOR" + thing.getDeveui())
+			.build();
 	}
 }

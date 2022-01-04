@@ -21,6 +21,7 @@ import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchValue;
 import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.telemetry.StateMessage;
 import com.lasrosas.iot.core.shared.telemetry.Switched;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
@@ -46,7 +47,7 @@ public class MultiSwitchReactorTest {
 
 
 		// Set the initial state: not connected, expected ON
-		var payloadNotConnected = new ConnectionState(false);
+		var payloadNotConnected = new ConnectionState(0, ConnectionState.CAUSE_NTW_TIMEOUT);
 
 		testReact(receiver, payloadNotConnected);
 
@@ -57,7 +58,7 @@ public class MultiSwitchReactorTest {
 		Assert.assertEquals(MultiSwitch.OFF, multiSwitch.getState());
 
 		// Do connect
-		var payloadConnected = new ConnectionState(true);
+		var payloadConnected = new ConnectionState(1, ConnectionState.CAUSE_NTW_JOIN);
 		testReact(receiver, payloadConnected);
 
 		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true));
@@ -90,6 +91,13 @@ public class MultiSwitchReactorTest {
 	private void testReact(TwinReactorReceiver receiver,  Telemetry inboundTelemetry) {
 		ReactContext.clearAndPop();
 		Message<Telemetry> telemetryConnected = MessageBuilder.withPayload(inboundTelemetry).build();
+
+		reactor.react(receiver, telemetryConnected);
+	}
+
+	private void testReact(TwinReactorReceiver receiver,  StateMessage inboundTelemetry) {
+		ReactContext.clearAndPop();
+		Message<StateMessage> telemetryConnected = MessageBuilder.withPayload(inboundTelemetry).build();
 
 		reactor.react(receiver, telemetryConnected);
 	}
