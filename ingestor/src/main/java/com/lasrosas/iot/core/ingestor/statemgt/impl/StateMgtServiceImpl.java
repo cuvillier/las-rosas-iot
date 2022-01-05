@@ -1,5 +1,8 @@
 package com.lasrosas.iot.core.ingestor.statemgt.impl;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class StateMgtServiceImpl implements StateMgtService {
 	@Autowired 
 	private TimeoutThingTask timeoutThingTask;
 
+	@PersistenceContext
+	private EntityManager em;
+
 	public static interface StateNotifictionCallback {
 		  void notifiyState(Message<?> cs);
 	}
@@ -38,7 +44,7 @@ public class StateMgtServiceImpl implements StateMgtService {
 		var thingId = LasRosasHeaders.thingid(message).get();
 		var thing = thingRepo.getOne(thingId);
 
-		var proxy = thing.getProxy();
+		var proxy = thing.getCreateProxy(em);
 		proxy.setLastSeen(LasRosasHeaders.timeReceived(message));
 		ConnectionState notification = null;
 

@@ -13,7 +13,7 @@ public class MultiSwitchType extends DigitalTwinType {
 
 	public static final String PREFIX = "mst_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
-	public static final String COL_MAX_STATE = PREFIX + "maxState";
+	public static final String COL_MAX_STATE = PREFIX + "max_state";
 	public static final String COL_TECHID = PREFIX + "techid";
 
 	@Column(name=COL_MAX_STATE)

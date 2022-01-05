@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
@@ -29,6 +30,7 @@ import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 @IntegrationComponentScan
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan("com.lasrosas.iot")
+@ActiveProfiles("dev")
 public class LasRosasConfigTest {
 	public static Logger log = LoggerFactory.getLogger(LasRosasConfigTest.class);
 

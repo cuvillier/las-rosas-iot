@@ -15,6 +15,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 
 public class LoraMessageSplitterConfig {
 	@Bean
@@ -57,6 +58,7 @@ public class LoraMessageSplitterConfig {
 		var router = new PayloadTypeRouter();
 		router.setChannelMapping(LoraMetricMessage.class.getName(), "loraMetricChannel");
 		router.setChannelMapping(ThingEncodedMessage.class.getName(), "thingEncodedChannel");
+		router.setChannelMapping(StillAlive.class.getName(), "errorChannel");
 		return router;
 	}
 

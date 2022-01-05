@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.database.entities.dtw.BaseDatabaseTest;
 import com.lasrosas.iot.database.entities.dtw.DatabaseTest;
@@ -18,14 +16,10 @@ public class ThingRepoTimeoutTest extends BaseDatabaseTest {
 	@Autowired
 	private ThingRepo thingRepo;
 
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
 	@Test
 	@Transactional
 	void findTesthing() throws Exception {
-
-		var result = thingRepo.findTimeouted();
-
-		log.info("==================> " + gson.toJson(result));
+		// Just run it
+		thingRepo.findTimeouted();
 	}
 }

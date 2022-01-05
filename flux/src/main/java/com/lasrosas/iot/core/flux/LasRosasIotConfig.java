@@ -105,7 +105,9 @@ public class LasRosasIotConfig {
 	public PollerMetadata defaultPoller() {
 
 	    PollerMetadata pollerMetadata = new PollerMetadata();
-	    pollerMetadata.setTrigger(new PeriodicTrigger(1000));
+	    
+	    // every hour
+	    pollerMetadata.setTrigger(new PeriodicTrigger(60*60*1000));
 	    return pollerMetadata;
 	}
 
@@ -481,6 +483,7 @@ public class LasRosasIotConfig {
 		var router = new PayloadTypeRouter();
 	    router.setChannelMapping(Order.class.getName(), orderChannel);
 	    router.setChannelMapping(Telemetry.class.getName(), loraMetricChannel);
+	    router.setDefaultOutputChannelName(errorChannel);
 
 	    return router;
 	}
@@ -498,6 +501,7 @@ public class LasRosasIotConfig {
 		var router = new HeaderValueRouter(LasRosasHeaders.GATEWAY_NAURAL_ID);
 	    router.setChannelMapping("rak7249", rak7249DownlinkChannel);
 	    router.setResolutionRequired(true);
+	    router.setDefaultOutputChannelName(errorChannel);
 
 	    return router;
 	}

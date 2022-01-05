@@ -2,6 +2,8 @@ package com.lasrosas.iot.core.ingestor.statemgt.impl;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ public class TimeoutThingTask {
 
 	@Autowired
 	private ThingRepo thingRepo;
+
+	@PersistenceContext
+	private EntityManager em;
 	
 	private StateNotifictionCallback stateNotifictionCallback;
 
@@ -36,7 +41,7 @@ public class TimeoutThingTask {
 		for(var thing: things) {
 			if( thing.needToDisconnect() ) {
 				var notification = new ConnectionState(0, ConnectionState.CAUSE_NTW_TIMEOUT);
-				thing.getProxy().setConnected(0);
+				thing.getCreateProxy(em).setConnected(0);
 
 				var imessage = MessageBuilder.withPayload(notification)
 					.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())

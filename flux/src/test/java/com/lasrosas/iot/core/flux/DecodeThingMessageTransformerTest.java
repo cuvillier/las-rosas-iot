@@ -14,6 +14,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.PollableChannel;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 @DataJpaTest()
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan("com.lasrosas.iot")
+@ActiveProfiles("dev")
 public class DecodeThingMessageTransformerTest {
 	public static Logger log = LoggerFactory.getLogger(DecodeThingMessageTransformerTest.class);
 

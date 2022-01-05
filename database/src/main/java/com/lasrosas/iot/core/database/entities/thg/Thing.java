@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -44,7 +45,7 @@ public abstract class Thing extends BaseEntity {
 	public static final String COL_READABLE = PREFIX + "readable";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_MODE = PREFIX + "mode";
-	public static final String COL_CONNECTION_TIMEOUT = PREFIX + "connectionTimeout";
+	public static final String COL_CONNECTION_TIMEOUT = PREFIX + "connection_timeout";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "type";
 	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "gateway";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
@@ -144,6 +145,20 @@ public abstract class Thing extends BaseEntity {
 
 	public void setReadable(String readable) {
 		this.readable = readable;
+	}
+
+	public void createProxy() {
+		this.proxy = new ThingProxy();
+		this.proxy.setThing(this);		
+	}
+
+	public ThingProxy getCreateProxy(EntityManager em) {
+		if (this.proxy == null) {
+			createProxy();
+			em.persist(this.proxy);
+		}
+
+		return proxy;
 	}
 
 	public ThingProxy getProxy() {

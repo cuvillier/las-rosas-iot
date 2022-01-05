@@ -27,9 +27,9 @@ public class MultiSwitch extends DigitalTwin {
 	public static final String PREFIX = "msw_";
 	public static final String DISCRIMINATOR = "msw";
 	public static final String COL_STATE = PREFIX + "state";
-	public static final String COL_EXPECTED_STATE = PREFIX + "expectedState";
+	public static final String COL_EXPECTED_STATE = PREFIX + "expected_state";
 	public static final String COL_CONNECTED = PREFIX + "connected";
-	public static final String COL_STATE_WHEN_CONNECT = PREFIX + "stateWhenConnect";
+	public static final String COL_STATE_WHEN_CONNECT = PREFIX + "state_when_connect";
 
 	@Column(name=COL_STATE)
 	private int state = OFF;

@@ -1,5 +1,8 @@
 package com.lasrosas.iot.core.ingestor.timeSerieWriter.impl;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.core.database.entities.thg.ThingProxy;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerieType;
@@ -39,6 +41,9 @@ public class WriteSQLImpl implements WriteSQL {
 	@Autowired
 	private TimeSeriePointRepo tspRepo;
 	
+	@PersistenceContext
+	private EntityManager em;
+
 	private boolean storeProxyTime = false;
 
 	
@@ -63,14 +68,7 @@ public class WriteSQLImpl implements WriteSQL {
 
 		// Twin point
 		if( thing == null ) return;
-		var proxy = thing.getProxy();
-
-		// Create the proxy if needed
-		if (proxy == null) {
-			proxy = new ThingProxy();
-			proxy.setThing(thing);
-			thing.setProxy(proxy);
-		}
+		var proxy = thing.getCreateProxy(em);
 
 		// Merge the proxy values
 		proxy.setLastSeen(point.getTime());

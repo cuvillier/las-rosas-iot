@@ -29,6 +29,7 @@ public class WriteSQLTest {
 		var tht = new ThingType("LasRosas", "UnitTest");
 		var gtw = new ThingGateway("unittest");
 		var thg = new ThingLora(gtw, tht, "123456");
+		thg.createProxy();
 
 		var point = createPoint(thg, "{ i: 1 }", "UnitTest", null);
 		var cut = new WriteSQLImpl();

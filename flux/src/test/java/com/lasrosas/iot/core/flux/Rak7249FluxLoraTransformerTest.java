@@ -15,6 +15,7 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
@@ -29,6 +30,7 @@ import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 @SpringBootTest
 @EnableIntegration
 @ContextConfiguration(classes = {Rak7249FluxLoraTransformerConfig.class, UtilsConfig.class})
+@ActiveProfiles("dev")
 public class Rak7249FluxLoraTransformerTest {
 	public static Logger log = LoggerFactory.getLogger(Rak7249FluxLoraTransformerTest.class);
 

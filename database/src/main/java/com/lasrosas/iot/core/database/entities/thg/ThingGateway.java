@@ -30,7 +30,7 @@ public class ThingGateway extends BaseEntity {
 	public static final String COL_URL = PREFIX + "url";
 	public static final String COL_LOGIN = PREFIX + "login";
 	public static final String COL_PASSWORD = PREFIX + "password";
-	public static final String COL_TYPE_NAME = PREFIX + "typeName";
+	public static final String COL_TYPE_NAME = PREFIX + "type_name";
 
 	public static final String PROP_TYPE = "things";
 
