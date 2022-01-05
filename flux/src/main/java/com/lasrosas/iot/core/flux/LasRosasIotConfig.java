@@ -106,8 +106,7 @@ public class LasRosasIotConfig {
 
 	    PollerMetadata pollerMetadata = new PollerMetadata();
 	    
-	    // every hour
-	    pollerMetadata.setTrigger(new PeriodicTrigger(60*60*1000));
+	    pollerMetadata.setTrigger(new PeriodicTrigger(10*1000));
 	    return pollerMetadata;
 	}
 

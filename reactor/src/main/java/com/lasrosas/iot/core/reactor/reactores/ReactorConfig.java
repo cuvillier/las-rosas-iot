@@ -17,7 +17,7 @@ public class ReactorConfig {
 	}
 	
 	@Bean
-	public MultiSwitchReactor PowerSwitchReactor() {
+	public MultiSwitchReactor MultiSwitchReactor() {
 		return new MultiSwitchReactor();
 	}
 }

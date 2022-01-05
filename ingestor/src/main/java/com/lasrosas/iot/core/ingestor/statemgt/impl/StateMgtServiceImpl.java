@@ -32,7 +32,7 @@ public class StateMgtServiceImpl implements StateMgtService {
 		  void notifiyState(Message<?> cs);
 	}
 
-	@Scheduled(cron = "0 0/1 * * * *")
+	@Scheduled(cron = "0 0 0/1 * * *")
 	public void timeoutThingtask() {
 		log.info("=== Starting batch timeoutThings");
 		timeoutThingTask.timeoutThing();
