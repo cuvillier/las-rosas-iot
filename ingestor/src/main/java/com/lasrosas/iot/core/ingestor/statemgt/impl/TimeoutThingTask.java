@@ -24,12 +24,9 @@ public class TimeoutThingTask {
 	
 	private StateNotifictionCallback stateNotifictionCallback;
 
-
 	public TimeoutThingTask(StateNotifictionCallback stateNotifictionCallback) {
-		super();
 		this.stateNotifictionCallback = stateNotifictionCallback;
 	}
-
 
 	public void setStateNotifictionCallback(StateNotifictionCallback stateNotifictionCallback) {
 		this.stateNotifictionCallback = stateNotifictionCallback;

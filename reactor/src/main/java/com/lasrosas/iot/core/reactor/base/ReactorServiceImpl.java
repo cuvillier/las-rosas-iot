@@ -88,6 +88,7 @@ public class ReactorServiceImpl implements ReactorService {
 				for(var order: context.getOrders()) {
 					var builder = MessageBuilder.withPayload(order)
 						.copyHeaders(imessage.getHeaders())
+						.setHeader(LasRosasHeaders.GATEWAY_NAURAL_ID, receiver.getThing().getGateway().getNaturalId())
 						.setHeader(LasRosasHeaders.ORIGIN_TWIN, twin.getTechid())
 						.setHeader(LasRosasHeaders.ORIGIN_TYPE, LasRosasHeaders.ORIGIN_TWIN);
 

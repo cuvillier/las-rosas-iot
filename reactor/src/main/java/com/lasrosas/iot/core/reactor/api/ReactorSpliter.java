@@ -3,8 +3,6 @@ package com.lasrosas.iot.core.reactor.api;
 import org.springframework.integration.splitter.AbstractMessageSplitter;
 import org.springframework.messaging.Message;
 
-import com.lasrosas.iot.core.shared.telemetry.Telemetry;
-
 public class ReactorSpliter extends AbstractMessageSplitter {
 
 	private ReactorService service;
@@ -20,11 +18,7 @@ public class ReactorSpliter extends AbstractMessageSplitter {
 	@Override
 	protected Object splitMessage(Message<?> imessage) {
 
-		if(imessage.getPayload() instanceof Telemetry) {
-			var result = service.react(imessage);
-			return result;
-		}
-
-		return null;
+		var result = service.react(imessage);
+		return result;
 	}
 }

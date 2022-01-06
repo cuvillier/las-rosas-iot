@@ -11,6 +11,11 @@ public class ToGsonTransformer extends AbstractTransformer {
 
 	@Override
 	protected Object doTransform(Message<?> message) {
-		return gson.toJson(message.getPayload());
+		var json = gson.toJson(message.getPayload());
+		return "{\n" 
+			   + "  \"schema\": \"" + message.getPayload().getClass().getSimpleName() + "\",\n"
+		       + "  \"payload\":" + json + "\n"
+		       + "}";
+				
 	}
 }

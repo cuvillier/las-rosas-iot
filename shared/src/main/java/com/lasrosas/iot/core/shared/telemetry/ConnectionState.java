@@ -5,6 +5,7 @@ public class ConnectionState extends StateMessage {
 	public static final int CAUSE_NTW_JOIN = 1;
 	public static final int CAUSE_NTW_TIMEOUT = 2;
 	public static final int CAUSE_ALIVE = 3;
+	public static final int CAUSE_RECONNECT = 4;
 
 	private int remind = 0;
 	private int connected;

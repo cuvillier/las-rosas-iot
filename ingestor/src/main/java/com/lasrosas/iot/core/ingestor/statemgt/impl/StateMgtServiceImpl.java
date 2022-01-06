@@ -32,7 +32,7 @@ public class StateMgtServiceImpl implements StateMgtService {
 		  void notifiyState(Message<?> cs);
 	}
 
-	@Scheduled(cron = "0 0 0/1 * * *")
+	@Scheduled(cron = "0 0/5 * * * *")
 	public void timeoutThingtask() {
 		log.info("=== Starting batch timeoutThings");
 		timeoutThingTask.timeoutThing();
@@ -53,7 +53,18 @@ public class StateMgtServiceImpl implements StateMgtService {
 		if( payload instanceof ConnectionState) {
 			var connectionState = (ConnectionState)payload;
 
-			var remind = connectionState.getConnected() == proxy.getConnected()?1:0;
+			int remind;
+
+			/*
+			 * If the sensor join, it was disconnected, but proxy.connected may be true
+			 * because it is updated asynchronously by the TimeoutThingTask.
+			 * 
+			 * In any case, force the remind to 0, to handle it like a new connection.
+			 */
+			if( connectionState.getCause() == ConnectionState.CAUSE_NTW_JOIN )
+				remind = 0;
+			else
+				remind = connectionState.getConnected() == proxy.getConnected()?1:0;
 			notification = new ConnectionState(connectionState.getConnected(), connectionState.getCause(), remind);
 
 			proxy.setConnected(connectionState.getConnected());

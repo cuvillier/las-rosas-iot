@@ -35,8 +35,7 @@ public class MultiSwitchReactor implements TwinReactor {
 		// Only Thing receivers are supported
 		var switchTwin = receiver.<MultiSwitch>getTwin();
 		var payload = imessage.getPayload();
-		var previousState = switchTwin.getState();
-		var previousConnected = switchTwin.isConnected();
+		boolean boot;
 
 		if( payload instanceof Switched ) {
 
@@ -50,11 +49,14 @@ public class MultiSwitchReactor implements TwinReactor {
 			switchTwin.setState(switched.getState());
 			switchTwin.setExpectedState(switched.getState());
 
+			boot = false;
+
 		} else if( payload instanceof ConnectionState ) {
 
 			var connectionState = (ConnectionState)payload;
-			if( switchTwin.isConnected() == connectionState.isConnected()) return;
-	
+			if( connectionState.getRemind() == 1 && switchTwin.isConnected() == connectionState.isConnected()) return;
+
+			boot = connectionState.getCause() == ConnectionState.CAUSE_NTW_JOIN;
 			switchTwin.setConnected(connectionState.getConnected());
 
 			if( switchTwin.isConnected() && switchTwin.getStateWhenConnect().isPresent()) {
@@ -66,9 +68,9 @@ public class MultiSwitchReactor implements TwinReactor {
 				switchTwin.setState(newState);
 				switchTwin.setExpectedState(newState);
 			}
-		}
+		} else
+			return;
 
-		if( previousState != switchTwin.getState() || previousConnected != switchTwin.isConnected())
-			ReactContext.addTelemetry(new MultiSwitchValue(switchTwin.getState(), switchTwin.getExpectedState(), switchTwin.isConnected()));
+		ReactContext.addTelemetry(new MultiSwitchValue(switchTwin.getState(), switchTwin.getExpectedState(), switchTwin.isConnected(), boot));
 	}
 }

@@ -7,13 +7,15 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.springframework.orm" level="DEBUG" />
-	<logger name="org.springframework.transaction" level="DEBUG" />
+	<logger name="com.lasrosas.iot.core.flux.FluxLogger" level="DEBUG" />
+
+	<logger name="org.springframework.orm" level="WARN" />
+	<logger name="org.springframework.transaction" level="WARN" />
 	<logger
 		name="oorg.hibernate.engine.transaction.internal.TransactionImpl"
-		level="DEBUG" />
+		level="WARN" />
 
-	<root level="info">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

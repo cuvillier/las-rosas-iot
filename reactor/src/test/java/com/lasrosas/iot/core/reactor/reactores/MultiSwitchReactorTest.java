@@ -51,7 +51,7 @@ public class MultiSwitchReactorTest {
 
 		testReact(receiver, payloadNotConnected);
 
-		assertReactContextTelemetries();
+		assertReactContextTelemetries(new MultiSwitchValue(0, 1, false, false));
 		assertReactContextOrders();
 
 		Assert.assertFalse(multiSwitch.isConnected());
@@ -61,7 +61,7 @@ public class MultiSwitchReactorTest {
 		var payloadConnected = new ConnectionState(1, ConnectionState.CAUSE_NTW_JOIN);
 		testReact(receiver, payloadConnected);
 
-		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true));
+		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, true));
 		assertReactContextOrders( new MultiSwitchOrder(1));
 
 		Assert.assertTrue(multiSwitch.isConnected());
@@ -71,7 +71,7 @@ public class MultiSwitchReactorTest {
 		var payloadSwitchOff = new Switched(MultiSwitch.OFF);
 		testReact(receiver, payloadSwitchOff);
 
-		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true));
+		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true, false));
 		assertReactContextOrders();
 
 		Assert.assertTrue(multiSwitch.isConnected());
@@ -81,7 +81,7 @@ public class MultiSwitchReactorTest {
 		var payloadSwitchOn = new Switched(MultiSwitch.ON);
 		testReact(receiver, payloadSwitchOn);
 
-		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true));
+		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, false));
 		assertReactContextOrders();
 
 		Assert.assertTrue(multiSwitch.isConnected());
@@ -102,14 +102,14 @@ public class MultiSwitchReactorTest {
 		reactor.react(receiver, telemetryConnected);
 	}
 
-	private void assertReactContextTelemetries(Telemetry ... telemetries) {
+	private void assertReactContextTelemetries(Object ... result) {
 		var ctx = ReactContext.peek();
 
-		assertEquals(telemetries.length, ctx.getTelemetries().size());
+		assertEquals(result.length, ctx.getTelemetries().size());
 		for(int i = 0; i < ctx.getTelemetries().size(); i++) {
 
 			var telemetry1 = ctx.getTelemetries().get(i);
-			var telemetry2 = telemetries[i];
+			var telemetry2 = result[i];
 
 			String json1 = gson.toJson(telemetry1);
 			String json2 = gson.toJson(telemetry2);

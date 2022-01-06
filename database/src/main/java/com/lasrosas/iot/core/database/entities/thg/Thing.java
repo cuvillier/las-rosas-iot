@@ -178,11 +178,10 @@ public abstract class Thing extends BaseEntity {
 		var lastSeen = this.proxy.getLastSeen();
 		var connectedUpTo = lastSeen.plusSeconds(this.connectionTimeout);
 
-		var now = LocalDateTime.now();
-		log.debug("now " + now);
-		log.debug("connectedUpTo " + connectedUpTo);
-		log.debug("connectedUpTo.after " + connectedUpTo.isAfter(now));
-		log.debug("connectedUpTo.before" + connectedUpTo.isBefore(now));
-		return (connectedUpTo.isBefore(now));
+		var needToDisconnect = connectedUpTo.isBefore(LocalDateTime.now());
+		if(needToDisconnect)
+			log.info("Thing " + getNaturalId() + " needs to be disconnected.");
+
+		return needToDisconnect;
 	}
 }

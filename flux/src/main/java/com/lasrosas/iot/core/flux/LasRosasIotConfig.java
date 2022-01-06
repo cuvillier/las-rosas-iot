@@ -525,8 +525,19 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@ServiceActivator(inputChannel = publishMqttChannel)
-	public MessageHandler mqttPublisher(MqttPahoClientFactory rak7249MqttClientFactory) {
-		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", rak7249MqttClientFactory);
+	public MessageHandler mqttPublisher(MqttPahoClientFactory publishMqttClientFactory) {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("lasRosasIot", publishMqttClientFactory) {
+
+			@Override
+			protected void publish(String topic, Object mqttMessage, Message<?> message) {
+
+				log.info("Publish mqtt message topic=" + topic);
+				log.info(message.getPayload().toString());
+
+				super.publish(topic, mqttMessage, message);
+			}
+		};
+
 		messageHandler.setAsync(false);
 		messageHandler.setTopicExpressionString("'device/' + headers['ThingNaturalId'] + '/uplink'");
 		return messageHandler;
