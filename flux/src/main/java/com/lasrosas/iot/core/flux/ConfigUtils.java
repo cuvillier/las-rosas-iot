@@ -7,13 +7,14 @@ import org.springframework.integration.mqtt.support.MqttMessageConverter;
 
 public class ConfigUtils {
 
-	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MqttMessageConverter mqttMessageConverter) {
+	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String name, String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MqttMessageConverter mqttMessageConverter) {
 
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
 				config.getClientId(),
 				clientFactory,
 				topic);
 
+		adapter.setBeanName(name);// Required, else fail with DSL
 		adapter.setConverter(mqttMessageConverter == null? new DefaultPahoMessageConverter(): mqttMessageConverter);
 
 		// Set options from config

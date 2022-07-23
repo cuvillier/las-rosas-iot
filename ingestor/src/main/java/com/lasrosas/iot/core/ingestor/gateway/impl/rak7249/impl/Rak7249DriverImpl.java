@@ -15,6 +15,7 @@ import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageAck
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.ingestor.lora.api.DeviceNameParser;
+import com.lasrosas.iot.core.ingestor.lora.api.LoraMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
@@ -32,6 +33,30 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 	public Rak7249DriverImpl() {
 		super();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Message< ? extends LoraMessage> transform(Message<? extends Rak7249Message> message) {
+		log.info("doTransform procssing message=" + message);
+
+		var payload = message.getPayload();
+
+		Message< ? extends LoraMessage> loraMessage;
+
+		if(payload instanceof Rak7249MessageJoin)
+			loraMessage = convertJoinToLoraMessage((Message<Rak7249MessageJoin>)message);
+
+		else if(payload instanceof Rak7249MessageAck)
+			loraMessage = convertAckToLoraMessage((Message<Rak7249MessageAck>)message);
+
+		else if(payload instanceof Rak7249MessageRx)
+			loraMessage = convertRxToLoraMessage((Message<Rak7249MessageRx>)message);
+		else
+			throw new RuntimeException("Unknown message type: " + message.getPayload().getClass().getName());
+
+		log.info("doTransform loraMessage = " + loraMessage);
+		return loraMessage;
+	}	
 
 	@Override
 	public Rak7249Message fromJson(String topic, String json) {

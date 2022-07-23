@@ -1,5 +1,7 @@
 package com.lasrosas.iot.core.ingestor.lora.impl;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -9,12 +11,14 @@ import com.lasrosas.iot.core.database.entities.thg.ThingLora;
 import com.lasrosas.iot.core.database.repo.GatewayRepo;
 import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.core.database.repo.ThingTypeRepo;
+import com.lasrosas.iot.core.ingestor.lora.api.LoraMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
+import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
 
@@ -30,6 +34,44 @@ public class LoraServiceImpl implements LoraService {
 	private GatewayRepo gatewayRepo;
 
 	private boolean autocreate = true;
+	@Override
+	public ArrayList<Message<?>> splitMessage(Message<?> imessage) {
+		var result = new ArrayList<Message<?>>();
+		var payload = (LoraMessage)imessage.getPayload();
+
+		if(payload instanceof LoraMessageUplink ) {
+			var thing = thingLoraRepo.getByDeveui(payload.getDeveui());
+
+			@SuppressWarnings("unchecked")
+			var splitResult = splitUplink((Message<LoraMessageUplink>)imessage);
+
+			result.add(splitResult.getLoraMetricMessage());
+			result.add(splitResult.getThingEncodedMessage());
+			result.add(MessageBuilder
+						.withPayload(new StillAlive())
+						.copyHeaders(imessage.getHeaders())
+						.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
+						.setHeader(LasRosasHeaders.THING_NATURAL_ID, "LOR" + thing.getDeveui())
+						.build()
+						);
+
+		} else if(payload instanceof LoraMessageJoin ) {
+
+			@SuppressWarnings("unchecked")
+			var splitResult = splitJoin((Message<LoraMessageJoin>)imessage);
+			result.add(splitResult);
+
+		} else {
+			
+			result.add(MessageBuilder
+					.withPayload(new StillAlive())
+					.copyHeaders(imessage.getHeaders())
+					.build()
+					);
+		}
+
+		return result;
+	}
 
 	@Override
 	public HandleUplinkResult splitUplink(Message<LoraMessageUplink> imessage) {

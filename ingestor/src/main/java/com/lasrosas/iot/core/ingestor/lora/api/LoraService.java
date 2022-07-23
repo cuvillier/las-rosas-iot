@@ -1,5 +1,7 @@
 package com.lasrosas.iot.core.ingestor.lora.api;
 
+import java.util.ArrayList;
+
 import org.springframework.messaging.Message;
 
 import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
@@ -23,6 +25,8 @@ public interface LoraService {
 			return loraMetricMessage;
 		}
 	}
+
+	ArrayList<Message<?>> splitMessage(Message<?> imessage);
 
 	HandleUplinkResult splitUplink(Message<LoraMessageUplink> message);
 

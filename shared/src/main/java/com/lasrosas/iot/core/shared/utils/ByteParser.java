@@ -126,7 +126,12 @@ public class ByteParser {
 	}
 
 	public byte ubyte() {
-		return (byte)uint(8);
+		if(ibit == 0) {
+			var result = bytes[ibyte];
+			shift(8);
+			return result;
+		} else
+			return (byte)uint(8);
 	}
 
 	public int uint8() {

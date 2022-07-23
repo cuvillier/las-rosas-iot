@@ -50,6 +50,7 @@ public class LoraMessageSplitter  extends AbstractMessageSplitter {
 			result.add(splitResult);
 
 		} else {
+			
 			result.add(MessageBuilder
 					.withPayload(new StillAlive())
 					.copyHeaders(imessage.getHeaders())

@@ -8,6 +8,7 @@ import org.springframework.messaging.Message;
 public class LasRosasHeaders {
 	public static String THING_ID = "ThingId";
 	public static String THING_NATURAL_ID = "ThingNaturalId";
+	public static String THING_PART = "ThingPart";
 	public static String TWIN_ID = "TwinId";
 	public static String TWIN_NATURAL_ID = "TwinNaturalId";
 	public static String TIME_RECEIVED = "TimeReceived";
@@ -16,6 +17,7 @@ public class LasRosasHeaders {
 	public static String ORIGIN_TYPE = "OriginType";
 	public static String ORIGIN_THING = "thg";
 	public static String ORIGIN_TWIN = "twi";
+	public static String TOPIC = "topic";
 
 	/* Copy of IntegrationMessageHeaderAccessor */
 	public static final String CORRELATION_ID = "correlationId";
@@ -43,6 +45,10 @@ public class LasRosasHeaders {
 		return Optional.ofNullable(message.getHeaders().get(THING_ID, Long.class));
 	}
 
+	public static Optional<String> thingpart(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(THING_PART, String.class));
+	}
+
 	public static Optional<String> thingNaturalId(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(THING_NATURAL_ID, String.class));
 	}
@@ -54,9 +60,21 @@ public class LasRosasHeaders {
 	public static Optional<String> gatewayNaturalId(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(GATEWAY_NAURAL_ID, String.class));
 	}
+	public static Optional<String> topic(Message<?> message) {
+		return Optional.ofNullable(message.getHeaders().get(TOPIC, String.class));
+	}
 
 	public static Optional<String> twinNaturalId(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(TWIN_NATURAL_ID, String.class));
+	}
+
+	public static Optional<String> naturalId(Message<?> message) {
+		var thingNaturalId = thingNaturalId(message);
+
+		if( thingNaturalId.isEmpty())
+			return twinNaturalId(message);
+
+		return thingNaturalId;
 	}
 
 	public static Optional<String> schema(Message<?> message) {
