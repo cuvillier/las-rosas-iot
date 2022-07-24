@@ -7,9 +7,9 @@ import org.springframework.messaging.Message;
 
 import com.google.gson.Gson;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
-import com.lasrosas.iot.core.database.finca.WaterTank;
 import com.lasrosas.iot.core.database.repo.TimeSerieRepo;
 import com.lasrosas.iot.core.database.repo.TimeSerieTypeRepo;
+import com.lasrosas.iot.core.database.twins.WaterTank;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.reactor.base.TwinReactor;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;

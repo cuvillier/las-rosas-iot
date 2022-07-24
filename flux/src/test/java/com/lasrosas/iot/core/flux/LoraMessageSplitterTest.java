@@ -26,7 +26,7 @@ import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 

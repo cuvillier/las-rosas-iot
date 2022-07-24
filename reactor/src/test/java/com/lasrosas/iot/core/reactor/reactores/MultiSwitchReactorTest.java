@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiverFromThing;
-import com.lasrosas.iot.core.database.finca.MultiSwitch;
+import com.lasrosas.iot.core.database.twins.MultiSwitch;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;

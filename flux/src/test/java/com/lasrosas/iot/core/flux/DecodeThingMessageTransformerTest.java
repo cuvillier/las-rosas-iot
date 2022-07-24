@@ -20,9 +20,9 @@ import org.springframework.test.context.ContextConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.sensors.impl.SensorsConfig;
-import com.lasrosas.iot.core.ingestor.sensors.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
+import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 

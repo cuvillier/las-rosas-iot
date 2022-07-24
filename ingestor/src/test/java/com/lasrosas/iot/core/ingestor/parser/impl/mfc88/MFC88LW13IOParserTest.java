@@ -12,9 +12,9 @@ import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
-import com.lasrosas.iot.core.ingestor.sensors.impl.mfc88.MFC88LW13IOFrameDecoder;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.impl.mfc88.MFC88LW13IOFrameDecoder;
+import com.lasrosas.iot.core.ingestor.parsers.impl.mfc88.MFC88LW13IOFrame.UplinkTimeSyncRequest.UplinkTimeSyncRequestOption;
 import com.lasrosas.iot.core.shared.utils.ByteParser;
 
 public class MFC88LW13IOParserTest {

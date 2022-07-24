@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
-import com.lasrosas.iot.core.ingestor.sensors.api.SensorConfig;
+import com.lasrosas.iot.core.ingestor.parsers.api.SensorConfig;
 
 @SpringBootApplication(scanBasePackages="com.lasrosas.iot.core")
 @EnableTransactionManagement

@@ -20,7 +20,7 @@ import com.lasrosas.iot.core.flux.LasRosasIotConfig.LasRosasGateway;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.RxInfo;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.TxInfo;
-import com.lasrosas.iot.core.ingestor.sensors.impl.SensorsConfig;
+import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @EnableIntegration

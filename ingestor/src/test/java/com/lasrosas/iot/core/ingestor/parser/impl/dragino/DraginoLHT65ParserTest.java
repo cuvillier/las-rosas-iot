@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.core.ingestor.sensors.impl.dragino.DraginoLHT65Frame.UplinkTempHumRequest.BatteryStatus;
-import com.lasrosas.iot.core.ingestor.sensors.impl.dragino.DraginoLHT65FrameDecoder;
+import com.lasrosas.iot.core.ingestor.parsers.impl.dragino.DraginoLHT65FrameDecoder;
+import com.lasrosas.iot.core.ingestor.parsers.impl.dragino.DraginoLHT65Frame.UplinkTempHumRequest.BatteryStatus;
 
 public class DraginoLHT65ParserTest {
 	public static final Logger log = LoggerFactory.getLogger(DraginoLHT65ParserTest.class);

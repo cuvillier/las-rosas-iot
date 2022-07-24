@@ -6,9 +6,9 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.messaging.PollableChannel;
 
-import com.lasrosas.iot.core.ingestor.sensors.api.UplinkDecoderTransformer;
-import com.lasrosas.iot.core.ingestor.sensors.api.SensorService;
-import com.lasrosas.iot.core.ingestor.sensors.impl.SensorServiceImpl;
+import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
+import com.lasrosas.iot.core.ingestor.parsers.api.UplinkDecoderTransformer;
+import com.lasrosas.iot.core.ingestor.parsers.impl.SensorServiceImpl;
 
 public class DecodeThingMessageTransformerConfig {
 	@Bean

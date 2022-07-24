@@ -16,7 +16,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;

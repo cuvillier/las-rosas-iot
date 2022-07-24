@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.messaging.Message;
 
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 
 public interface LoraService {

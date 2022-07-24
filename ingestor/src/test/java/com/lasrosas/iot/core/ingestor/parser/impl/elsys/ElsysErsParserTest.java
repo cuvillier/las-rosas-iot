@@ -7,8 +7,8 @@ import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.sensors.impl.elsys.ElsysGenericParser;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysGenericParser;
 
 public class ElsysErsParserTest {
 	public static final Logger log = LoggerFactory.getLogger(ElsysErsParserTest.class);

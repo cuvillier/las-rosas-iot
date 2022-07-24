@@ -14,7 +14,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageSplitter;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
-import com.lasrosas.iot.core.ingestor.sensors.api.ThingEncodedMessage;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 
 public class LoraMessageSplitterConfig {
