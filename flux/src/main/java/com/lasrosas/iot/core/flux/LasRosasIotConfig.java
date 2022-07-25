@@ -401,14 +401,23 @@ public class LasRosasIotConfig {
 	@Bean
 	public IntegrationFlow handleThingMessage(MessageChannel thingEncodedDataChannel, MessageChannel telemetryChannel, SensorService service, WriteInfluxDB influxDB, WriteSQL sql) {
 
+		/*
+		 * The transofrm required a Message<>, not the payload type.
+		 * In order to make that working, use a GenericTransformer with the Message<> data type, do not use direct lambda.
+		 * half a day lost to solve this....
+		 */
 		return IntegrationFlows
 					.from(thingEncodedDataChannel)
-					.<Message<ThingEncodedMessage>, Message<? extends ThingDataMessage>>transform(imessage -> {
+					.<Message<ThingEncodedMessage>, Message<? extends ThingDataMessage>>transform(new GenericTransformer<Message<ThingEncodedMessage>, Message<? extends ThingDataMessage>>() {
+
+						@Override
+						public Message<? extends ThingDataMessage> transform(Message<ThingEncodedMessage> imessage) {
 							var result = service.decodeUplink(imessage);
 							var tsp = sql.writePoint(result);
 							influxDB.writePoint(tsp.getTimeSerie(), result);
 							return result;
 						}
+					}
 					)
 					.split(new TelemetrySpliter(service))
 					.channel(telemetryChannel)

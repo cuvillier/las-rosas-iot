@@ -1,6 +1,6 @@
 package com.lasrosas.iot.core.ingestor.timeSerieWriter.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
-import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteInfluxDBImpl;
 
 public class WriteInfluxDBImplTest {
 

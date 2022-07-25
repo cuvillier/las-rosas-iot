@@ -8,11 +8,10 @@ import org.springframework.messaging.Message;
 public class LasRosasHeaders {
 	public static String THING_ID = "ThingId";
 	public static String THING_NATURAL_ID = "ThingNaturalId";
-	public static String THING_PART = "ThingPart";
+	public static String SENSOR = "Sensor";
 	public static String TWIN_ID = "TwinId";
 	public static String TWIN_NATURAL_ID = "TwinNaturalId";
 	public static String TIME_RECEIVED = "TimeReceived";
-	public static String SENSOR = "Sensor";
 	public static String ORIGIN_ID = "OriginId";
 	public static String ORIGIN_TYPE = "OriginType";
 	public static String ORIGIN_THING = "thg";
@@ -43,10 +42,6 @@ public class LasRosasHeaders {
 
 	public static Optional<Long> thingid(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(THING_ID, Long.class));
-	}
-
-	public static Optional<String> thingpart(Message<?> message) {
-		return Optional.ofNullable(message.getHeaders().get(THING_PART, String.class));
 	}
 
 	public static Optional<String> thingNaturalId(Message<?> message) {

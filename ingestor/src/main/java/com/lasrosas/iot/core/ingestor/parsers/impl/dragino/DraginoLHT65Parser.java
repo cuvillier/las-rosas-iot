@@ -21,6 +21,8 @@ import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 public class DraginoLHT65Parser implements PayloadParser {
 		public static final String MANUFACTURER = "DRAGINO";
 		public static final String MODEL = "LHT65";
+		public static final String SENSOR_INT = "INT";
+		public static final String SENSOR_EXT = "EXT";
 
 		public static Gson gson = new GsonBuilder().create();
 
@@ -51,14 +53,14 @@ public class DraginoLHT65Parser implements PayloadParser {
 				airEnv.setTemperature(tempHum.getTemperatureINT());
 				airEnv.setHumidity(tempHum.getHumidityINT());
 				var telemetry = MessageBuilder.withPayload((Telemetry)airEnv).copyHeaders(imessage.getHeaders()).build();
-				telemetry.getHeaders().put(LasRosasHeaders.THING_PART, DraginoLHT65Frame.INTERNAL_SENSOR);
+				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_INT);
 				result.add(telemetry);
 
 				// External temp & hum sensor
 				airEnv = new AirEnvironment();
 				airEnv.setTemperature(tempHum.getTemperatureEXT());
 				telemetry = MessageBuilder.withPayload((Telemetry)airEnv).copyHeaders(imessage.getHeaders()).build();
-				telemetry.getHeaders().put(LasRosasHeaders.THING_PART, DraginoLHT65Frame.EXTERNAL_SENSOR);
+				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_EXT);
 				result.add(telemetry);
 
 				// Battery Level

@@ -19,10 +19,13 @@ import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.core.shared.telemetry.BatteryLevel;
 import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
+import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class AdeunisARF8170BAParser implements PayloadParser {
 	public static final String MANUFACTURER = "Adeunis";
 	public static final String MODEL = "ARF8170BA";
+	public static final String SENSOR_INT = "INT";
+	public static final String SENSOR_EXT = "EXT";
 
 	public static Gson gson = new GsonBuilder().create();
 
@@ -66,7 +69,9 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(MessageBuilder.createMessage(norm, imessage.getHeaders()));
+				var telemetry = MessageBuilder.createMessage((Telemetry)norm, imessage.getHeaders());
+				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_INT);
+				result.add(telemetry);
 			}
 
 			temp10thdeg = frame.getValueExternalSensor10thDeg();
@@ -75,7 +80,9 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 				var norm = new AirEnvironment();
 				norm.setTemperature(temp10thdeg / 10.0);
 
-				result.add(MessageBuilder.createMessage(norm, imessage.getHeaders()));
+				var telemetry = MessageBuilder.createMessage((Telemetry)norm, imessage.getHeaders());
+				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_EXT);
+				result.add(telemetry);
 			}
 		}
 

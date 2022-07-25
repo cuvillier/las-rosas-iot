@@ -4,7 +4,7 @@ import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
-public class UpperCaseNamingStrategy extends PhysicalNamingStrategyStandardImpl {
+public class LowerCaseNamingStrategy extends PhysicalNamingStrategyStandardImpl {
      
     @Override
     public Identifier toPhysicalTableName(final Identifier identifier, final JdbcEnvironment jdbcEnv) {
@@ -12,6 +12,6 @@ public class UpperCaseNamingStrategy extends PhysicalNamingStrategyStandardImpl 
             return null;
         }
  
-        return Identifier.toIdentifier(identifier.getText().toUpperCase());
+        return Identifier.toIdentifier(identifier.getText().toLowerCase());
     }
 }

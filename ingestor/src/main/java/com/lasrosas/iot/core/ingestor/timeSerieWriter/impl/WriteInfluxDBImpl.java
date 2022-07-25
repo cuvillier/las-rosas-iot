@@ -84,14 +84,14 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 
 			var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
 
-			measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
+			var sensor = LasRosasHeaders.sensor(imessage);
+			if( sensor == null) 
+				measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
+			else
+				measurment = (naturalId + "_" + sensor + "_" + payloadTypeName).replaceAll("\\.", "_");
+
 			tsr.setInfluxdbMeasurement(measurment);
 		}
-
-		var sensor = tsr.getSensor();
-
-		if( sensor != null )
-			measurment += "_" + sensor;
 
 		var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
 

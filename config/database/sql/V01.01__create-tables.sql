@@ -17,7 +17,7 @@ CREATE TABLE t_dtw_digital_twin_type
 	twt_fk_spa_space INT UNSIGNED NOT NULL,
 	dtt_fk_dtt_super_type INT UNSIGNED DEFAULT NULL,
 	dtt_concrete BIT DEFAULT 1,
-	mst_maxState INT UNSIGNED NOT NULL DEFAULT 2,
+	mst_max_state INT UNSIGNED NOT NULL DEFAULT 2,
 
 	PRIMARY KEY (twt_techid),
 	CONSTRAINT fk_dtt_fk_dtt_super_type FOREIGN KEY (dtt_fk_dtt_super_type) REFERENCES t_dtw_digital_twin_type (twt_techid),
@@ -65,12 +65,11 @@ CREATE TABLE t_thg_gateway
 (
 	gtw_techid INT UNSIGNED AUTO_INCREMENT,
 	gtw_natural_id VARCHAR(50),
-	gtw_typeName VARCHAR(50),
 	gtw_protocol VARCHAR(50) DEFAULT NULL,
 	gtw_url VARCHAR(50) DEFAULT NULL,
 	gtw_login VARCHAR(50) DEFAULT NULL,
 	gtw_password VARCHAR(50) DEFAULT NULL,
-	gtw_typeName VARCHAR(50) DEFAULT NULL,
+	gtw_type_name VARCHAR(50) DEFAULT NULL,
 	PRIMARY KEY (gtw_techid)
 );
 
@@ -93,7 +92,7 @@ CREATE TABLE t_thg_thing
 (
 	thg_techid INT UNSIGNED AUTO_INCREMENT,
 	thg_readable VARCHAR(50) DEFAULT NULL,
-	thg_connectionTimeout INT(6) DEFAULT NULL,
+	thg_connection_timeout INT(6) DEFAULT NULL,
 	thg_discriminator VARCHAR(3) NOT NULL,
 	thg_fk_tty_type INT UNSIGNED NOT NULL,
 	thg_fk_gtw_gateway INT UNSIGNED,

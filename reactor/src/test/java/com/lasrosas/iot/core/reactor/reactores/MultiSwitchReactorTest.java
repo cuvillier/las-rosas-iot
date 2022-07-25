@@ -1,10 +1,11 @@
 package com.lasrosas.iot.core.reactor.reactores;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +55,8 @@ public class MultiSwitchReactorTest {
 		assertReactContextTelemetries(new MultiSwitchValue(0, 1, false, false));
 		assertReactContextOrders();
 
-		Assert.assertFalse(multiSwitch.isConnected());
-		Assert.assertEquals(MultiSwitch.OFF, multiSwitch.getState());
+		assertFalse(multiSwitch.isConnected());
+		assertEquals(MultiSwitch.OFF, multiSwitch.getState());
 
 		// Do connect
 		var payloadConnected = new ConnectionState(1, ConnectionState.CAUSE_NTW_JOIN);
@@ -64,8 +65,8 @@ public class MultiSwitchReactorTest {
 		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, true));
 		assertReactContextOrders( new MultiSwitchOrder(1));
 
-		Assert.assertTrue(multiSwitch.isConnected());
-		Assert.assertEquals(MultiSwitch.ON, multiSwitch.getState());
+		assertTrue(multiSwitch.isConnected());
+		assertEquals(MultiSwitch.ON, multiSwitch.getState());
 
 		// Do switch off
 		var payloadSwitchOff = new Switched(MultiSwitch.OFF);
@@ -74,8 +75,8 @@ public class MultiSwitchReactorTest {
 		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true, false));
 		assertReactContextOrders();
 
-		Assert.assertTrue(multiSwitch.isConnected());
-		Assert.assertEquals(MultiSwitch.OFF, multiSwitch.getState());
+		assertTrue(multiSwitch.isConnected());
+		assertEquals(MultiSwitch.OFF, multiSwitch.getState());
 
 		// Do switch on
 		var payloadSwitchOn = new Switched(MultiSwitch.ON);
@@ -84,8 +85,8 @@ public class MultiSwitchReactorTest {
 		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, false));
 		assertReactContextOrders();
 
-		Assert.assertTrue(multiSwitch.isConnected());
-		Assert.assertEquals(MultiSwitch.ON, multiSwitch.getState());
+		assertTrue(multiSwitch.isConnected());
+		assertEquals(MultiSwitch.ON, multiSwitch.getState());
 }
 
 	private void testReact(TwinReactorReceiver receiver,  Telemetry inboundTelemetry) {

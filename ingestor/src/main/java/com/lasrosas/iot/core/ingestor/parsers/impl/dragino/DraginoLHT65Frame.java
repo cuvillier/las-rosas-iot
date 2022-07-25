@@ -4,8 +4,6 @@ import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.shared.utils.NotFoundException;
 
 public class DraginoLHT65Frame {
-	public static final String EXTERNAL_SENSOR = "Ext";
-	public static final String INTERNAL_SENSOR = "Int";
 
 	public static class UplinkTempHumRequest extends ThingDataMessage  {
 

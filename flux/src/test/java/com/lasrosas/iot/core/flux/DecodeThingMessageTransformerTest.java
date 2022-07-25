@@ -1,5 +1,9 @@
 package com.lasrosas.iot.core.flux;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +26,8 @@ import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
-import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8180BAFrame.UplinkFrame0x43;
+import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
+import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8170BAFrame.UplinkFrame0x30;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
@@ -52,7 +57,7 @@ public class DecodeThingMessageTransformerTest {
 
 		var imessage = MessageBuilder
 				.withPayload(message)
-				.setHeader(LasRosasHeaders.THING_ID, 7L)
+				.setHeader(LasRosasHeaders.THING_ID, 6L)
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 				.build();
 
@@ -62,10 +67,10 @@ public class DecodeThingMessageTransformerTest {
 
 		log.info(gson.toJson(result));
 
-		var frame0x30 = (UplinkFrame0x43)result.getPayload();
+		var frame0x30 = (UplinkFrame0x30)result.getPayload();
 
 		log.info(gson.toJson(frame0x30));
-/*		
+
 		assertEquals(1, frame0x30.getStatus().getFrameCounter());
 		assertFalse(frame0x30.getStatus().isConfig());
 		assertFalse(frame0x30.getStatus().isLowBat());
@@ -82,6 +87,6 @@ public class DecodeThingMessageTransformerTest {
 		assertEquals(0, frame0x30.getChannel4EventCounter());
 
 		assertNull(frame0x30.getTimestamp());
-*/
+
 	}
 }
