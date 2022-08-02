@@ -28,13 +28,11 @@ public class DownlinkEncoderTransformer extends AbstractTransformer {
 			// Sensor encoding
 			byte [] data = sensorService.encodeOrder((Message<? extends Order>)imessage);
 
-
-			var json = gatewayService.encodeDownlink(getApplicationContextId(), data);
+			var json = gatewayService.encodeDownlink(gatewayNaturalId, data);
 
 			// Gateway message wrapping
-			var result  = MessageBuilder.withPayload(data)
+			var result  = MessageBuilder.withPayload(json)
 					.copyHeaders(imessage.getHeaders())
-					.setHeader(LasRosasHeaders.GATEWAY_NAURAL_ID, gatewayNaturalId)
 					.build();
 
 			return result;

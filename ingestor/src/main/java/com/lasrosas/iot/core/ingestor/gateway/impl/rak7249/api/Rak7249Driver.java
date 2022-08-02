@@ -9,7 +9,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 
 public interface Rak7249Driver extends GatewayDriver {
-	String DRIVER_NAME = "Rak7249";
+	String TYPE_NAME = "RAK7249";	// Match the database value.
 	Rak7249Message fromJson(String topic, String json);
 
 	Message<? extends LoraMessage> transform(Message<? extends Rak7249Message> message);

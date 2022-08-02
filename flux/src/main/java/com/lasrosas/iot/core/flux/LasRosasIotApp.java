@@ -11,10 +11,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorConfig;
+import com.lasrosas.iot.core.reactor.reactores.ReactorConfig;
 
-@SpringBootApplication(scanBasePackages="com.lasrosas.iot.core")
+@SpringBootApplication
 @EnableTransactionManagement
-@Import({IOTDatabaseConfig.class, SensorConfig.class, LasRosasIotConfig.class})
+@Import({IOTDatabaseConfig.class, SensorConfig.class, ReactorConfig.class, LasRosasIotConfig.class})
 public class LasRosasIotApp {
 	public static final Logger log = LoggerFactory.getLogger(LasRosasIotApp.class);
 

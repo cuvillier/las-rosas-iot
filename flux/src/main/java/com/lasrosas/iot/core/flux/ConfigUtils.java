@@ -2,12 +2,10 @@ package com.lasrosas.iot.core.flux;
 
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
-import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.integration.mqtt.support.MqttMessageConverter;
 
 public class ConfigUtils {
 
-	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String name, String topic, MqttConfig config, MqttPahoClientFactory clientFactory, MqttMessageConverter mqttMessageConverter) {
+	public static MqttPahoMessageDrivenChannelAdapter mqttChannelAdapter(String name, String topic, MqttConfig config, MqttPahoClientFactory clientFactory) {
 
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
 				config.getClientId(),
@@ -15,7 +13,6 @@ public class ConfigUtils {
 				topic);
 
 		adapter.setBeanName(name);// Required, else fail with DSL
-		adapter.setConverter(mqttMessageConverter == null? new DefaultPahoMessageConverter(): mqttMessageConverter);
 
 		// Set options from config
 		if( config.getCompletionTimeout() != null) adapter.setCompletionTimeout(config.getCompletionTimeout());

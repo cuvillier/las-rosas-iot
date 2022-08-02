@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -20,13 +19,13 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.impl.DefaultDeviceNameParser;
+import com.lasrosas.iot.core.shared.utils.GsonUtils;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class Rak7249DriverImpl implements Rak7249Driver {
 	public static final Logger log = LoggerFactory.getLogger(Rak7249DriverImpl.class);
 
-	@Autowired
-	private Gson gson;
+	private Gson gson = GsonUtils.createGson();
 
 	private DeviceNameParser deviceNameParser = new DefaultDeviceNameParser();
 
@@ -56,19 +55,20 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 
 		log.info("doTransform loraMessage = " + loraMessage);
 		return loraMessage;
-	}	
+	}
 
 	@Override
 	public Rak7249Message fromJson(String topic, String json) {
 		Rak7249Message message;
 		if(topic.endsWith("/join")) 
 			message = gson.fromJson(json, Rak7249MessageJoin.class);
-		
+
 		else if(topic.endsWith("/rx")) 
 			message = gson.fromJson(json, Rak7249MessageRx.class);
 		
 		else if(topic.endsWith("/ack")) 
 			message = gson.fromJson(json, Rak7249MessageAck.class);
+
 		else
 			throw new RuntimeException("Unkknown topic " + topic + ". Fix the code here.");
 
@@ -161,5 +161,10 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 	public String encodeDownlink(byte[] data) {
 		var hexData = javax.xml.bind.DatatypeConverter.printHexBinary(data);
 		return "{\"confirmed\": true, \"fPort\": 1, \"data\": \""+ hexData +"\"}";
+	}
+
+	@Override
+	public String typeName() {
+		return Rak7249Driver.TYPE_NAME;
 	}
 }

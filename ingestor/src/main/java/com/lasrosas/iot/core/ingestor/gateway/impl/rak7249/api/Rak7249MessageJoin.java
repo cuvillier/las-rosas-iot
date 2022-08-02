@@ -16,6 +16,11 @@ public class Rak7249MessageJoin extends Rak7249Message {
 	public String deviceName;
 	public String devEUI;
 	public String devAddr;
+	
+	public Rak7249MessageJoin() {
+		super();
+	}
+
 	public String getApplicationID() {
 		return applicationID;
 	}

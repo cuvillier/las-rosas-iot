@@ -32,12 +32,12 @@ public class DraginoLHT65Frame {
 
 		private final BatteryStatus batteryStatus;
 		private final double batteryVoltage;
-		private final double temperatureEXT;
+		private final Double temperatureEXT;
 		private final double temperatureINT;
 		private final double humidityINT;
 		private final int sensorExt;
 
-		public UplinkTempHumRequest(BatteryStatus batteryStatus, double batteryVoltage, double temperatureINT, double humidityINT, int sensorExt, double temperatureEXT) {
+		public UplinkTempHumRequest(BatteryStatus batteryStatus, double batteryVoltage, double temperatureINT, double humidityINT, int sensorExt, Double temperatureEXT) {
 			this.batteryStatus = batteryStatus;
 			this.batteryVoltage = batteryVoltage;
 			this.temperatureEXT = temperatureEXT;
@@ -54,7 +54,7 @@ public class DraginoLHT65Frame {
 			return batteryVoltage;
 		}
 
-		public double getTemperatureEXT() {
+		public Double getTemperatureEXT() {
 			return temperatureEXT;
 		}
 
@@ -64,6 +64,10 @@ public class DraginoLHT65Frame {
 
 		public double getHumidityINT() {
 			return humidityINT;
+		}
+
+		public int getSensorExt() {
+			return sensorExt;
 		}
 	}
 }

@@ -124,6 +124,10 @@ public class Rak7249MessageRx extends Rak7249Message {
 		}
 	}
 	
+	public Rak7249MessageRx() {
+		super();
+	}
+
 	@PartOfState
 	private TxInfo txInfo;
 

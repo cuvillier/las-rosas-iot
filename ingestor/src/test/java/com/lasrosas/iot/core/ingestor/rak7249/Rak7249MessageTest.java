@@ -1,18 +1,9 @@
 package com.lasrosas.iot.core.ingestor.rak7249;
 
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
+import com.lasrosas.iot.core.shared.utils.GsonUtils;
 
 public class Rak7249MessageTest {
 
@@ -49,11 +40,7 @@ public class Rak7249MessageTest {
 			+ "			}\n"
 			+ "		}";
 
-		var  gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() { 
-			@Override 
-			public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException { 
-				return ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()).toLocalDateTime();
-			}}).create();
+		var  gson = GsonUtils.createGson();
 
 		gson.fromJson(json, Rak7249MessageRx.class);
 	}

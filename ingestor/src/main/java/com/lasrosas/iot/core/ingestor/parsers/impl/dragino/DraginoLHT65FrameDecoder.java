@@ -25,9 +25,12 @@ public class DraginoLHT65FrameDecoder {
 
 		int extSensor = bytes[6];
 
-		var b7 = bytes[7];
-		var b8 = bytes[8];
-		double tempEXT = (((b7 & 0xff) << 8) | (b8 & 0xff)) / 100.0;
+		Double tempEXT = null;
+		if(extSensor != 0) {
+			var b7 = bytes[7];
+			var b8 = bytes[8];
+			tempEXT = (((b7 & 0xff) << 8) | (b8 & 0xff)) / 100.0;
+		}
 
 		return new UplinkTempHumRequest(batteryStatus, batteryVoltage, tempINT, humeINT, extSensor, tempEXT);
 	}

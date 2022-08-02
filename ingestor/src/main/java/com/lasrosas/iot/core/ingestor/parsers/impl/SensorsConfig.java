@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8170BAParser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8180BAParser;
+import com.lasrosas.iot.core.ingestor.parsers.impl.dragino.DraginoLHT65Parser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysGenericParser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysMB7389Parser;
@@ -46,14 +47,20 @@ public class SensorsConfig {
 	}
 
 	@Bean
+	public DraginoLHT65Parser DraginoLHT65Parser() {
+		return new DraginoLHT65Parser();
+	}
+
+	@Bean
 	@ConfigurationProperties(prefix = "lora-sensors")
 	public SensorServiceImpl LoraSensors(
 			AdeunisARF8180BAParser adenuisARF8180BAParser,
 			AdeunisARF8170BAParser adenuisARF8170BAParser,
 			ElsysErsParser elsysErsParser,
 			ElsysMB7389Parser elsysMB7389Parser,
-			MFC88LW13IOParser mfc88LW1310Parser) {
+			MFC88LW13IOParser mfc88LW1310Parser,
+			DraginoLHT65Parser draginoLHT65Parser) {
 
-		return new SensorServiceImpl(adenuisARF8180BAParser, adenuisARF8170BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser);
+		return new SensorServiceImpl(adenuisARF8180BAParser, adenuisARF8170BAParser, elsysErsParser, elsysMB7389Parser, mfc88LW1310Parser, draginoLHT65Parser);
 	}
 }

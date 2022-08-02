@@ -19,7 +19,7 @@ public class GatewayServiceImpl implements GatewayService {
 
 	public GatewayServiceImpl(GatewayDriver ... driverList ) {
 		for(var driver: driverList) {
-			drivers.put(driver.getClass().getSimpleName(), driver);
+			drivers.put(driver.typeName(), driver);
 		}
 	}
 

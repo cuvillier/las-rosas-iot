@@ -38,11 +38,13 @@ public class SensorServiceImpl implements SensorService {
 	}
 
 	private void add(PayloadParser parser) {
-		parsers.put(parser.getManufacturer() + "/" + parser.getModel(), parser);
+		parsers.put(parser.getManufacturer().toLowerCase() + "/" + parser.getModel().toLowerCase(), parser);
 	}
 
 	public PayloadParser getParser(String manufacturer, String model) {
-		return parsers.get(manufacturer + "/" + model);
+		var key = manufacturer.toLowerCase() + "/" + model.toLowerCase();
+		log.info(gson.toJson(parsers));
+		return parsers.get(key);
 	}
 
 	@Override

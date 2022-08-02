@@ -19,6 +19,9 @@ public class Rak7249MessageAck extends Rak7249Message {
 	public boolean acknowledge;
 	public int fCnt;
 
+	public Rak7249MessageAck() {
+		super();
+	}
 	public String getApplicationID() {
 		return applicationID;
 	}

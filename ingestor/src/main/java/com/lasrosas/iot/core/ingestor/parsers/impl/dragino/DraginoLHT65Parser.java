@@ -52,15 +52,21 @@ public class DraginoLHT65Parser implements PayloadParser {
 				var airEnv = new AirEnvironment();
 				airEnv.setTemperature(tempHum.getTemperatureINT());
 				airEnv.setHumidity(tempHum.getHumidityINT());
-				var telemetry = MessageBuilder.withPayload((Telemetry)airEnv).copyHeaders(imessage.getHeaders()).build();
-				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_INT);
+				var telemetry = MessageBuilder
+						.withPayload((Telemetry)airEnv)
+						.copyHeaders(imessage.getHeaders())
+						.setHeader(LasRosasHeaders.SENSOR, SENSOR_INT)
+						.build();
 				result.add(telemetry);
 
 				// External temp & hum sensor
 				airEnv = new AirEnvironment();
 				airEnv.setTemperature(tempHum.getTemperatureEXT());
-				telemetry = MessageBuilder.withPayload((Telemetry)airEnv).copyHeaders(imessage.getHeaders()).build();
-				telemetry.getHeaders().put(LasRosasHeaders.SENSOR, SENSOR_EXT);
+				telemetry = MessageBuilder
+						.withPayload((Telemetry)airEnv)
+						.copyHeaders(imessage.getHeaders())
+						.setHeader(LasRosasHeaders.SENSOR, SENSOR_EXT)
+						.build();
 				result.add(telemetry);
 
 				// Battery Level

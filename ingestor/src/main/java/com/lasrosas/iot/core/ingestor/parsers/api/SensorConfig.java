@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorServiceImpl;
 import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8170BAParser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8180BAParser;
+import com.lasrosas.iot.core.ingestor.parsers.impl.dragino.DraginoLHT65Parser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysErsParser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.elsys.ElsysMB7389Parser;
 import com.lasrosas.iot.core.ingestor.parsers.impl.mfc88.MFC88LW13IOParser;
@@ -19,7 +20,8 @@ public class SensorConfig {
 			new AdeunisARF8180BAParser(),
 			new ElsysErsParser(),
 			new ElsysMB7389Parser(),
-			new MFC88LW13IOParser()
+			new MFC88LW13IOParser(),
+			new DraginoLHT65Parser()
 		);
 	}
 }
