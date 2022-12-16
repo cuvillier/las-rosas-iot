@@ -31,6 +31,14 @@
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
+				<artifactId>database</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			    <scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>shared</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -48,6 +56,11 @@
 				<groupId>com.influxdb</groupId>
 				<artifactId>influxdb-client-java</artifactId>
 				<version>6.4.0</version>
+			</dependency>
+			<dependency>
+			    <groupId>io.goodforgod</groupId>
+			    <artifactId>gson-configuration</artifactId>
+			    <version>1.4.2</version>
 			</dependency>
  		</dependencies>
 	</dependencyManagement>

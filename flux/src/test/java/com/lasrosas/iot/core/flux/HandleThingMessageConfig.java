@@ -2,27 +2,23 @@ package com.lasrosas.iot.core.flux;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
-import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
-import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
-import com.lasrosas.iot.core.ingestor.parsers.api.UplinkDecoderTransformer;
+import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 
 @ContextConfiguration(classes = { LasRosasIotBaseConfig.class, SensorsConfig.class, IOTDatabaseConfig.class})
 
-public class Rak7249ToLoraMessageConfig {
+public class HandleThingMessageConfig {
 
 	@Autowired
 	private LasRosasFluxDelegate delegate;
 
 	@Bean
-	public IntegrationFlow rak7249ToLoraMessage(Rak7249Driver service, MessageChannel rak7249UplinkTxChannel,
-			MessageChannel loraChannel) {
-		return delegate.rak7249ToLoraMessage(service, rak7249UplinkTxChannel, loraChannel);
+	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service) {
+		return delegate.handleLoraMessages(loraChannel, service);
 	}
 }

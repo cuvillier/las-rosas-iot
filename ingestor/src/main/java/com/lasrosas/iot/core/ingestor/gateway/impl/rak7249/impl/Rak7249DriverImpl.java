@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -19,13 +20,13 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.impl.DefaultDeviceNameParser;
-import com.lasrosas.iot.core.shared.utils.GsonUtils;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class Rak7249DriverImpl implements Rak7249Driver {
 	public static final Logger log = LoggerFactory.getLogger(Rak7249DriverImpl.class);
 
-	private Gson gson = GsonUtils.createGson();
+	@Autowired
+	private Gson gson;
 
 	private DeviceNameParser deviceNameParser = new DefaultDeviceNameParser();
 
@@ -89,7 +90,7 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 		loraMessage.setCnt(rxMessage.getFCnt());
 		loraMessage.setPort(rxMessage.getFPort());
 
-		if( rxMessage.getRxInfo() != null) {
+		if( rxMessage.getRxInfo() != null && rxMessage.getRxInfo().size() > 0) {
 			loraMessage.setRssi(rxMessage.getRxInfo().get(0).getRssi());
 			loraMessage.setSnr(rxMessage.getRxInfo().get(0).getLoRaSNR());
 		}
@@ -131,7 +132,7 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 
 		if(deviceInfo !=null) {
 			loraMessage.setManufacturer(deviceInfo.getManufacturer());
-			loraMessage.setManufacturer(deviceInfo.getModel());
+			loraMessage.setModel(deviceInfo.getModel());
 		}
 
 		return buildMessage(loraMessage, imessage);

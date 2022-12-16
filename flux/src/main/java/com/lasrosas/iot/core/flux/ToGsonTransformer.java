@@ -1,16 +1,18 @@
 package com.lasrosas.iot.core.flux;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.shared.telemetry.StateMessage;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class ToGsonTransformer extends AbstractTransformer {
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+	@Autowired
+	private Gson gson;
 
 	@Override
 	protected Object doTransform(Message<?> message) {

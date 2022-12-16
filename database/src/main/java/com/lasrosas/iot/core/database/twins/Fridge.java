@@ -29,7 +29,7 @@ public class Fridge extends DigitalTwin {
 	public static final String COL_INSIDE_TEMP = PREFIX + "inside_temp";
 	public static final String COL_INSIDE_TEMP_MIN = PREFIX + "inside_temp_min";
 	public static final String COL_INSIDE_TEMP_MAX = PREFIX + "inside_temp_max";
-	public static final String COL_OUTSIDE_TEMP = PREFIX + "inside_temp";
+	public static final String COL_OUTSIDE_TEMP = PREFIX + "outside_temp";
 
 	@Column(name=COL_LENGTH)
 	private Double length;

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
+import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.shared.telemetry.Order;
 
 @Entity
@@ -32,6 +33,7 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
 	public static final String COL_TYPE_FK = PREFIX_FK + TwinReactorReceiverType.PREFIX + "type";
 	public static final String COL_SOURCE_FK = PREFIX_FK + "source";
+	public static final String COL_SENSOR = PREFIX + "sensor";
 
 	public static final String PROP_TYPE = "type";
 	public static final String PROP_TWIN = "twin";
@@ -39,6 +41,9 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name=COL_TWIN_FK)
 	private DigitalTwin twin;
+
+	@Column(name=COL_SENSOR)
+	private String sensor;
 
 	@ManyToOne
 	@JoinColumn(name=COL_TYPE_FK)
@@ -50,6 +55,14 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	@SuppressWarnings("unchecked")
 	public <T extends DigitalTwin> T getTwin() {
 		return (T)twin;
+	}
+
+	public String getSensor() {
+		return sensor;
+	}
+
+	public void setSensor(String sensor) {
+		this.sensor = sensor;
 	}
 
 	public void setTwin(DigitalTwin twin) {

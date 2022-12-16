@@ -3,6 +3,7 @@ package com.lasrosas.iot.core.ingestor.parsers.impl.dragino;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -24,7 +25,8 @@ public class DraginoLHT65Parser implements PayloadParser {
 		public static final String SENSOR_INT = "INT";
 		public static final String SENSOR_EXT = "EXT";
 
-		public static Gson gson = new GsonBuilder().create();
+		@Autowired
+		public Gson gson;
 
 		private DraginoLHT65FrameDecoder decoder = new DraginoLHT65FrameDecoder();
 

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.PayloadParser;
@@ -27,7 +27,8 @@ public class AdeunisARF8170BAParser implements PayloadParser {
 	public static final String SENSOR_INT = "INT";
 	public static final String SENSOR_EXT = "EXT";
 
-	public static Gson gson = new GsonBuilder().create();
+	@Autowired
+	public  Gson gson;
 
 	private AdeunisARF8170BAFrameDecoder decoder = new AdeunisARF8170BAFrameDecoder();
 

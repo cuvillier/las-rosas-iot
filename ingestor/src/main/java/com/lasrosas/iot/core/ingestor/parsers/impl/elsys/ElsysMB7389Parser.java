@@ -13,7 +13,11 @@ import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class ElsysMB7389Parser implements PayloadParser {
 
-	private ElsysGenericParser parser = new ElsysGenericParser();
+	private ElsysGenericParser parser ;
+
+	public ElsysMB7389Parser(ElsysGenericParser parser ) {
+		this.parser = parser;
+	}
 
 	@Override
 	public Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage) {

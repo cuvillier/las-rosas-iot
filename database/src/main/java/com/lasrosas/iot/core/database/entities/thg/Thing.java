@@ -75,14 +75,15 @@ public abstract class Thing extends BaseEntity {
 	private List<TwinReactorReceiverFromThing> receivers;
 
 	public enum AdminState {
-		Enabled,
+		Connected,
+		Disconnected,
 		Disabled,
 		Removed
 	}
 
 	@Column(name = COL_MODE)
 	@Enumerated(EnumType.STRING)
-	private AdminState adminState = AdminState.Enabled;
+	private AdminState adminState = AdminState.Disconnected;
 
 	Thing() {
 	}

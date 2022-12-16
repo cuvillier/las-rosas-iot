@@ -1,28 +1,48 @@
 package com.lasrosas.iot.core.shared.utils;
 
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.LongSerializationPolicy;
+
+import io.goodforgod.gson.configuration.GsonConfiguration;
 
 public class GsonUtils {
 
-	public static Gson createGson() {
-		return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() { 
-			@Override 
-			public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException { 
-				return ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()).toLocalDateTime();
-			}}).create();
+	private static GsonBuilder gsonBuilder = null;
+
+	public static Gson gson() {
+		return gsonBuilder().create();
+	}
+
+	private static boolean debug = true;
+	public synchronized static GsonBuilder gsonBuilder() {
+
+		if(gsonBuilder == null) {
+
+			var configuration = GsonConfiguration.ofJavaISO()
+		        .setSerializeNulls(false)
+		        .setLenient(true)
+		        .setEscapeHtmlChars(false)
+		        .setPrettyPrinting(true)
+		        .setLongSerializationPolicy(LongSerializationPolicy.STRING)
+		        .setComplexMapKeySerialization(true)
+		        .setGenerateNonExecutableJson(true);
+		
+			if(debug)
+				configuration.setPrettyPrinting(true);
+
+			gsonBuilder = configuration.builder();
+		}
+
+		return gsonBuilder;
 	}
 
 	public static int mergeJsonObjects(JsonObject fromjson, JsonObject tojson, LocalDateTime time) {

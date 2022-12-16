@@ -96,7 +96,7 @@ CREATE TABLE t_thg_thing
 	thg_discriminator VARCHAR(3) NOT NULL,
 	thg_fk_tty_type INT UNSIGNED NOT NULL,
 	thg_fk_gtw_gateway INT UNSIGNED,
-	thg_admin_state VARCHAR(10) DEFAULT 'Enabled' NOT NULL,
+	thg_admin_state VARCHAR(32) DEFAULT 'Enabled' NOT NULL,
 	lor_dev_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_key VARCHAR(50) DEFAULT NULL,

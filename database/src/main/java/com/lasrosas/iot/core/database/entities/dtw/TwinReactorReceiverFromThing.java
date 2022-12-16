@@ -1,6 +1,5 @@
 package com.lasrosas.iot.core.database.entities.dtw;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -19,7 +18,6 @@ public class TwinReactorReceiverFromThing extends TwinReactorReceiver {
 	public static final String PREFIX_FK = PREFIX + "fk_";
 	public static final String DISCRIMINATOR = "thg";
 
-	public static final String COL_SENSOR = Thing.PREFIX + "sensor";
 	public static final String COL_THING_FK = PREFIX_FK + Thing.PREFIX + "thing";
 	public static final String PROP_THING = "thing";
 
@@ -27,23 +25,12 @@ public class TwinReactorReceiverFromThing extends TwinReactorReceiver {
 	@JoinColumn(name=COL_THING_FK)
 	private Thing thing;
 
-	@Column(name=COL_SENSOR)
-	private String sensor;
-
 	public Thing getThing() {
 		return thing;
 	}
 
 	public void setThing(Thing thing) {
 		this.thing = thing;
-	}
-
-	public String getSensor() {
-		return sensor;
-	}
-
-	public void setSensor(String sensor) {
-		this.sensor = sensor;
 	}
 
 	@Override

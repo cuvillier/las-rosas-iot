@@ -1,11 +1,11 @@
 package com.lasrosas.iot.core.flux;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +20,19 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.Assert;
 
 import com.google.gson.Gson;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageAck;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
-import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
-import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.RxInfo;
-import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx.TxInfo;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageAck;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
+import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
-import com.lasrosas.iot.core.database.entities.SampleData;
 
 /*
 assertEquals(1, frame0x30.getStatus().getFrameCounter());
@@ -58,7 +56,7 @@ assertNull(frame0x30.getTimestamp());
 @EnableIntegration
 @ContextConfiguration(
 		classes = {
-				Rak7249ToLoraMessageConfig.class,
+				HandleThingMessageConfig.class,
 				LasRosasIotBaseConfig.class,
 				SensorsConfig.class,
 				IOTDatabaseConfig.class,
@@ -69,14 +67,22 @@ assertNull(frame0x30.getTimestamp());
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan("com.lasrosas.iot")
 @ActiveProfiles("test")
-public class Rak7249ToLoraMessageTest {
-	public static Logger log = LoggerFactory.getLogger(Rak7249ToLoraMessageTest.class);
+public class HandleThingMessageTest {
+	public static Logger log = LoggerFactory.getLogger(HandleThingMessageTest.class);
 
 	@Autowired
-	private MessageChannel rak7249UplinkTxChannel;
+	private MessageChannel loraChannel;
 
 	@Autowired
-	private PublishSubscribeChannel loraChannel;
+	private PublishSubscribeChannel thingEncodedChannel;
+	@Autowired
+	private PublishSubscribeChannel loraMetricChannelName;
+	
+	@Autowired
+	private PublishSubscribeChannel stateChannelName;
+	
+	@Autowired
+	private PublishSubscribeChannel errorChannelName;
 
 	@Autowired
 	private Gson gson;
@@ -88,42 +94,48 @@ public class Rak7249ToLoraMessageTest {
 	};
 	private HandlerResult handlerResult;
 
+	/*
+	 * Test Uplink LoraMessage handling
+	 * @precondition:
+	 *  - thing with deveui 0018b2200000093c
+	 **/
 	@Test
 	@DirtiesContext
 	public void rak7249ToLoraMessageUplink() {
-		var sampleThing = SampleData.SampleThing6;
 
-		final var messageRak7249 = new Rak7249MessageRx();
-		messageRak7249.setData("MCAAIQAAAAAAAAA=");
-		messageRak7249.setData_encode("base64");
-		messageRak7249.setTxInfo(new TxInfo(1234L, 678));
-		messageRak7249.setRxInfo(Arrays.asList(new RxInfo("gateway", 789.2f, 234, LocalDateTime.now())));
+		final var loraMessage = new LoraMessageUplink();
+		loraMessage.setData("MCAAIQAAAAAAAAA=");
+		loraMessage.setDataEncoding("base64");
+		loraMessage.setCnt(0);
+		loraMessage.setDeveui("0018b2200000093c");
+		loraMessage.setFrequency(null);
+		loraMessage.setPort(0);
+		loraMessage.setRssi(null);
+		loraMessage.setSnr(null);
 
 		var imessage = MessageBuilder
-				.withPayload(messageRak7249)
-				.setHeader(LasRosasHeaders.THING_ID, sampleThing.id())
+				.withPayload(loraMessage)
+				.setHeader(LasRosasHeaders.THING_ID, 6L)
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 				.build();
 
 		handlerResult = HandlerResult.WAITING;
+/*
+		router.setChannelMapping(ThingEncodedMessage.class.getName(), LasRosasIotBaseConfig.thingEncodedDataChannelName);
+		router.setChannelMapping(LoraMetricMessage.class.getName(), LasRosasIotBaseConfig.loraMetricChannelName);
+		router.setChannelMapping(ConnectionState.class.getName(), LasRosasIotBaseConfig.stateChannelName);
+		router.setChannelMapping(StillAlive.class.getName(), LasRosasIotBaseConfig.stateChannelName);
+		router.setDefaultOutputChannelName(LasRosasIotBaseConfig.errorChannelName);
+*/
 
-		loraChannel.subscribe((m) -> {
+		thingEncodedChannel.subscribe((m) -> {
 			try {
 				log.info(gson.toJson(m));
 
-				var loraMessage = (LoraMessageUplink)m.getPayload();
+				var thingEncodedMessage = (ThingEncodedMessage)m.getPayload();
 	
 				log.info(gson.toJson(loraMessage));
-				assertEquals(messageRak7249.getFCnt(), loraMessage.getCnt());
-				assertEquals(messageRak7249.getData(), loraMessage.getData());
-				assertEquals(messageRak7249.getData_encode(), loraMessage.getDataEncoding());
-				assertEquals(messageRak7249.getDevEUI(), loraMessage.getDeveui());
-				assertEquals(messageRak7249.getTxInfo().getFrequency(), loraMessage.getFrequency());
-				assertEquals(messageRak7249.getFPort(), loraMessage.getPort());
-
-				var rxInfo = messageRak7249.getRxInfo().get(0);
-				assertEquals(rxInfo.getRssi(), loraMessage.getRssi());
-				assertEquals(rxInfo.getLoRaSNR(), loraMessage.getSnr());
+				assertEquals(loraMessage.getData(), thingEncodedMessage.getEncodedData());
 
 			} catch(RuntimeException e) {
 				handlerResult = HandlerResult.ERROR;
@@ -132,7 +144,7 @@ public class Rak7249ToLoraMessageTest {
 			handlerResult = HandlerResult.OK;
 		});
 
-		rak7249UplinkTxChannel.send(imessage);
+		//.send(imessage);
 
 		if(handlerResult != HandlerResult.OK) throw new RuntimeException("Test failed: result = " + handlerResult);
 
@@ -141,11 +153,9 @@ public class Rak7249ToLoraMessageTest {
 	@Test
 	@DirtiesContext
 	public void rak7249ToLoraMessageJoin() {
-		var sampleThing = SampleData.SampleThing6;
-		var thingType = SampleData.Adeunis_ARF8180BA;
-
+/*
 		final var messageRak7249 = new Rak7249MessageJoin();
-		messageRak7249.setDeviceName(thingType.manufacturer() + "/" + thingType.model() + "/0018B2200000093C");
+		messageRak7249.setDeviceName("Adenuis/ARF8180BA/0018B2200000093C");
 		messageRak7249.setApplicationID("1");
 		messageRak7249.setApplicationName("LasRosas");
 		messageRak7249.setDevAddr("1234");
@@ -153,7 +163,7 @@ public class Rak7249ToLoraMessageTest {
 
 		var imessage = MessageBuilder
 				.withPayload(messageRak7249)
-				.setHeader(LasRosasHeaders.THING_ID, sampleThing.id())
+				.setHeader(LasRosasHeaders.THING_ID, 6L)
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 				.build();
 
@@ -181,29 +191,28 @@ public class Rak7249ToLoraMessageTest {
 		rak7249UplinkTxChannel.send(imessage);
 
 		if(handlerResult != HandlerResult.OK) throw new RuntimeException("Test failed: result = " + handlerResult);
-
+*/
 	}
 
 	@Test
 	@DirtiesContext
 	public void rak7249ToLoraMessageAck() {
-		var sampleThing = SampleData.SampleThing6;
-		var thingType = SampleData.Adeunis_ARF8180BA;
-
+/*
 		final var messageRak7249 = new Rak7249MessageAck();
-		messageRak7249.setDeviceName(thingType.manufacturer() + "/" + thingType.model() + "/0018B2200000093C");
+		messageRak7249.setDeviceName("Adenuis/ARF8180BA/0018B2200000093C");
 		messageRak7249.setApplicationID("1");
 		messageRak7249.setApplicationName("LasRosas");
-		messageRak7249.setDevEUI(sampleThing.deveui());
+		messageRak7249.setDevEUI("0018b2200000093c");
 		messageRak7249.setAcknowledge(true);
 		messageRak7249.setfCnt(1);
 		messageRak7249.setTime(LocalDateTime.now());
 
 		var imessage = MessageBuilder
 				.withPayload(messageRak7249)
-				.setHeader(LasRosasHeaders.THING_ID, sampleThing.id())
+				.setHeader(LasRosasHeaders.THING_ID, 6L)
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 				.build();
+
 		handlerResult = HandlerResult.WAITING;
 
 		loraChannel.subscribe((m) -> {
@@ -227,6 +236,6 @@ public class Rak7249ToLoraMessageTest {
 		rak7249UplinkTxChannel.send(imessage);
 
 		if(handlerResult != HandlerResult.OK) throw new RuntimeException("Test failed: result = " + handlerResult);
-
+*/
 	}
 }

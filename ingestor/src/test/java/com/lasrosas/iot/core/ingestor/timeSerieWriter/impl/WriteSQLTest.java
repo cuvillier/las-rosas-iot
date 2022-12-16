@@ -8,9 +8,10 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.database.entities.thg.ThingGateway;
@@ -20,19 +21,27 @@ import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerieType;
 
+@SpringBootTest
 public class WriteSQLTest {
 	public static final Logger log = LoggerFactory.getLogger(WriteSQLTest.class);
-	private Gson gson = new GsonBuilder().create();
+
+	@Autowired
+	private Gson gson;
+	
+	@Autowired
+	private WriteSQLImpl cut;
 
 	@Test
 	public void testUpdateProxy() {
+		assertNotNull(gson);
+
 		var tht = new ThingType("LasRosas", "UnitTest");
 		var gtw = new ThingGateway("unittest");
 		var thg = new ThingLora(gtw, tht, "123456");
 		thg.createProxy();
 
 		var point = createPoint(thg, "{ i: 1 }", "UnitTest", null);
-		var cut = new WriteSQLImpl();
+
 		cut.setStoreProxyTime(true);
 		cut.updateProxy(point);
 

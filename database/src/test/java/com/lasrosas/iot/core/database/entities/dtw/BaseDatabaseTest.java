@@ -1,4 +1,4 @@
-package com.lasrosas.iot.database.entities.dtw;
+package com.lasrosas.iot.core.database.entities.dtw;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;

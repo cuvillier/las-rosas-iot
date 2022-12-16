@@ -24,8 +24,8 @@ public class SpringExpressionTest {
 
 		ExpressionParser parser = new SpelExpressionParser();
 
-		Expression exp = parser.parseExpression("'application/1/device/' + headers['ThingNaturalId'] + '/tx'"); 
+		Expression exp = parser.parseExpression("'application/1/device/' + headers['ThingNaturalId'] + '/rx'"); 
 		var result = exp.getValue(imessage, String.class);
-		assertEquals("application/1/device/123b123b123b123b123/tx", result);
+		assertEquals("application/1/device/123b123b123b123b123/rx", result);
 	}
 }

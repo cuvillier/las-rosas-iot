@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,9 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	private InfluxDBClient influxDB;
 	private boolean dryMode = false;
 	private Set<Class<?>> initedClasses = new HashSet<Class<?>>();
-	private Gson gson = new GsonBuilder().create();
+
+	@Autowired
+	public Gson gson;
 
 	public WriteInfluxDBImpl(InfluxDBConfig config) {
 		this.config = config;
@@ -75,16 +78,19 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 		var measurment = tsr.getInfluxdbMeasurement();
 
 		if( measurment == null) {
-
-			String naturalId;
-			if(	LasRosasHeaders.twinNaturalId(imessage).isPresent() )
-				naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage).get();
-			else
-				naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage).get();
+			var isTwin = LasRosasHeaders.twinNaturalId(imessage).isPresent();
 
 			var payloadTypeName = imessage.getPayload().getClass().getSimpleName();
 
-			var sensor = LasRosasHeaders.sensor(imessage);
+			String naturalId;
+			String sensor = null;
+			if(	isTwin )
+				naturalId = "TWI_"+LasRosasHeaders.twinNaturalId(imessage).get();
+			else {
+				naturalId = "THG_"+LasRosasHeaders.thingNaturalId(imessage).get();
+				sensor = LasRosasHeaders.sensor(imessage);
+			}
+
 			if( sensor == null) 
 				measurment = (naturalId + "_" + payloadTypeName).replaceAll("\\.", "_");
 			else

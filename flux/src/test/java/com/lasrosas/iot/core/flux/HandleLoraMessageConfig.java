@@ -17,7 +17,7 @@ import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 
-public class LoraMessageSplitterConfig {
+public class HandleLoraMessageConfig {
 	@Bean
 	public DirectChannel inputChannel() {
 		return new DirectChannel();

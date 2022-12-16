@@ -31,13 +31,13 @@ import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @EnableIntegration
-@ContextConfiguration(classes = {LoraMessageSplitterConfig.class, IOTDatabaseConfig.class, UtilsConfig.class})
+@ContextConfiguration(classes = {HandleLoraMessageConfig.class, IOTDatabaseConfig.class, UtilsConfig.class})
 @DataJpaTest()
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan("com.lasrosas.iot")
 @ActiveProfiles("dev")
-public class LoraMessageSplitterTest {
-	public static Logger log = LoggerFactory.getLogger(Rak7249FluxLoraTransformerTest.class);
+public class HandleLoraMessageTest {
+	public static Logger log = LoggerFactory.getLogger(HandleLoraMessageTest.class);
 
 	@Autowired
 	private DirectChannel inputChannel;
@@ -48,7 +48,8 @@ public class LoraMessageSplitterTest {
 	@Autowired
 	private PollableChannel thingEncodedChannel;
 	
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	@Autowired
+	private Gson gson;
 
 	@Test
 	public void HandleLoraMessage() {

@@ -3,10 +3,17 @@ package com.lasrosas.iot.core.shared.telemetry;
 public class AirEnvironment extends Telemetry {
 	public static final String SCHEMA = "AirEnvironment";
 
+	private String sensor;
 	private Double temperature;
 	private Double humidity;
 	private Double light;
 
+	public String getSensor() {
+		return sensor;
+	}
+	public void setSensor(String sensor) {
+		this.sensor = sensor;
+	}
 	public Double getTemperature() {
 		return temperature;
 	}

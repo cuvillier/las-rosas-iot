@@ -3,11 +3,11 @@ package com.lasrosas.iot.core.ingestor.parsers.impl.mfc88;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.PayloadParser;
@@ -20,7 +20,8 @@ public class MFC88LW13IOParser implements PayloadParser {
 		public static final String MANUFACTURER = "MFC88";
 		public static final String MODEL = "LW13IO";
 
-		public static Gson gson = new GsonBuilder().create();
+		@Autowired
+		public Gson gson;
 
 		private MFC88LW13IOFrameDecoder decoder = new MFC88LW13IOFrameDecoder();
 

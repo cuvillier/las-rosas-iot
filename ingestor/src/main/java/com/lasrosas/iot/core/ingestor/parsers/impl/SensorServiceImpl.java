@@ -11,7 +11,6 @@ import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
@@ -25,7 +24,8 @@ import com.lasrosas.iot.core.shared.utils.NotFoundException;
 public class SensorServiceImpl implements SensorService {
 	public static final Logger log = LoggerFactory.getLogger(SensorServiceImpl.class);
 
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	@Autowired
+	private Gson gson;
 
 	@Autowired
 	private ThingRepo thgRepo;
@@ -43,7 +43,6 @@ public class SensorServiceImpl implements SensorService {
 
 	public PayloadParser getParser(String manufacturer, String model) {
 		var key = manufacturer.toLowerCase() + "/" + model.toLowerCase();
-		log.info(gson.toJson(parsers));
 		return parsers.get(key);
 	}
 

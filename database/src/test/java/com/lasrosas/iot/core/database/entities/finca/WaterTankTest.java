@@ -1,4 +1,4 @@
-package com.lasrosas.iot.database.entities.finca;
+package com.lasrosas.iot.core.database.entities.finca;
 
 import static org.junit.jupiter.api.Assertions.*;
 

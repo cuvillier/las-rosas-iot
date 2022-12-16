@@ -24,7 +24,8 @@ import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class WriteSQLImpl implements WriteSQL {
 
-	private Gson gson = new GsonBuilder().create();
+	@Autowired
+	public Gson gson;
 
 	@Autowired
 	private ThingRepo thgRepo;

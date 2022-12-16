@@ -1,4 +1,4 @@
-package com.lasrosas.iot.database.entities.dtw;
+package com.lasrosas.iot.core.database.entities.dtw;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.ingestor.rak7249;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.util.Assert;
 
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.shared.utils.GsonUtils;
@@ -40,8 +41,13 @@ public class Rak7249MessageTest {
 			+ "			}\n"
 			+ "		}";
 
-		var  gson = GsonUtils.createGson();
+		var  gson = GsonUtils.gson();
+//		Gson gson = new GsonBuilder().create();
 
-		gson.fromJson(json, Rak7249MessageRx.class);
+		var message = gson.fromJson(json, Rak7249MessageRx.class);
+
+		Assert.notNull(message, "message is null");
+		System.out.println(gson.toJson(message));
+		Assert.notNull(message.getDevEUI(), "devEUI is null");
 	}
 }

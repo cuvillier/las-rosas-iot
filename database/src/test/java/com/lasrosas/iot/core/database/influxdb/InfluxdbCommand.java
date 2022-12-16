@@ -1,4 +1,4 @@
-package com.lasrosas.iot.database.influxdb;
+package com.lasrosas.iot.core.database.influxdb;
 
 public class InfluxdbCommand {
 	public static void main(String ... argv) {

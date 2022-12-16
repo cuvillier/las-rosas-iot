@@ -50,10 +50,16 @@
 		    <artifactId>spring-integration-test</artifactId>
 		    <scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.lasrosas.iot.core</groupId>
+			<artifactId>database</artifactId>
+			<type>test-jar</type>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
+
 	<build>
 	  <finalName>lasrosasiot-flux-2.1.5</finalName>
-
 	    <plugins>
 	      <plugin>
 	        <groupId>org.springframework.boot</groupId>

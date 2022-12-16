@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.ingestor.lora.impl;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -41,6 +42,7 @@ public class LoraServiceImpl implements LoraService {
 
 		if(payload instanceof LoraMessageUplink ) {
 			var thing = thingLoraRepo.getByDeveui(payload.getDeveui());
+			Optional.of(thing);
 
 			@SuppressWarnings("unchecked")
 			var splitResult = splitUplink((Message<LoraMessageUplink>)imessage);
@@ -62,7 +64,7 @@ public class LoraServiceImpl implements LoraService {
 			result.add(splitResult);
 
 		} else {
-			
+
 			result.add(MessageBuilder
 					.withPayload(new StillAlive())
 					.copyHeaders(imessage.getHeaders())
@@ -76,6 +78,9 @@ public class LoraServiceImpl implements LoraService {
 	@Override
 	public HandleUplinkResult splitUplink(Message<LoraMessageUplink> imessage) {
 		var uploadMessage = imessage.getPayload();
+
+		if( uploadMessage.getDeveui() == null)
+			throw new RuntimeException("DevEUI is missing in uploadMessage");
 
 		var loraMetric = new LoraMetricMessage();
 		loraMetric.setCnt(uploadMessage.getCnt());

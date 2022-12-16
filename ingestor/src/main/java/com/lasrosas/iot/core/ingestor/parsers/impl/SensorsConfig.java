@@ -37,8 +37,8 @@ public class SensorsConfig {
 	}
 
 	@Bean
-	public ElsysMB7389Parser ElsysMB7389Parser() {
-		return new ElsysMB7389Parser();
+	public ElsysMB7389Parser ElsysMB7389Parser(ElsysGenericParser ElsysGenericParser) {
+		return new ElsysMB7389Parser(ElsysGenericParser);
 	}
 
 	@Bean
