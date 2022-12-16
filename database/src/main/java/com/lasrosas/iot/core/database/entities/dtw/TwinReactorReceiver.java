@@ -28,6 +28,7 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
+	public static final String COL_READABLE = PREFIX + "readable";
 	public static final String COL_TWIN_FK = PREFIX_FK + DigitalTwin.PREFIX + "twin";
 	public static final String COL_TYPE_FK = PREFIX_FK + TwinReactorReceiverType.PREFIX + "type";
 	public static final String COL_SOURCE_FK = PREFIX_FK + "source";
@@ -43,6 +44,9 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 	@JoinColumn(name=COL_TYPE_FK)
 	private TwinReactorReceiverType type;
 
+	@Column(name=COL_READABLE)
+	private String readable;
+
 	@SuppressWarnings("unchecked")
 	public <T extends DigitalTwin> T getTwin() {
 		return (T)twin;
@@ -50,6 +54,14 @@ public abstract class TwinReactorReceiver extends BaseEntity {
 
 	public void setTwin(DigitalTwin twin) {
 		this.twin = twin;
+	}
+
+	public String getReadable() {
+		return readable;
+	}
+
+	public void setReadable(String readable) {
+		this.readable = readable;
 	}
 
 	public TwinReactorReceiverType getType() {

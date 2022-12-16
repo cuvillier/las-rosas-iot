@@ -96,7 +96,7 @@ CREATE TABLE t_thg_thing
 	thg_discriminator VARCHAR(3) NOT NULL,
 	thg_fk_tty_type INT UNSIGNED NOT NULL,
 	thg_fk_gtw_gateway INT UNSIGNED,
-	thg_mode VARCHAR(10) DEFAULT 'Enabled' NOT NULL,
+	thg_admin_state VARCHAR(10) DEFAULT 'Enabled' NOT NULL,
 	lor_dev_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_eui VARCHAR(50) DEFAULT NULL,
 	lor_app_key VARCHAR(50) DEFAULT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE t_thg_thing
 	PRIMARY KEY (thg_techid),
 	CONSTRAINT fk_thg_fk_tty_type FOREIGN KEY (thg_fk_tty_type) REFERENCES t_thg_thing_type(tty_techid),
 	CONSTRAINT fk_thg_fk_gtw_gateway FOREIGN KEY (thg_fk_gtw_gateway) REFERENCES t_thg_gateway (gtw_techid),
-	CONSTRAINT fk_thg_mode CHECK(thg_mode IN ('Enabled', 'Disabled', 'Removed'))
+	CONSTRAINT fk_thg_admin_state CHECK(thg_admin_state IN ('Enabled', 'Disabled', 'Removed'))
 );
 
 CREATE TABLE t_thg_thing_proxy

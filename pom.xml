@@ -18,7 +18,7 @@
 	<description>Las Rosas IOT base project</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>18</java.version>
 		<config.path>${project.basedir}/config</config.path>
 	</properties>
 
@@ -27,37 +27,27 @@
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>database</artifactId>
-				<version>2.2.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>com.lasrosas.iot.core</groupId>
-				<artifactId>ingestor</artifactId>
-				<version>2.2.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>com.lasrosas.iot.core</groupId>
-				<artifactId>reactor</artifactId>
-				<version>2.2.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.lasrosas.iot.core</groupId>
 				<artifactId>shared</artifactId>
-				<version>2.2.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mariadb.jdbc</groupId>
-				<artifactId>mariadb-java-client</artifactId>
-				<version>2.6.2</version>
+				<groupId>com.lasrosas.iot.core</groupId>
+				<artifactId>ingestor</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.eclipse.paho</groupId>
-				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-				<version>1.2.5</version>
+				<groupId>com.lasrosas.iot.core</groupId>
+				<artifactId>reactor</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-			  <groupId>com.influxdb</groupId>
-			  <artifactId>influxdb-client-java</artifactId>
-			  <version>2.3.0</version>
+				<groupId>com.influxdb</groupId>
+				<artifactId>influxdb-client-java</artifactId>
+				<version>6.4.0</version>
 			</dependency>
  		</dependencies>
 	</dependencyManagement>
@@ -69,6 +59,7 @@
 		<module>ingestor</module>
 		<module>reactor</module>
 		<module>flux</module>
+		<module>webapi</module>
 	</modules>
 
 </project>

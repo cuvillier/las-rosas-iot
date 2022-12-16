@@ -23,6 +23,8 @@ CREATE TABLE t_dtw_reactor_receiver
 (
 	rre_techid INT UNSIGNED AUTO_INCREMENT,
 	rre_discriminator VARCHAR(3) NOT NULL,
+	rre_readable  VARCHAR(50),
+	rre_sensor  VARCHAR(16),
     rre_fk_twi_twin INT UNSIGNED NOT NULL,
     rre_fk_rrt_type INT UNSIGNED NOT NULL,
     rvt_fk_thg_thing INT UNSIGNED DEFAULT NULL,

@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
 
 @Entity
@@ -28,6 +29,7 @@ public class ThingType extends BaseEntity {
 	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "battery_min_percentage";
 	public static final String COL_MANUFACTURER = PREFIX + "manufacturer";
 
+	@JsonBackReference
 	@OneToMany(mappedBy = Thing.PROP_TYPE, fetch = FetchType.LAZY)
 	private List<Thing> things;
 

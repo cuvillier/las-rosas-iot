@@ -12,4 +12,5 @@ public interface ThingRepo extends ThingRepoBase<Thing> {
 
 	@Query("select thg from Thing thg where thg.connectionTimeout is not null and thg.proxy.lastSeen is not null")
 	List<Thing> findTimeouted();
+	List<Thing> findByGateway_Techid(long gatewayTechid);
 }

@@ -3,169 +3,169 @@ package com.lasrosas.iot.core.ingestor.parsers.impl.elsys;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 
 public class ElsysGenericUplinkFrame extends ThingDataMessage {
-    private Double Temperature;
-    private Integer Humidity;
-    private Integer AccelerationX;
-    private Integer AccelerationY;
-    private Integer AccelerationZ;
-    private Integer Light;
-    private Integer Motion;
-    private Integer Co2;
-    private Integer Vdd;
-    private Integer Analog1;
-    private Integer GpsLatitude;
-    private Integer GpsLongitude;
-    private Integer Pulse1;
-    private Integer PulseAbs;
-    private Double ExternalTemperature;
-    private Integer Digital;
-    private Integer Distance;
-    private Integer AccMotion;
-    private Double IrInternalTemperature;
-    private Double IrExternalTemperature;
-    private Integer Occupancy;
-    private Integer Waterleak;
+    private Double temperature;
+    private Integer humidity;
+    private Integer accelerationX;
+    private Integer accelerationY;
+    private Integer accelerationZ;
+    private Integer light;
+    private Integer motion;
+    private Integer co2;
+    private Integer vdd;
+    private Integer analog1;
+    private Integer gpsLatitude;
+    private Integer gpsLongitude;
+    private Integer pulse1;
+    private Integer pulseAbs;
+    private Double externalTemperature;
+    private Integer digital;
+    private Integer distance;
+    private Integer accMotion;
+    private Double irInternalTemperature;
+    private Double irExternalTemperature;
+    private Integer occupancy;
+    private Integer waterleak;
     private Double pressure;
-    private Integer SoundPeak;
-    private Integer SoundAvg;
-    private Integer Pulse2;
-    private Integer PulseAbs2;
-    private Integer Analog2;
-    private Double ExternalTemperature2;
+    private Integer soundPeak;
+    private Integer soundAvg;
+    private Integer pulse2;
+    private Integer pulseAbs2;
+    private Integer analog2;
+    private Double externalTemperature2;
     private double [] grideye;
-    private Integer AnalogUV;
+    private Integer analogUV;
 
     public Double getTemperature() {
-		return Temperature;
+		return temperature;
 	}
 	public void setTemperature(Double temperature) {
-		Temperature = temperature;
+		temperature = temperature;
 	}
 	public Integer getHumidity() {
-		return Humidity;
+		return humidity;
 	}
 	public void setHumidity(Integer humidity) {
-		Humidity = humidity;
+		humidity = humidity;
 	}
 	public Integer getAccelerationX() {
-		return AccelerationX;
+		return accelerationX;
 	}
 	public void setAccelerationX(Integer accelerationX) {
-		AccelerationX = accelerationX;
+		accelerationX = accelerationX;
 	}
 	public Integer getAccelerationY() {
-		return AccelerationY;
+		return accelerationY;
 	}
 	public void setAccelerationY(Integer accelerationY) {
-		AccelerationY = accelerationY;
+		accelerationY = accelerationY;
 	}
 	public Integer getAccelerationZ() {
-		return AccelerationZ;
+		return accelerationZ;
 	}
 	public void setAccelerationZ(Integer accelerationZ) {
-		AccelerationZ = accelerationZ;
+		accelerationZ = accelerationZ;
 	}
 	public Integer getLight() {
-		return Light;
+		return light;
 	}
 	public void setLight(Integer light) {
-		Light = light;
+		light = light;
 	}
 	public Integer getMotion() {
-		return Motion;
+		return motion;
 	}
 	public void setMotion(Integer motion) {
-		Motion = motion;
+		motion = motion;
 	}
 	public Integer getCo2() {
-		return Co2;
+		return co2;
 	}
 	public void setCo2(Integer co2) {
-		Co2 = co2;
+		co2 = co2;
 	}
 	public Integer getVdd() {
-		return Vdd;
+		return vdd;
 	}
 	public void setVdd(Integer vdd) {
-		Vdd = vdd;
+		vdd = vdd;
 	}
 	public Integer getAnalog1() {
-		return Analog1;
+		return analog1;
 	}
 	public void setAnalog1(Integer analog1) {
-		Analog1 = analog1;
+		analog1 = analog1;
 	}
 	public Integer getGpsLatitude() {
-		return GpsLatitude;
+		return gpsLatitude;
 	}
 	public void setGpsLatitude(Integer gpsLatitude) {
-		GpsLatitude = gpsLatitude;
+		gpsLatitude = gpsLatitude;
 	}
 	public Integer getGpsLongitude() {
-		return GpsLongitude;
+		return gpsLongitude;
 	}
 	public void setGpsLongitude(Integer gpsLongitude) {
-		GpsLongitude = gpsLongitude;
+		gpsLongitude = gpsLongitude;
 	}
 	public Integer getPulse1() {
-		return Pulse1;
+		return pulse1;
 	}
 	public void setPulse1(Integer pulse1) {
-		Pulse1 = pulse1;
+		pulse1 = pulse1;
 	}
 	public Integer getPulseAbs() {
-		return PulseAbs;
+		return pulseAbs;
 	}
 	public void setPulseAbs(Integer pulseAbs) {
-		PulseAbs = pulseAbs;
+		pulseAbs = pulseAbs;
 	}
 	public Double getExternalTemperature() {
-		return ExternalTemperature;
+		return externalTemperature;
 	}
 	public void setExternalTemperature(Double externalTemperature) {
-		ExternalTemperature = externalTemperature;
+		externalTemperature = externalTemperature;
 	}
 	public Integer getDigital() {
-		return Digital;
+		return digital;
 	}
 	public void setDigital(Integer digital) {
-		Digital = digital;
+		digital = digital;
 	}
 	public Integer getDistance() {
-		return Distance;
+		return distance;
 	}
 	public void setDistance(Integer distance) {
-		Distance = distance;
+		distance = distance;
 	}
 	public Integer getAccMotion() {
-		return AccMotion;
+		return accMotion;
 	}
 	public void setAccMotion(Integer accMotion) {
-		AccMotion = accMotion;
+		accMotion = accMotion;
 	}
 	public Double getIrInternalTemperature() {
-		return IrInternalTemperature;
+		return irInternalTemperature;
 	}
 	public void setIrInternalTemperature(Double irIntegerernalTemperature) {
-		IrInternalTemperature = irIntegerernalTemperature;
+		irInternalTemperature = irIntegerernalTemperature;
 	}
 	public Double getIrExternalTemperature() {
-		return IrExternalTemperature;
+		return irExternalTemperature;
 	}
 	public void setIrExternalTemperature(Double irExternalTemperature) {
-		IrExternalTemperature = irExternalTemperature;
+		irExternalTemperature = irExternalTemperature;
 	}
 	public Integer getOccupancy() {
-		return Occupancy;
+		return occupancy;
 	}
 	public void setOccupancy(Integer occupancy) {
-		Occupancy = occupancy;
+		occupancy = occupancy;
 	}
 	public Integer getWaterleak() {
-		return Waterleak;
+		return waterleak;
 	}
 	public void setWaterleak(Integer waterleak) {
-		Waterleak = waterleak;
+		waterleak = waterleak;
 	}
 	public Double getPressure() {
 		return pressure;
@@ -174,40 +174,40 @@ public class ElsysGenericUplinkFrame extends ThingDataMessage {
 		this.pressure = pressure;
 	}
 	public Integer getSoundPeak() {
-		return SoundPeak;
+		return soundPeak;
 	}
 	public void setSoundPeak(Integer soundPeak) {
-		SoundPeak = soundPeak;
+		soundPeak = soundPeak;
 	}
 	public Integer getSoundAvg() {
-		return SoundAvg;
+		return soundAvg;
 	}
 	public void setSoundAvg(Integer soundAvg) {
-		SoundAvg = soundAvg;
+		soundAvg = soundAvg;
 	}
 	public Integer getPulse2() {
-		return Pulse2;
+		return pulse2;
 	}
 	public void setPulse2(Integer pulse2) {
-		Pulse2 = pulse2;
+		pulse2 = pulse2;
 	}
 	public Integer getPulseAbs2() {
-		return PulseAbs2;
+		return pulseAbs2;
 	}
 	public void setPulseAbs2(Integer pulseAbs2) {
-		PulseAbs2 = pulseAbs2;
+		pulseAbs2 = pulseAbs2;
 	}
 	public Integer getAnalog2() {
-		return Analog2;
+		return analog2;
 	}
 	public void setAnalog2(Integer analog2) {
-		Analog2 = analog2;
+		analog2 = analog2;
 	}
 	public Double getExternalTemperature2() {
-		return ExternalTemperature2;
+		return externalTemperature2;
 	}
 	public void setExternalTemperature2(Double externalTemperature2) {
-		ExternalTemperature2 = externalTemperature2;
+		externalTemperature2 = externalTemperature2;
 	}
 	public double[] getGrideye() {
 		return grideye;
@@ -216,9 +216,9 @@ public class ElsysGenericUplinkFrame extends ThingDataMessage {
 		this.grideye = grideye;
 	}
 	public Integer getAnalogUV() {
-		return AnalogUV;
+		return analogUV;
 	}
 	public void setAnalogUV(Integer analogUV) {
-		AnalogUV = analogUV;
+		analogUV = analogUV;
 	}
 }

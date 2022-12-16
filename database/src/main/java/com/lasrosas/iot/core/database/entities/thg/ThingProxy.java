@@ -11,11 +11,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
 
 @Entity
 @Table(name = ThingProxy.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = ThingProxy.COL_TECHID), name = BaseEntity.PROP_TECHID), })
+@JsonIgnoreProperties({ "thing" })
 public class ThingProxy extends BaseEntity {
 	public static final String TABLE = "t_thg_thing_proxy";
 	public static final String PREFIX = "thp_";
@@ -54,6 +57,7 @@ public class ThingProxy extends BaseEntity {
 	private String config;
 
 	@Column(name=COL_VALUES)
+	@JsonIgnore
 	private String values;
 
 	public Thing getThing() {

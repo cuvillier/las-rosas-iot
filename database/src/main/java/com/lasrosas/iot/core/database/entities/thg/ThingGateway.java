@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.NaturalId;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
 
 @Entity
@@ -39,11 +40,12 @@ public class ThingGateway extends BaseEntity {
 	private String naturalId;
 
 	@OneToMany(mappedBy = Thing.PROP_GATEWAY, fetch = FetchType.EAGER)
+	@JsonBackReference
 	private List<Thing> things;
 
 	@Column(name = COL_PROTOCOL)
 	private String protocol;
-	
+
 	@Column(name = COL_LOGIN)
 	private String login;
 
@@ -57,7 +59,7 @@ public class ThingGateway extends BaseEntity {
 	private String typeName;
 
 	public ThingGateway() {}
-	
+
 	public ThingGateway(String naturalId) {
 		this.naturalId = naturalId;
 	}

@@ -24,7 +24,7 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   datasource:
-    url: jdbc:mariadb://localhost:3307/lasrosasiot
+    url: jdbc:mariadb://192.168.10.13:3306/lasrosasiot
     username: lasrosasiot
     password: lasrosasiot  
   jpa:
@@ -35,7 +35,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
-        physical_naming_strategy: com.lasrosas.iot.core.database.UpperCaseNamingStrategy
+        physical_naming_strategy: com.lasrosas.iot.core.database.LowerCaseNamingStrategy
 logging:
   level:
     org.springframework.orm: INFO

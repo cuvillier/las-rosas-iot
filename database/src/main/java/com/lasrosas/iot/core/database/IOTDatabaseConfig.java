@@ -11,7 +11,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix = "sql")
+@ConfigurationProperties(prefix = "spring.datasource")
 @Validated
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "com.lasrosas.iot.core.database")

@@ -44,7 +44,7 @@ public abstract class Thing extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_READABLE = PREFIX + "readable";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
-	public static final String COL_MODE = PREFIX + "mode";
+	public static final String COL_MODE = PREFIX + "admin_state";
 	public static final String COL_CONNECTION_TIMEOUT = PREFIX + "connection_timeout";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingType.PREFIX + "type";
 	public static final String COL_GATEWAY_FK = PREFIX_FK + ThingGateway.PREFIX + "gateway";
@@ -70,11 +70,11 @@ public abstract class Thing extends BaseEntity {
 
 	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ThingProxy proxy;
-	
+
 	@OneToMany(mappedBy = TwinReactorReceiverFromThing.PROP_THING)
 	private List<TwinReactorReceiverFromThing> receivers;
-	
-	public enum Mode {
+
+	public enum AdminState {
 		Enabled,
 		Disabled,
 		Removed
@@ -82,7 +82,7 @@ public abstract class Thing extends BaseEntity {
 
 	@Column(name = COL_MODE)
 	@Enumerated(EnumType.STRING)
-	private Mode mode = Mode.Enabled;
+	private AdminState adminState = AdminState.Enabled;
 
 	Thing() {
 	}
@@ -108,12 +108,12 @@ public abstract class Thing extends BaseEntity {
 		this.connectionTimeout = connectionTimeout;
 	}
 
-	public Mode getMode() {
-		return mode;
+	public AdminState getAdminState() {
+		return adminState;
 	}
 
-	public void setMode(Mode mode) {
-		this.mode = mode;
+	public void setAdminState(AdminState mode) {
+		this.adminState = mode;
 	}
 	public List<TwinReactorReceiverFromThing> getReceivers() {
 		return receivers;
