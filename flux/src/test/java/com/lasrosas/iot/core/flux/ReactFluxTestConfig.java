@@ -3,7 +3,6 @@ package com.lasrosas.iot.core.flux;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.Router;
 import org.springframework.integration.annotation.Splitter;
-import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.AbstractSimpleMessageHandlerFactoryBean;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.dsl.Pollers;
@@ -14,6 +13,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.PollableChannel;
 
 import com.lasrosas.iot.core.reactor.api.ReactorService;
+import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
 
 public class ReactFluxTestConfig {
 
@@ -50,6 +50,11 @@ public class ReactFluxTestConfig {
 	@Bean
 	public PollableChannel orderChannel() {
 		return MessageChannels.queue().get();
+	}
+
+	@Bean
+	public ReactorService ReactorService() {
+		return new ReactorServiceImpl();
 	}
 
 	@Bean

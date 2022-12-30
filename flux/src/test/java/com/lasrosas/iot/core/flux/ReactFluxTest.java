@@ -28,6 +28,6 @@ public class ReactFluxTest {
 	@Test
 	@DirtiesContext
 	@Transactional
-	public void glop() {
+	public void test_Switch() {
 	}
 }
