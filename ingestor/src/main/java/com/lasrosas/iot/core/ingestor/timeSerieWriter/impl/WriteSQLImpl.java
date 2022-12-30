@@ -8,7 +8,6 @@ import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
@@ -46,12 +45,13 @@ public class WriteSQLImpl implements WriteSQL {
 	private EntityManager em;
 
 	private boolean storeProxyTime = false;
-
 	
+	// public for testing, not in interface 
 	public boolean isStoreProxyTime() {
 		return storeProxyTime;
 	}
 
+	// public for testing, not in interface 
 	public void setStoreProxyTime(boolean storeProxyTime) {
 		this.storeProxyTime = storeProxyTime;
 	}
@@ -64,7 +64,8 @@ public class WriteSQLImpl implements WriteSQL {
 		return point;
 	}
 
-	/* test friendly */ void updateProxy(TimeSeriePoint point) {
+	// public for testing, not in interface 
+	public void updateProxy(TimeSeriePoint point) {
 		var thing = point.getTimeSerie().getThing();
 
 		// Twin point

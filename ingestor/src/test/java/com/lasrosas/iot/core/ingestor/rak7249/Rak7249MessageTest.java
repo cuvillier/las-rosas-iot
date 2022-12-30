@@ -1,11 +1,14 @@
 package com.lasrosas.iot.core.ingestor.rak7249;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
 import com.lasrosas.iot.core.shared.utils.GsonUtils;
+import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
+@ContextConfiguration(classes = {UtilsConfig.class})
 public class Rak7249MessageTest {
 
 	@Test
@@ -32,7 +35,7 @@ public class Rak7249MessageTest {
 			+ "						\"longitude\": -5.579390,\n"
 			+ "						\"altitude\": 279\n"
 			+ "					},\n"
-			+ "					\"time\": \"2021-07-18T07:50:17.653651Z\"\n"
+			+ "					\"time\": \"2021-07-18T07:50:17\"\n"
 			+ "				}\n"
 			+ "			],\n"
 			+ "			\"txInfo\": {\n"

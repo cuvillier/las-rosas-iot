@@ -28,7 +28,7 @@ public class LoraMessageSplitter  extends AbstractMessageSplitter {
 		var payload = (LoraMessage)imessage.getPayload();
 
 		if(payload instanceof LoraMessageUplink ) {
-			var thing = thingLoraRepo.getByDeveui(payload.getDeveui());
+			var thing = thingLoraRepo.getByDeveui(payload.getDeveui()).get();
 
 			@SuppressWarnings("unchecked")
 			var splitResult = service.splitUplink((Message<LoraMessageUplink>)imessage);

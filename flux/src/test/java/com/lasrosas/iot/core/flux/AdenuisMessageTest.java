@@ -23,6 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.google.gson.Gson;
 import com.lasrosas.iot.core.database.IOTDatabaseConfig;
+import com.lasrosas.iot.core.database.entities.SampleData;
+import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 import com.lasrosas.iot.core.ingestor.parsers.impl.adeunis.AdeunisARF8170BAFrame.ChannelState;
@@ -31,7 +33,14 @@ import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @EnableIntegration
-@ContextConfiguration(classes = {Rak7249ToLoraMessageConfig.class, SensorsConfig.class, IOTDatabaseConfig.class, UtilsConfig.class})
+@ContextConfiguration(
+		classes = {
+				AdeunisMessageTestConfig.class,
+				SensorsConfig.class,
+				IOTDatabaseConfig.class,
+				UtilsConfig.class
+		}
+)
 @DataJpaTest()
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan("com.lasrosas.iot")
@@ -46,10 +55,15 @@ public class AdenuisMessageTest {
 	private PollableChannel outputChannel;
 
 	@Autowired
+	private ThingLoraRepo thingLoraRepo;
+
+	@Autowired
 	private Gson gson;
 
 	@Test
 	public void DecodeThingMessageTransformer() {
+
+		var thing = thingLoraRepo.getByDeveui(SampleData.THING_ADEUNIS_ARF8180BA_DEVEUI).get();
 
 		var message = new ThingEncodedMessage();
 		message.setEncodedData("MCAAIQAAAAAAAAA=");
@@ -57,7 +71,7 @@ public class AdenuisMessageTest {
 
 		var imessage = MessageBuilder
 				.withPayload(message)
-				.setHeader(LasRosasHeaders.THING_ID, 6L)
+				.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 				.build();
 

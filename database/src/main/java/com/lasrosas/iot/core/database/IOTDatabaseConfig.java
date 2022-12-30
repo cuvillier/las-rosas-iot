@@ -30,7 +30,7 @@ public class IOTDatabaseConfig {
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(org.mariadb.jdbc.Driver.class.getName());
+		dataSource.setDriverClassName(org.postgresql.Driver.class.getName());
 		dataSource.setUrl(url);
 
 		dataSource.setUsername(username);

@@ -4,6 +4,25 @@ public class LoraMessageUplink extends LoraMessage {
 	public String data;
 	public String dataEncoding;
 
+	
+	public LoraMessageUplink() {
+		super();
+	}
+
+	public LoraMessageUplink(String deveui, String data, String dataEncoding, int port, int cnt, Integer rssi,
+			Float snr, Long frequency) {
+		super(deveui);
+		this.data = data;
+		this.dataEncoding = dataEncoding;
+		this.port = port;
+		this.cnt = cnt;
+		this.rssi = rssi;
+		this.snr = snr;
+		this.frequency = frequency;
+	}
+
+
+
 	public int port;
 
 	public int cnt;

@@ -34,7 +34,7 @@ public class GatewayServiceImpl implements GatewayService {
 
 	@Override
 	public String encodeDownlink(String gatewayNaturalId, byte[] data) {
-		var gateway = gatewayRepo.findByNaturalId(gatewayNaturalId);
+		var gateway = gatewayRepo.findByNaturalId(gatewayNaturalId).get();
 		var driverName = gateway.getTypeName();
 		var driver = getDriver(driverName);
 		return driver.encodeDownlink(data);

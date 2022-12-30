@@ -9,6 +9,19 @@ public class LoraMetricMessage extends Telemetry {
 	public Float snr;
 	public Long frequency;
 
+	public LoraMetricMessage() {
+		super();
+	}
+
+	public LoraMetricMessage(int port, int cnt, Integer rssi, Float snr, Long frequency) {
+		super();
+		this.port = port;
+		this.cnt = cnt;
+		this.rssi = rssi;
+		this.snr = snr;
+		this.frequency = frequency;
+	}
+
 	public int getPort() {
 		return port;
 	}

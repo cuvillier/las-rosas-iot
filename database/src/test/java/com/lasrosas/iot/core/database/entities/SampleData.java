@@ -8,6 +8,27 @@ package com.lasrosas.iot.core.database.entities;
  *
  */
 public final class SampleData {
+
+	public static String THING_ADEUNIS_ARF8180BA_DEVEUI = "0018b2200000093c";
+	public static String THING_ADEUNIS_ARF8180BA_UPLINK1 = "MCAAIQAAAAAAAAA=";
+
+	public static String THING_ADEUNIS_ARF8170BA_DEVEUI = "0018b21000003d4f";
+	public static String THING_ADEUNIS_ARF8170BA_UPLINK1 = "";
+
+	public static String THING_ELSYS_ERS_DEVEUI = "a81758fffe0346aa";
+	public static String THING_ELSYS_ERS_UPLINK1 = "";
+
+	public static String THING_ELSYS_MB7389_DEVEUI = "a81758fffe053159";
+	public static String THING_ELSYS_MB7389_UPLINK1 = "AQBmAmED+PvEBw4zDgEsDwAUAA9mRA==";
+
+	public static String THING_MFC88_LW13IO_DEVEUI = "70b3d58ff10184df";
+	public static String THING_MFC88_LW13IO_UPLINK1 = "ARHF3CEAAgcHAQA=";
+
+	public static String THING_DRAGINO_LHT65_DEVEUI = "a8404114e18446ec";
+	public static String THING_DRAGINO_LHT65_UPLINK1 = "y8gE2QNfAQSEf/8=";
+
+	public static final String GatewayNaturalId = "GatewayTechoFinca";
+
 	public static record SampleThingType(long id, String manufacturer, String model) {};
 
 	public static SampleThingType Adeunis_ARF8180BA= new SampleThingType(1l,"Adeunis","ARF8180BA");

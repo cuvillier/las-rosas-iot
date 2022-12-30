@@ -9,10 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
 import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.database.entities.thg.ThingGateway;
 import com.lasrosas.iot.core.database.entities.thg.ThingLora;
@@ -20,16 +21,17 @@ import com.lasrosas.iot.core.database.entities.thg.ThingType;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerie;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
 import com.lasrosas.iot.core.database.entities.tsr.TimeSerieType;
+import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 
-@SpringBootTest
-public class WriteSQLTest {
+@ContextConfiguration(classes = {WriteSQLConfig.class})
+public class WriteSQLTest extends BaseDatabaseTest {
 	public static final Logger log = LoggerFactory.getLogger(WriteSQLTest.class);
 
 	@Autowired
 	private Gson gson;
-	
+
 	@Autowired
-	private WriteSQLImpl cut;
+	private WriteSQL cut;
 
 	@Test
 	public void testUpdateProxy() {

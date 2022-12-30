@@ -14,9 +14,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("application-test.properties")
 @EnableTransactionManagement
 public class DatabaseTestConfig {
+
 	@Autowired
     private Environment env;
-    
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

@@ -1,18 +1,21 @@
 package com.lasrosas.iot.core.ingestor.gateway.impl;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-public class GatewayServiceTest {
+import com.lasrosas.iot.core.database.entities.SampleData;
+import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
+
+@ContextConfiguration(classes = { GatewayServiceTestConfig.class})
+public class GatewayServiceTest extends BaseDatabaseTest {
+
+	@Autowired
+	private GatewayServiceImpl service;
 
 	@Test
 	public void test() {
-/*
-		var service = new GatewayServiceImpl( new Rak7249DriverImpl());
 		byte[] payload = {0x01, 0x02, 0x03};
-		var imessage = MessageBuilder.withPayload(payload)
-							.setHeader(LasRosasHeaders.GATEWAY_NAURAL_ID, "rak7249")
-							.build();
-		service.encodeDownlink("rak7249", imessage.getPayload());
-*/
+		service.encodeDownlink(SampleData.GatewayNaturalId, payload);
 	}
 }

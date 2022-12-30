@@ -95,6 +95,7 @@ public class SensorServiceImpl implements SensorService {
 	}
 */
 	@Override
+	@Transactional
 	public Collection<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 
 		var thingId = LasRosasHeaders.thingid(imessage).get();

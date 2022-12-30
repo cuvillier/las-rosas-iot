@@ -13,5 +13,13 @@ public abstract class LoraMessage {
 	public void setDeveui(String deveui) {
 		this.deveui = deveui;
 	}
+	public LoraMessage() {
+		super();
+	}
+	public LoraMessage(String deveui) {
+		super();
+		this.deveui = deveui;
+	}
+
 }
 

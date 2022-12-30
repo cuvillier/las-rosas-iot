@@ -41,8 +41,7 @@ public class LoraServiceImpl implements LoraService {
 		var payload = (LoraMessage)imessage.getPayload();
 
 		if(payload instanceof LoraMessageUplink ) {
-			var thing = thingLoraRepo.getByDeveui(payload.getDeveui());
-			Optional.of(thing);
+			var thing = thingLoraRepo.getByDeveui(payload.getDeveui()).get();
 
 			@SuppressWarnings("unchecked")
 			var splitResult = splitUplink((Message<LoraMessageUplink>)imessage);
@@ -93,9 +92,7 @@ public class LoraServiceImpl implements LoraService {
 		thingData.setEncodedData(uploadMessage.getData());
 		thingData.setDataEncoding(uploadMessage.getDataEncoding());
 
-		var thing = thingLoraRepo.getByDeveui(uploadMessage.getDeveui());
-		if(thing == null )
-			throw new NotFoundException("Thing deveui=" + uploadMessage.getDeveui());
+		var thing = thingLoraRepo.getByDeveui(uploadMessage.getDeveui()).get();
 
 		return new HandleUplinkResult(
 
@@ -120,8 +117,8 @@ public class LoraServiceImpl implements LoraService {
 
 		var joinMessage = imessage.getPayload();
 
-		var thing = thingLoraRepo.getByDeveui(joinMessage.getDeveui());
-		if(thing == null ) {
+		var thing = thingLoraRepo.getByDeveui(joinMessage.getDeveui()).orElse(null);
+		if(thing == null) {
 
 			/*
 			 * If the thing doesnot exists, try to create it.
@@ -138,9 +135,7 @@ public class LoraServiceImpl implements LoraService {
 			if (tty == null)
 				throw new NotFoundException("Thing type for device name=" + joinMessage.getDeveui());
 	
-			ThingGateway gateway = gatewayRepo.findByNaturalId(joinMessage.getGatewayId());
-			if (gateway == null)
-				throw new NotFoundException("Gateway " + joinMessage.getGatewayId());
+			ThingGateway gateway = gatewayRepo.findByNaturalId(joinMessage.getGatewayId()).get();
 	
 			var thingLora = new ThingLora(gateway, tty, joinMessage.getDeveui());
 	

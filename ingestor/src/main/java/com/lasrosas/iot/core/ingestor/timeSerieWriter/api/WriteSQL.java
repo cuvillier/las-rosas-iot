@@ -6,4 +6,8 @@ import com.lasrosas.iot.core.database.entities.tsr.TimeSeriePoint;
 
 public interface WriteSQL {
 	TimeSeriePoint writePoint(Message<?>  imessage);
+
+	void setStoreProxyTime(boolean b);
+
+	void updateProxy(TimeSeriePoint point);
 }

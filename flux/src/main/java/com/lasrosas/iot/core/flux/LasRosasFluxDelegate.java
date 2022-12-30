@@ -16,7 +16,6 @@ import org.springframework.integration.handler.AbstractMessageHandler;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
-import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.integration.router.PayloadTypeRouter;
 import org.springframework.integration.splitter.AbstractMessageSplitter;
@@ -26,7 +25,6 @@ import org.springframework.integration.transformer.GenericTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -308,8 +306,13 @@ public class LasRosasFluxDelegate {
 							public Message<? extends ThingDataMessage> transform(
 									Message<ThingEncodedMessage> imessage) {
 								var result = service.decodeUplink(imessage);
-								var tsp = sql.writePoint(result);
-								influxDB.writePoint(tsp.getTimeSerie(), result);
+								if(sql != null && influxDB != null) {
+									var tsp = sql.writePoint(result);
+	
+									// If writeSQL is mocked for testing.
+									if(tsp != null) influxDB.writePoint(tsp.getTimeSerie(), result);
+								}
+
 								return result;
 							}
 						})
@@ -509,17 +512,8 @@ public class LasRosasFluxDelegate {
 	@MessagingGateway
 	public static interface LasRosasGateway {
 
-		@Gateway(requestChannel = LasRosasIotBaseConfig.rak7249UplinkChannelName)
-		void sendRak7249(Message<String> message);
-
 		@Gateway(requestChannel = LasRosasIotBaseConfig.telemetryChannelName)
 		void sendTelemetry(Message<?> c);
-
-		@Gateway(requestChannel = LasRosasIotBaseConfig.publishMqttChannelName)
-		void sendToMqtt(Telemetry telemetry, @Header(MqttHeaders.TOPIC) String topic);
-
-		@Gateway(requestChannel = LasRosasIotBaseConfig.orderChannelName)
-		void sendOrder(Message<? extends Order> order);
 
 		@Gateway(requestChannel = LasRosasIotBaseConfig.rak7249UplinkTxChannelName)
 		@Transactional

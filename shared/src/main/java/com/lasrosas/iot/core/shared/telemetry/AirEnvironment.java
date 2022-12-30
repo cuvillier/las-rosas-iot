@@ -8,6 +8,16 @@ public class AirEnvironment extends Telemetry {
 	private Double humidity;
 	private Double light;
 
+	public AirEnvironment() {
+	}
+
+	public AirEnvironment(String sensor, Double temperature, Double humidity, Double light) {
+		super();
+		this.sensor = sensor;
+		this.temperature = temperature;
+		this.humidity = humidity;
+		this.light = light;
+	}
 	public String getSensor() {
 		return sensor;
 	}

@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.google.gson.FieldNamingPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -13,8 +15,10 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.LongSerializationPolicy;
 
 import io.goodforgod.gson.configuration.GsonConfiguration;
+import io.goodforgod.gson.configuration.deserializer.LocalDateTimeDeserializer;
 
 public class GsonUtils {
+	public static final Logger log = LoggerFactory.getLogger(GsonUtils.class);
 
 	private static GsonBuilder gsonBuilder = null;
 
@@ -35,11 +39,12 @@ public class GsonUtils {
 		        .setLongSerializationPolicy(LongSerializationPolicy.STRING)
 		        .setComplexMapKeySerialization(true)
 		        .setGenerateNonExecutableJson(true);
-		
+
 			if(debug)
 				configuration.setPrettyPrinting(true);
 
 			gsonBuilder = configuration.builder();
+			gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
 		}
 
 		return gsonBuilder;
