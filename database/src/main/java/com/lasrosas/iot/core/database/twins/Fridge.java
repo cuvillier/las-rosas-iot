@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
+import com.lasrosas.iot.core.shared.telemetry.FridgeStatus;
 
 @Entity
 @Table(name=Fridge.TABLE)
@@ -30,6 +31,7 @@ public class Fridge extends DigitalTwin {
 	public static final String COL_INSIDE_TEMP_MIN = PREFIX + "inside_temp_min";
 	public static final String COL_INSIDE_TEMP_MAX = PREFIX + "inside_temp_max";
 	public static final String COL_OUTSIDE_TEMP = PREFIX + "outside_temp";
+	public static final String COL_STATUS = PREFIX + "status";
 
 	@Column(name=COL_LENGTH)
 	private Double length;
@@ -55,6 +57,9 @@ public class Fridge extends DigitalTwin {
 	@Column(name=COL_OUTSIDE_TEMP)
 	private Double outsideTemp;
 
+	@Column(name=COL_STATUS)
+	private FridgeStatus status;
+
 	public Fridge() {
 	}
 
@@ -65,6 +70,20 @@ public class Fridge extends DigitalTwin {
 		this.height = height;
 		this.insideTempMax = insideTempMax;
 		this.insideTempMin = insideTempMin;
+		
+		updateStatus();
+	}
+
+	private void updateStatus() {
+
+		if(insideTemp != null) {
+			if(insideTempMax != null && insideTemp >= insideTempMax)
+				status = FridgeStatus.ALARM_OVERHEAT;
+			else if(insideTempMax != null && insideTemp <= insideTempMin)
+				status = FridgeStatus.ALARM_TOO_COLD;
+			else
+				status = FridgeStatus.NORMAL;
+		}
 	}
 
 	public Double getVolume() {
@@ -103,6 +122,7 @@ public class Fridge extends DigitalTwin {
 
 	public void setInsideTempMax(Double insideTempMax) {
 		this.insideTempMax = insideTempMax;
+		updateStatus();
 	}
 
 	public Double getInsideTempMin() {
@@ -111,6 +131,7 @@ public class Fridge extends DigitalTwin {
 
 	public void setInsideTempMin(Double insideTempMin) {
 		this.insideTempMin = insideTempMin;
+		updateStatus();
 	}
 
 	public Double getInsideTemp() {
@@ -119,6 +140,7 @@ public class Fridge extends DigitalTwin {
 
 	public void setInsideTemp(Double insideTemp) {
 		this.insideTemp = insideTemp;
+		updateStatus();
 	}
 
 	public Double getOutsideTemp() {
@@ -135,5 +157,13 @@ public class Fridge extends DigitalTwin {
 
 	public void setInsideHumidity(Double insideHumidity) {
 		this.insideHumidity = insideHumidity;
+	}
+
+	public FridgeStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(FridgeStatus status) {
+		this.status = status;
 	}
 }

@@ -171,7 +171,6 @@ CREATE TABLE t_dtw_reactor_type
 (
 	rat_techid SERIAL,
 	rat_bean VARCHAR(50) NOT NULL,
-    rat_fk_twt_twin_type INTEGER NOT NULL,
 	
 	PRIMARY KEY (rat_techid)
 );
@@ -180,7 +179,7 @@ CREATE TABLE t_dtw_reactor_receiver_type
 (
 	rrt_techid SERIAL,
 	rrt_role VARCHAR(50) NOT NULL,
-	rrt_schema VARCHAR(128) NOT NULL,
+	rrt_schema VARCHAR(128),
     rrt_fk_rat_reactor_type INTEGER NOT NULL,
 
 	PRIMARY KEY (rrt_techid),
@@ -226,6 +225,7 @@ CREATE TABLE t_dtw_fridge (
   fri_inside_temp_min real,
   fri_inside_humidity real,
   fri_outside_temp real,
+  fri_status varchar(32),
   PRIMARY KEY (twi_techid),
   CONSTRAINT fk_fri_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid)
 );

@@ -6,8 +6,10 @@ import org.springframework.messaging.Message;
 
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.twins.Fridge;
+import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.reactor.base.TwinReactor;
 import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
+import com.lasrosas.iot.core.shared.telemetry.FridgeTemperature;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class FridgeReactor implements TwinReactor {
@@ -19,7 +21,7 @@ public class FridgeReactor implements TwinReactor {
 	@Override
 	public void react(TwinReactorReceiver receiver, Message<?> imessage) {
 
-		if (!receiver.getType().getRole().equals("level"))
+		if (!receiver.getType().getRole().equals("temperature"))
 			throw new RuntimeException("Unexpected receiver role " + receiver.getType().getRole());
 
 		var fridge = receiver.<Fridge>getTwin();
@@ -29,36 +31,21 @@ public class FridgeReactor implements TwinReactor {
 		var airEnvironment = (AirEnvironment)payload;
 
 		var temp = airEnvironment.getTemperature();
-		var humidity = airEnvironment.getTemperature();
+		var humidity = airEnvironment.getHumidity();
 
 		var sensor = LasRosasHeaders.sensor(imessage);
 		if( sensor == null || sensor.equals("INT") ) {
-			
-			if(temp != null) {
-				fridge.setInsideTemp(temp);
-	
-				// Temp code, should send an alarm.
-				if( fridge.getInsideTempMax() != null && temp > fridge.getInsideTempMax())
-					log.error("Fridge temp abovethe max: " + temp + " > " + fridge.getInsideTempMax());
-	
-				if( fridge.getInsideTempMin() != null && temp < fridge.getInsideTempMin())
-					log.error("Fridge temp below the min: " + temp + " < " + fridge.getInsideTempMin());
-			}
 
-			if( humidity != null )
-				fridge.setInsideHumidity(humidity);
+			if( temp != null) fridge.setInsideTemp(temp);
+			if( humidity != null ) fridge.setInsideHumidity(humidity);
 
 		} else if( sensor.equals("EXT") ) {
-			if(temp != null)
-				fridge.setOutsideTemp(temp);
+			if(temp != null) fridge.setOutsideTemp(temp);
+
 		} else
 			log.warn("Fridge " + fridge.getTechid() + " Receive data with unknown sensor " + sensor);
 
-
-		/*
-		var wtf = new WaterTankFilling(volume, percentage, waterFlow);
-
-		ReactContext.addTelemetry(wtf);
-		*/
+		var telemetry = new FridgeTemperature(fridge.getStatus(), fridge.getInsideTemp(), fridge.getInsideHumidity(), fridge.getOutsideTemp());
+		ReactContext.addTelemetry(telemetry);
 	}
 }

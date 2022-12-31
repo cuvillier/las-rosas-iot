@@ -1,6 +1,8 @@
 package com.lasrosas.iot.core.flux;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -12,7 +14,10 @@ import org.springframework.messaging.PollableChannel;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
+import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 
+@Configuration
+@Import(SensorsConfig.class)
 public class IngestionFluxTestConfig {
 
 	@Bean(name = PollerMetadata.DEFAULT_POLLER)

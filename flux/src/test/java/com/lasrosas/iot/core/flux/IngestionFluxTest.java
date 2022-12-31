@@ -10,43 +10,30 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.geo.Distance;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.core.database.IOTDatabaseConfig;
 import com.lasrosas.iot.core.database.entities.SampleData;
+import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
-import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
 import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;
 import com.lasrosas.iot.core.shared.telemetry.StateMessage;
 import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
-import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
 @EnableIntegration
-@ContextConfiguration(classes = { IngestionFluxTestConfig.class, IOTDatabaseConfig.class, UtilsConfig.class,
-		SensorsConfig.class })
-@DataJpaTest()
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@EntityScan("com.lasrosas.iot")
-@ActiveProfiles("dev")
-public class IngestionFluxTest {
+@ContextConfiguration(classes = { IngestionFluxTestConfig.class})
+public class IngestionFluxTest extends BaseDatabaseTest {
 	public static Logger log = LoggerFactory.getLogger(IngestionFluxTest.class);
 
 	@Autowired

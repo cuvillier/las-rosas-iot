@@ -1,21 +1,34 @@
 package com.lasrosas.iot.core.flux;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.integration.annotation.Gateway;
+import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.Router;
 import org.springframework.integration.annotation.Splitter;
+import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.config.AbstractSimpleMessageHandlerFactoryBean;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.router.PayloadTypeRouter;
 import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.integration.splitter.AbstractMessageSplitter;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.PollableChannel;
 
 import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
+import com.lasrosas.iot.core.reactor.reactores.FridgeReactor;
+import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
-public class ReactFluxTestConfig {
+public class FridgeTestConfig {
+
+	@MessagingGateway
+	public static interface TelemetryGateway {
+
+		@Gateway(requestChannel = LasRosasIotBaseConfig.telemetryChannelName)
+		void sendTelemetry(Message<Telemetry> c);
+	}
 
 	@Bean(name = PollerMetadata.DEFAULT_POLLER)
 	public PollerMetadata poller() {
@@ -28,8 +41,8 @@ public class ReactFluxTestConfig {
 	}
 
 	@Bean
-	public PollableChannel telemetryChannel() {
-		return MessageChannels.queue().get();
+	public PublishSubscribeChannel telemetryChannel() {
+		return MessageChannels.publishSubscribe().get();
 	}
 
 	@Bean
@@ -55,6 +68,11 @@ public class ReactFluxTestConfig {
 	@Bean
 	public ReactorService ReactorService() {
 		return new ReactorServiceImpl();
+	}
+
+	@Bean
+	public FridgeReactor FridgeReactor() {
+		return new FridgeReactor();
 	}
 
 	@Bean
