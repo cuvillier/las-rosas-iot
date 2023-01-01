@@ -4,17 +4,19 @@ import com.google.gson.JsonObject;
 
 public class WaterTankFilling extends Telemetry {
 	public static String SCHEMA = "WaterTankFilling";
-	private Double volume;
-	private Double percentage;
-	private Double waterFlow;
+	private final Double volume;
+	private final Double percentage;
+	private final Double waterFlow;
+	private final WaterTankStatus status;
 
-	public WaterTankFilling(double volume, Double percentage) {
-		this(volume, percentage, null);
+	public WaterTankFilling(WaterTankStatus status, double volume, Double percentage) {
+		this(status, volume, percentage, null);
 	}
 
-	public WaterTankFilling(double volume, Double percentage, Double waterFlow) {
+	public WaterTankFilling(WaterTankStatus status, double volume, Double percentage, Double waterFlow) {
 		super();
 
+		this.status = status;
 		this.volume = Math.floor(volume * 100D) / 100D;
 		this.percentage = Math.floor(percentage * 100D) / 100D;
 		this.waterFlow = waterFlow == null? null: Math.floor(waterFlow * 100D) / 100D;
@@ -28,6 +30,14 @@ public class WaterTankFilling extends Telemetry {
 		if( waterFlow != null) json.addProperty("waterFlow", waterFlow);
 
 		return json;
+	}
+
+	public static String getSCHEMA() {
+		return SCHEMA;
+	}
+
+	public WaterTankStatus getStatus() {
+		return status;
 	}
 
 	public Double getVolume() {

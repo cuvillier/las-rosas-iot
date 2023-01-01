@@ -49,13 +49,13 @@ public class WaterTankTest {
 		var tank = new WaterTank(6, 2.5/2, 0);
 
 		var time = LocalDateTime.now();
-		tank.setLevel(null, null, time, 1.0);
-		
+		tank.updateLevel(time, 1.0);
+
 		assertEquals(null, tank.getWaterFlow());
 
 		var time2 = time.plus(30, ChronoUnit.MINUTES);
 
-		tank.setLevel(time, tank.getVolume(), time2, tank.getLevel() + 0.5);
+		tank.updateLevel(time2, tank.getLevel() + 0.5);
 		assertEquals(-14.89939, tank.getWaterFlow(), 0.0001);
 	}
 }

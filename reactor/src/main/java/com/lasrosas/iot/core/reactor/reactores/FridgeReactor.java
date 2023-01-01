@@ -37,6 +37,7 @@ public class FridgeReactor implements TwinReactor {
 		if( sensor == null || sensor.equals("INT") ) {
 
 			if( temp != null) fridge.setInsideTemp(temp);
+
 			if( humidity != null ) fridge.setInsideHumidity(humidity);
 
 		} else if( sensor.equals("EXT") ) {

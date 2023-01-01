@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
+import com.lasrosas.iot.core.shared.telemetry.WaterTankStatus;
 
 @Entity
 @Table(name=WaterTank.TABLE)
@@ -29,10 +32,20 @@ public class WaterTank extends DigitalTwin {
 	public static final String COL_RADIUS = PREFIX + "radius";
 	public static final String COL_LEVEL = PREFIX + "level";
 	public static final String COL_VOLUME = PREFIX + "volume";
+	public static final String COL_UPDATE_TIME = PREFIX + "update_time";
 	public static final String COL_PERCENTAGE = PREFIX + "percentage";
 	public static final String COL_SENSOR_ALT = PREFIX + "sensor_alt";
 	public static final String COL_WATER_FLOW = PREFIX + "water_flow";
 	public static final String COL_MAX_WATER_FLOW = PREFIX + "max_water_flow";
+	public static final String COL_STATUS = PREFIX + "status";
+
+	public static final double LEVEL_NORMAL_MAX = 95;
+	public static final double LEVEL_WARNING_MAX = 50;
+	public static final double LEVEL_ALARM_MAX = 25;
+	public static final double LEVEL_EMPTY_MAX = 5;
+
+	@Column(name=COL_UPDATE_TIME)
+	private LocalDateTime updateTime;
 
 	@Column(name=COL_LENGTH)
 	private Double length;
@@ -58,13 +71,27 @@ public class WaterTank extends DigitalTwin {
 	@Column(name=COL_MAX_WATER_FLOW)
 	private Double maxWaterFlow;
 
+	@Column(name=COL_STATUS)
+	@Enumerated(EnumType.STRING)
+	private WaterTankStatus status;
+
 	public WaterTank() {
+		this.status = WaterTankStatus.UNKNOWN;
 	}
 
 	public WaterTank(double length, double radius, double sensorAltitude) {
+		this();
 		this.length = length;
 		this.radius = radius;
 		this.sensorAltitude = sensorAltitude;
+	}
+
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
 	}
 
 	public Double getVolumeMax() {
@@ -76,13 +103,11 @@ public class WaterTank extends DigitalTwin {
 	}
 
 	private void onLevelChanged() {
-		this.volume = computeVolume();
-		this.percentageFill = computeFillPercent();
+		this.volume = computeVolume(level);
+		this.percentageFill = computeFillPercent(this.volume);
 	}
 
-	private Double computeVolume() {
-		if( level == null) return null;
-
+	private Double computeVolume(Double level) {
 		double L = length;
 		double D = radius * 2;
 		double H = radius * 2 - (level - sensorAltitude);
@@ -90,18 +115,12 @@ public class WaterTank extends DigitalTwin {
 		if(H < 0 ) H = 0;
 		if(H > D) H = D;
 
-		return (Math.acos(1-2*H/D)-Math.sin(2*Math.acos(1-2*H/D))/2)*Math.pow(D,2)*L/4;
-		
+		return (Math.acos(1-2*H/D)-Math.sin(2*Math.acos(1-2*H/D))/2)*Math.pow(D,2)*L/4;	
 	}
 
-	public Double computeFillPercent() {
-		if( level == null)
-			return null;
-		else {
-			var percentage = 100D * (this.volume/ getVolumeMax());
-			log.info("WaterTank volume=" + this.volume + " volumeMax=" + getVolumeMax() + " %=" + percentage);
-			return percentage;
-		}
+	public Double computeFillPercent(Double volume) {
+		var percentage = 100D * (volume/ getVolumeMax());
+		return percentage;
 	}
 
 	public Double getPercentageFill() {
@@ -112,16 +131,19 @@ public class WaterTank extends DigitalTwin {
 		return level;
 	}
 
-	public void setLevel(LocalDateTime previousTime, Double currentVolume, LocalDateTime time, Double levelMeasured) {
-		log.debug("Update watertank level to " + level + " m. volume=" + currentVolume);
+	public void updateLevel(LocalDateTime time, Double levelMeasured) {
 
+		var newVolume = computeVolume(levelMeasured);
+		this.waterFlow = computeWaterFlow(this.updateTime, this.volume, time, newVolume);
+
+		this.volume = newVolume; 
+		this.updateTime = time;
+		this.percentageFill = computeFillPercent(this.volume);
 		this.level = levelMeasured;
 
-		// Compute volume
-		onLevelChanged();
+		this.status = computeStatus();
 
-		// UPdate waterflow
-		this.waterFlow = computeWaterFlow(time, this.volume, previousTime, currentVolume);
+		log.info("WaterTank status=" + this.status +"volume=" + this.volume + ", level=" + this.level + ", fill=" + percentageFill );
 	}
 
 	private static Double computeWaterFlow(LocalDateTime previousTime,Double previousVolume, LocalDateTime time, Double volume) {
@@ -129,10 +151,36 @@ public class WaterTank extends DigitalTwin {
 
 		var seconds = time.until(previousTime, ChronoUnit.SECONDS);
 		var houres = seconds / (double)(60*60);	// Waterflow per hour
-		if(houres < 0.0000001) return null;
+		if(Math.abs(houres) < 0.0000001) return null;
+
 		var waterflow = (previousVolume - volume) / houres;
+
 		log.debug("Compute waterFlow. waterflow=" + waterflow + " time frame=" + seconds + "s");
+
 		return waterflow;
+	}
+
+	public WaterTankStatus computeStatus() {
+		if(this.percentageFill == null) return WaterTankStatus.UNKNOWN;
+
+		if(percentageFill > LEVEL_NORMAL_MAX)
+			return WaterTankStatus.FULL;
+		else if(percentageFill > LEVEL_WARNING_MAX)
+			return  WaterTankStatus.NORMAL;
+		else if(percentageFill > LEVEL_ALARM_MAX)
+			return WaterTankStatus.WARNING;
+		else if(percentageFill > LEVEL_EMPTY_MAX)
+			return WaterTankStatus.ALARM;
+		else
+			return WaterTankStatus.EMPTY;
+	}
+
+	public WaterTankStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(WaterTankStatus status) {
+		this.status = status;
 	}
 
 	public void setLevel(Double levelMeasured) {

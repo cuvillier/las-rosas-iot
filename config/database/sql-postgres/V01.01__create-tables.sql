@@ -37,6 +37,54 @@ CREATE TABLE t_dtw_digital_twin
 	CONSTRAINT fk_twi_fk_twt_type FOREIGN KEY (twi_fk_twt_type) REFERENCES t_dtw_digital_twin_type(twt_techid)
 );
 
+CREATE TABLE t_dtw_water_tank
+(
+    twi_techid integer NOT NULL,
+    wat_length real NOT NULL,
+    wat_radius real NOT NULL,
+    wat_sensor_alt real NOT NULL,
+    wat_level real,
+    wat_volume real,
+    wat_percentage real,
+    wat_water_flow real,
+    wat_max_water_flow real,
+    wat_status character varying(32) DEFAULT 'UNKNOWN',
+    wat_update_time timestamp(6) DEFAULT NULL,
+    CONSTRAINT t_dtw_water_tank_pkey PRIMARY KEY (twi_techid),
+    CONSTRAINT fk_wat_twi_techid FOREIGN KEY (twi_techid)
+        REFERENCES public.t_dtw_digital_twin (twi_techid),
+    CONSTRAINT fk_wat_status CHECK (wat_status= ANY (ARRAY['UNKNOWN'::character varying, 'FULL'::character varying, 'NORMAL'::character varying, 'WARNING'::character varying, 'ALARM'::character varying, 'EMPTY'::character varying]::text[]))
+);
+
+CREATE TABLE t_dtw_multiswitch
+(
+    twi_techid integer NOT NULL,
+    msw_state integer NOT NULL DEFAULT 0,
+    msw_expected_state integer NOT NULL DEFAULT 0,
+    msw_connected integer NOT NULL DEFAULT 0,
+    msw_state_when_connect integer,
+    CONSTRAINT t_dtw_multiswitch_pkey PRIMARY KEY (twi_techid),
+    CONSTRAINT fk_msw_twi_techid FOREIGN KEY (twi_techid)
+        REFERENCES public.t_dtw_digital_twin (twi_techid)
+);
+
+CREATE TABLE t_dtw_fridge
+(
+    twi_techid integer NOT NULL,
+    fri_width real,
+    fri_height real,
+    fri_length real,
+    fri_inside_temp real,
+    fri_inside_temp_max real,
+    fri_inside_temp_min real,
+    fri_inside_humidity real,
+    fri_outside_temp real,
+    fri_status character varying(32),
+    CONSTRAINT t_dtw_fridge_pkey PRIMARY KEY (twi_techid),
+    CONSTRAINT fk_fri_twi_techid FOREIGN KEY (twi_techid)
+        REFERENCES public.t_dtw_digital_twin (twi_techid)
+);
+
 CREATE TABLE t_dtw_water_tank (
   twi_techid integer NOT NULL,
   wat_length real NOT NULL,
@@ -47,8 +95,11 @@ CREATE TABLE t_dtw_water_tank (
   wat_percentage real DEFAULT NULL,
   wat_water_flow real  NULL,
   wat_max_water_flow real  NULL,
+  wat_status VARCHAR(32) DEFAULT 'UNKNOWN',
+  wat_updateTime TIMESTAMP(6) NULL DEFAULT NULL,
   PRIMARY KEY (twi_techid),
-  CONSTRAINT fk_wat_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid)
+  CONSTRAINT fk_wat_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid),
+  CONSTRAINT fk_wat_status CHECK(wat_status IN ('UNKNOWN', 'FULL', 'NORMAL', 'WARNING', 'ALARM','EMPTY'))
 );
 
 CREATE TABLE t_dtw_dynamic_twin (

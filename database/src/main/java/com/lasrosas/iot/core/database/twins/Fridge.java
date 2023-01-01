@@ -3,6 +3,8 @@ package com.lasrosas.iot.core.database.twins;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -58,6 +60,7 @@ public class Fridge extends DigitalTwin {
 	private Double outsideTemp;
 
 	@Column(name=COL_STATUS)
+	@Enumerated(EnumType.STRING)
 	private FridgeStatus status;
 
 	public Fridge() {
@@ -70,7 +73,6 @@ public class Fridge extends DigitalTwin {
 		this.height = height;
 		this.insideTempMax = insideTempMax;
 		this.insideTempMin = insideTempMin;
-		
 		updateStatus();
 	}
 

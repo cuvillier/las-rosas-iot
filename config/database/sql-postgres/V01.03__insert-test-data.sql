@@ -3,7 +3,7 @@ $$
 DECLARE
 BEGIN
 
-INSERT INTO t_thg_gateway (gtw_natural_id) VALUES ('TestGateway');
+INSERT INTO t_thg_gateway (gtw_natural_id, gtw_type_name) VALUES ('TestGateway', 'RAK7249');
 
 INSERT INTO t_thg_thing (thg_fk_gtw_gateway,thg_fk_tty_type, thg_readable, thg_discriminator, lor_dev_eui)
 	VALUES ( 
@@ -46,7 +46,7 @@ INSERT INTO t_dtw_digital_twin(
 		(SELECT twt_techid FROM t_dtw_digital_twin_type WHERE twt_name='WaterTank')
 	);
 
-INSERT INTO public.t_dtw_water_tank(twi_techid, wat_length, wat_radius, wat_sensor_alt)
+INSERT INTO t_dtw_water_tank(twi_techid, wat_length, wat_radius, wat_sensor_alt)
 	VALUES (
 		(SELECT twi_techid FROM t_dtw_digital_twin WHERE twi_name='TestWaterTank'),
 		1.0,
@@ -116,10 +116,18 @@ INSERT INTO t_thg_thing (thg_fk_gtw_gateway,thg_fk_tty_type, thg_readable, thg_d
 INSERT INTO t_dtw_digital_twin(
 	twi_discriminator, twi_name, twi_fk_twt_type)
 	VALUES (
-		'mst', 
+		'msw', 
 		'TestMultiSwitch', 
 		(SELECT twt_techid FROM t_dtw_digital_twin_type WHERE twt_name='MultiSwitch')
 	);
+
+INSERT INTO t_dtw_multiswitch(twi_techid, msw_state, msw_expected_state, msw_connected, msw_state_when_connect)
+	VALUES (
+		(SELECT twi_techid FROM t_dtw_digital_twin WHERE twi_name='TestMultiSwitch'),
+		0,
+		0, 
+		0,
+		1);
 
 INSERT INTO t_dtw_reactor_receiver(
 	rre_discriminator, rre_readable, rre_sensor, rre_fk_twi_twin, rre_fk_rrt_type, rvt_fk_thg_thing)
