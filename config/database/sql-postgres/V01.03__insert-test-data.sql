@@ -77,8 +77,8 @@ INSERT INTO t_dtw_digital_twin(
 	twi_discriminator, twi_name, twi_fk_twt_type)
 	VALUES (
 		'fri', 
-		'TestFridge', 
-		(SELECT twt_techid FROM t_dtw_digital_twin_type WHERE twt_name='TestFridge')
+		'TestFridge',
+		(SELECT twt_techid FROM t_dtw_digital_twin_type WHERE twt_name='Fridge')
 	);
 
 INSERT INTO t_dtw_fridge(twi_techid, fri_width, fri_height, fri_length, fri_inside_temp_min, fri_inside_temp_max)

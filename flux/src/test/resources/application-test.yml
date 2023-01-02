@@ -21,10 +21,11 @@ publish:
      serverURIs:
        - tcp://@localhost:1883
 spring:
-  datasource:
-    url: postgresql://localhost:5432/lasrosasiot
-    username: lasrosasiot
-    password: lasrosasiot
+# Datasource properties come from Database/src/test/resources/application-test.yml
+#  datasource:
+#    url: postgresql://localhost:5432/lasrosasiot-test
+#    username: lasrosasiot-test
+#    password: lasrosasiot-test
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   jpa:

@@ -85,23 +85,6 @@ CREATE TABLE t_dtw_fridge
         REFERENCES public.t_dtw_digital_twin (twi_techid)
 );
 
-CREATE TABLE t_dtw_water_tank (
-  twi_techid integer NOT NULL,
-  wat_length real NOT NULL,
-  wat_radius real NOT NULL,
-  wat_sensor_alt real NOT NULL,
-  wat_level real DEFAULT NULL,
-  wat_volume real DEFAULT NULL,
-  wat_percentage real DEFAULT NULL,
-  wat_water_flow real  NULL,
-  wat_max_water_flow real  NULL,
-  wat_status VARCHAR(32) DEFAULT 'UNKNOWN',
-  wat_updateTime TIMESTAMP(6) NULL DEFAULT NULL,
-  PRIMARY KEY (twi_techid),
-  CONSTRAINT fk_wat_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid),
-  CONSTRAINT fk_wat_status CHECK(wat_status IN ('UNKNOWN', 'FULL', 'NORMAL', 'WARNING', 'ALARM','EMPTY'))
-);
-
 CREATE TABLE t_dtw_dynamic_twin (
   twi_techid integer  NOT NULL,
   PRIMARY KEY (twi_techid),
@@ -253,32 +236,6 @@ CREATE TABLE t_dtw_reactor_receiver
 	CONSTRAINT fk_rvt_fk_thg_thing FOREIGN KEY (rvt_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
 	CONSTRAINT fk_rvd_fk_twi_twin FOREIGN KEY (rvd_fk_twi_twin) REFERENCES t_dtw_digital_twin (twi_techid),
 	CONSTRAINT fk_rre_fk_rrt_type FOREIGN KEY (rre_fk_rrt_type) REFERENCES t_dtw_reactor_receiver_type (rrt_techid)
-);
-
-/*--------------- DTWIN --------------*/
-CREATE TABLE t_dtw_multiswitch (
-  twi_techid SERIAL,
-  msw_state INTEGER NOT NULL DEFAULT 0,
-  msw_expected_state INTEGER NOT NULL DEFAULT 0,
-  msw_connected BIT NOT NULL DEFAULT 0::bit ,
-  msw_state_when_connect INTEGER DEFAULT NULL,
-  PRIMARY KEY (twi_techid),
-  CONSTRAINT fk_msw_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid)
-);
-
-CREATE TABLE t_dtw_fridge (
-  twi_techid SERIAL,
-  fri_width real,
-  fri_height real,
-  fri_length real,
-  fri_inside_temp real,
-  fri_inside_temp_max real,
-  fri_inside_temp_min real,
-  fri_inside_humidity real,
-  fri_outside_temp real,
-  fri_status varchar(32),
-  PRIMARY KEY (twi_techid),
-  CONSTRAINT fk_fri_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid)
 );
 
 /*--------------- ALARM --------------*/
