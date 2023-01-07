@@ -239,7 +239,7 @@ public class MFC88LW13IOFrame {
 		}
 
 		public boolean isToBeEnabled(int channel) {
-			return toBeDisabled[channel];
+			return toBeEnabled[channel];
 		}
 	}
 

@@ -3,20 +3,31 @@ package com.lasrosas.iot.core.shared.telemetry;
 public class Switched extends Telemetry {
 	public static final String SCHEMA = "SwitchedOnOff";
 
-	public static final int OFF = 0;
-	private final int state;
-
-	public Switched() {
-		this(OFF);
+	public static enum State {
+		OFF, ON
 	}
 
-	public Switched(int state) {
+	private final State state;
+
+	public static Switched on() {
+		return new Switched(State.ON);
+	}
+
+	public static Switched off() {
+		return new Switched(State.OFF);
+	}
+
+	public Switched() {
+		this(State.OFF);
+	}
+
+	public Switched(State state) {
 		super();
 		this.state = state;
 	}
 
 
-	public int getState() {
+	public State getState() {
 		return state;
 	}
 }

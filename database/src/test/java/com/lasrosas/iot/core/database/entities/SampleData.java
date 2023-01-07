@@ -32,6 +32,7 @@ public final class SampleData {
 	public static final String WATER_TANK_DISTANCE_SENSOR_DEVEUI = "0100000000000010";
 	public static final String FRIDGE_TEMPERATURE_SENSOR_DEVEUI = "0400000000000010";
 	public static final String FRIDGE_NAME = "TestFridge";
+	public static final String MULTISWITCH_SENSOR_DEVEUI= "0200000000000010";
 
 	public static record SampleThingType(String manufacturer, String model) {};
 

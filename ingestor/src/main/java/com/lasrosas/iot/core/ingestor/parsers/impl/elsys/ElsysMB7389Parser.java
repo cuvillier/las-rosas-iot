@@ -30,7 +30,7 @@ public class ElsysMB7389Parser implements PayloadParser {
 	}
 
 	@Override
-	public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+	public List<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 		return parser.telemetries(imessage);
 	}
 

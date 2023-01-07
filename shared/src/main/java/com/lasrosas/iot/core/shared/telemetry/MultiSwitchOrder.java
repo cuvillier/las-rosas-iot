@@ -5,7 +5,7 @@ public class MultiSwitchOrder extends Order {
 	private final String part;
 
 	public MultiSwitchOrder(int state) {
-		this(state, null);
+		this(state, "0");
 	}
 
 	public MultiSwitchOrder(int state, String part) {

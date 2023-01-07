@@ -9,6 +9,7 @@ import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public interface SensorService  {
 	Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> message);
-	Collection<Message<Telemetry>> telemetries(Message<ThingDataMessage> rawData);
+	Collection<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> rawData);
 	byte [] encodeOrder(Message<? extends Order> imessage);
+	boolean isNotifyJoin(String manufacturer, String model);
 }

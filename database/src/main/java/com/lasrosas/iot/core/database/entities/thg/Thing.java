@@ -68,7 +68,7 @@ public abstract class Thing extends BaseEntity {
 	@Column(name = COL_CONNECTION_TIMEOUT)
 	private Integer connectionTimeout;
 
-	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = ThingProxy.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ThingProxy proxy;
 
 	@OneToMany(mappedBy = TwinReactorReceiverFromThing.PROP_THING)
@@ -148,14 +148,15 @@ public abstract class Thing extends BaseEntity {
 		this.readable = readable;
 	}
 
-	public void createProxy() {
-		this.proxy = new ThingProxy();
-		this.proxy.setThing(this);		
+	public ThingProxy createProxy() {
+		var p = new ThingProxy();
+		p.setThing(this);
+		return p;
 	}
 
 	public ThingProxy getCreateProxy(EntityManager em) {
 		if (this.proxy == null) {
-			createProxy();
+			this.proxy = createProxy();
 			em.persist(this.proxy);
 		}
 
@@ -179,10 +180,6 @@ public abstract class Thing extends BaseEntity {
 		var lastSeen = this.proxy.getLastSeen();
 		var connectedUpTo = lastSeen.plusSeconds(this.connectionTimeout);
 
-		var needToDisconnect = connectedUpTo.isBefore(LocalDateTime.now());
-		if(needToDisconnect)
-			log.info("Thing " + getNaturalId() + " needs to be disconnected.");
-
-		return needToDisconnect;
+		return connectedUpTo.isBefore(LocalDateTime.now());
 	}
 }

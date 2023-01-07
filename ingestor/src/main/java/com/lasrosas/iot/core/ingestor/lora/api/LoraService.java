@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.springframework.messaging.Message;
 
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 
 public interface LoraService {
 
@@ -29,8 +28,4 @@ public interface LoraService {
 	ArrayList<Message<?>> splitMessage(Message<?> imessage);
 
 	HandleUplinkResult splitUplink(Message<LoraMessageUplink> message);
-
-	default Message<ConnectionState> splitJoin(Message<LoraMessageJoin> message) {
-		return null;
-	}
 }

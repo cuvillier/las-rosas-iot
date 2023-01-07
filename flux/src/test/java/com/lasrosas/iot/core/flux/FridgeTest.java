@@ -18,7 +18,7 @@ import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
 import com.lasrosas.iot.core.database.repo.DigitalTwinRepo;
 import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.core.database.twins.Fridge;
-import com.lasrosas.iot.core.flux.WaterTankTestConfig.TelemetryGateway;
+import com.lasrosas.iot.core.flux.DigitalTwinTestConfig.TelemetryGateway;
 import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;

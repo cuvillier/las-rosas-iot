@@ -1,48 +1,26 @@
 package com.lasrosas.iot.core.shared.telemetry;
 
-public class ConnectionState extends StateMessage {
+import java.util.Optional;
 
-	public static final int CAUSE_NTW_JOIN = 1;
-	public static final int CAUSE_NTW_TIMEOUT = 2;
-	public static final int CAUSE_ALIVE = 3;
-	public static final int CAUSE_RECONNECT = 4;
+public class ConnectionState extends Telemetry {
+	public static final int CONNECTED = 1;
+	public static final int DISCONNECTED = 0;
 
-	private int remind = 0;
-	private int connected;
-	private int cause;
+	private final Integer connected;
 
-	public ConnectionState(int connected, int cause) {
-		this(connected, cause, 0);
+	public static ConnectionState connected() {
+		return new ConnectionState(CONNECTED);
 	}
 
-	public ConnectionState(int connected, int cause, int remind) {
-		this.connected = connected;
-		this.cause = cause;
-		this.remind = remind;
+	public static ConnectionState disconnected() {
+		return new ConnectionState(DISCONNECTED);
 	}
 
-	public int getRemind() {
-		return remind;
-	}
-
-	public void setRemind(int remind) {
-		this.remind = remind;
-	}
-
-	public int getConnected() {
-		return connected;
-	}
-	public void setConnected(int connected) {
+	public ConnectionState(int connected) {
 		this.connected = connected;
 	}
-	public int getCause() {
-		return cause;
-	}
-	public void setCause(int cause) {
-		this.cause = cause;
-	}
 
-	public boolean isConnected() {
-		return connected == 1;
+	public Optional<Integer> getConnected() {
+		return connected == null? Optional.empty(): Optional.of(connected);
 	}
 }

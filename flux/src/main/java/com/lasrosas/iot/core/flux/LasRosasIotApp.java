@@ -15,7 +15,7 @@ import com.lasrosas.iot.core.reactor.reactores.ReactorConfig;
 
 @SpringBootApplication
 @EnableTransactionManagement
-@Import({IOTDatabaseConfig.class, SensorConfig.class, ReactorConfig.class, LasRosasIotConfig.class})
+@Import({IOTDatabaseConfig.class, SensorConfig.class, ReactorConfig.class, LasRosasIotConfig.class, LasRosasIotBaseConfig.class})
 public class LasRosasIotApp {
 	public static final Logger log = LoggerFactory.getLogger(LasRosasIotApp.class);
 

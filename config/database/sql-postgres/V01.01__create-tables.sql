@@ -10,7 +10,7 @@ CREATE TABLE t_dtw_space
 CREATE TABLE t_dtw_digital_twin_type
 (
 	twt_techid SERIAL,
-	twt_name VARCHAR(50) DEFAULT NULL,
+	twt_name VARCHAR(50) NOT NULL UNIQUE,
 	twt_discriminator VARCHAR(3) NOT NULL,
 	twt_may_have_children BIT DEFAULT 0::bit NOT NULL,
 	twt_fk_spa_space INTEGER NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE t_dtw_digital_twin
 (
 	twi_techid SERIAL,
 	twi_discriminator VARCHAR(3) NOT NULL,
-	twi_name VARCHAR(50),
+	twi_name VARCHAR(50) NOT NULL UNIQUE,
 	twi_fk_twt_type INTEGER NOT NULL,
 	twi_fk_twi_part_of INTEGER DEFAULT NULL,
 	twi_properties VARCHAR(4000) DEFAULT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE t_dtw_digital_twin
 
 CREATE TABLE t_dtw_water_tank
 (
-    twi_techid integer NOT NULL,
+    twi_techid integer NOT NULL UNIQUE,
     wat_length real NOT NULL,
     wat_radius real NOT NULL,
     wat_sensor_alt real NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE t_dtw_water_tank
 
 CREATE TABLE t_dtw_multiswitch
 (
-    twi_techid integer NOT NULL,
+    twi_techid integer NOT NULL UNIQUE,
     msw_state integer NOT NULL DEFAULT 0,
     msw_expected_state integer NOT NULL DEFAULT 0,
     msw_connected integer NOT NULL DEFAULT 0,
@@ -70,7 +70,7 @@ CREATE TABLE t_dtw_multiswitch
 
 CREATE TABLE t_dtw_fridge
 (
-    twi_techid integer NOT NULL,
+    twi_techid integer NOT NULL UNIQUE,
     fri_width real,
     fri_height real,
     fri_length real,
@@ -86,7 +86,7 @@ CREATE TABLE t_dtw_fridge
 );
 
 CREATE TABLE t_dtw_dynamic_twin (
-  twi_techid integer  NOT NULL,
+  twi_techid integer  NOT NULL UNIQUE,
   PRIMARY KEY (twi_techid),
   CONSTRAINT fk_dtw_twi_techid FOREIGN KEY (twi_techid) REFERENCES t_dtw_digital_twin (twi_techid)
 );
@@ -97,7 +97,7 @@ CREATE TABLE t_dtw_dynamic_twin (
 CREATE TABLE t_thg_gateway
 (
 	gtw_techid SERIAL,
-	gtw_natural_id VARCHAR(50),
+	gtw_natural_id VARCHAR(50) NOT NULL UNIQUE,
 	gtw_protocol VARCHAR(50) DEFAULT NULL,
 	gtw_url VARCHAR(50) DEFAULT NULL,
 	gtw_login VARCHAR(50) DEFAULT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE t_thg_gateway
 CREATE TABLE t_thg_thing_type
 (
 	tty_techid SERIAL,
-	tty_readable VARCHAR(50) DEFAULT NULL,
+	tty_readable VARCHAR(50) DEFAULT NULL UNIQUE,
 	tty_manufacturer VARCHAR(32),
 	tty_model VARCHAR(32),
 	tty_version VARCHAR(16),
@@ -124,7 +124,7 @@ CREATE TABLE t_thg_thing_type
 CREATE TABLE t_thg_thing
 (
 	thg_techid SERIAL,
-	thg_readable VARCHAR(50) DEFAULT NULL,
+	thg_readable VARCHAR(50) DEFAULT NULL UNIQUE,
 	thg_connection_timeout integer DEFAULT NULL,
 	thg_discriminator VARCHAR(3) NOT NULL,
 	thg_fk_tty_type INTEGER NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE t_thg_thing_proxy
 	thp_last_seen TIMESTAMP(6) NULL DEFAULT NULL,
 	thp_config VARCHAR(4000) DEFAULT NULL,
 	thp_values VARCHAR(4000) DEFAULT NULL,
-	thp_fk_thg_thing INTEGER,
+	thp_fk_thg_thing INTEGER UNIQUE,
 
 	PRIMARY KEY (thp_techid),
 	CONSTRAINT fk_thp_fk_thg_thing FOREIGN KEY (thp_fk_thg_thing) REFERENCES t_thg_thing(thg_techid)
@@ -167,8 +167,9 @@ CREATE TABLE t_thg_thing_proxy
 CREATE TABLE t_tsr_time_serie_type
 (
 	tst_techid SERIAL,
-	tst_schema VARCHAR(4000) DEFAULT NULL,
-	tst_diffused BOOLEAN DEFAULT FALSE,
+	tst_schema VARCHAR(4000) DEFAULT NULL UNIQUE,
+	tst_persistent BOOLEAN DEFAULT FALSE,
+	tst_retention INTEGER DEFAULT NULL,
 	PRIMARY KEY (tst_techid)
 );
 
@@ -183,7 +184,8 @@ CREATE TABLE t_tsr_time_serie
 	tsr_fk_poi_current_value INTEGER DEFAULT NULL,
 	PRIMARY KEY (tsr_techid),
 	CONSTRAINT fk_tsr_fk_thg_thing FOREIGN KEY (tsr_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
-	CONSTRAINT fk_tsr_fk_tst_type FOREIGN KEY (tsr_fk_tst_type) REFERENCES t_tsr_time_serie_type(tst_techid)
+	CONSTRAINT fk_tsr_fk_tst_type FOREIGN KEY (tsr_fk_tst_type) REFERENCES t_tsr_time_serie_type(tst_techid),
+	UNIQUE(tsr_fk_thg_thing, tsr_fk_twi_twin, tsr_fk_tst_type)
 );
 
 CREATE TABLE t_tsr_point
@@ -193,7 +195,8 @@ CREATE TABLE t_tsr_point
 	poi_value VARCHAR(2048) DEFAULT NULL,
 	poi_time  TIMESTAMP(6),
 	PRIMARY KEY (poi_techid),
-	CONSTRAINT fk_poi_fk_tsr_time_serie FOREIGN KEY (poi_fk_tsr_time_serie) REFERENCES t_tsr_time_serie(tsr_techid)
+	CONSTRAINT fk_poi_fk_tsr_time_serie FOREIGN KEY (poi_fk_tsr_time_serie) REFERENCES t_tsr_time_serie(tsr_techid),
+	UNIQUE (poi_fk_tsr_time_serie, poi_time)
 );
 
 ALTER TABLE t_tsr_time_serie
@@ -204,7 +207,7 @@ ADD	CONSTRAINT fk_tsr_fk_poi_current_value FOREIGN KEY (tsr_fk_poi_current_value
 CREATE TABLE t_dtw_reactor_type
 (
 	rat_techid SERIAL,
-	rat_bean VARCHAR(50) NOT NULL,
+	rat_bean VARCHAR(50) NOT NULL UNIQUE,
 	
 	PRIMARY KEY (rat_techid)
 );
@@ -217,7 +220,8 @@ CREATE TABLE t_dtw_reactor_receiver_type
     rrt_fk_rat_reactor_type INTEGER NOT NULL,
 
 	PRIMARY KEY (rrt_techid),
-	CONSTRAINT fk_rrt_fk_rat_reactor_type FOREIGN KEY (rrt_fk_rat_reactor_type) REFERENCES t_dtw_reactor_type (rat_techid)
+	CONSTRAINT fk_rrt_fk_rat_reactor_type FOREIGN KEY (rrt_fk_rat_reactor_type) REFERENCES t_dtw_reactor_type (rat_techid),
+	UNIQUE (rrt_fk_rat_reactor_type, rrt_role)
 );
 
 CREATE TABLE t_dtw_reactor_receiver

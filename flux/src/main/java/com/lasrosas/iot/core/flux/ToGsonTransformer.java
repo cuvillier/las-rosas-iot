@@ -6,7 +6,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.core.shared.telemetry.StateMessage;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class ToGsonTransformer extends AbstractTransformer {
@@ -24,16 +23,13 @@ public class ToGsonTransformer extends AbstractTransformer {
 		String topic;
 
 		if( LasRosasHeaders.twinNaturalId(message).isPresent() ) {
-			topic = "twin" + LasRosasHeaders.twinId(message);
+			topic = "twin/" + LasRosasHeaders.twinId(message).get();
 		} else if( LasRosasHeaders.thingNaturalId(message).isPresent() ) {
-			topic = "thing" + LasRosasHeaders.thingid(message);
+			topic = "thing/" + LasRosasHeaders.thingid(message).get();
 		} else
 			throw new RuntimeException("Unknow naruralId for this message");
 
-		if( message.getPayload() instanceof StateMessage)
-			topic += "/uplink/state";
-		else
-			topic += "/uplink/telemetry";
+		topic += "/uplink/telemetry";
 
 		return MessageBuilder.withPayload(json)
 				.copyHeaders(message.getHeaders())

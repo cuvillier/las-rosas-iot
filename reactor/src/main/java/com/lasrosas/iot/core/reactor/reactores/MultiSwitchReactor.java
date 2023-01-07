@@ -8,6 +8,7 @@ import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.twins.MultiSwitch;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
 import com.lasrosas.iot.core.reactor.base.TwinReactor;
+import com.lasrosas.iot.core.shared.telemetry.ConnectionStage;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
 import com.lasrosas.iot.core.shared.telemetry.MultiSwitchValue;
@@ -17,10 +18,6 @@ public class MultiSwitchReactor implements TwinReactor {
 	public static final String RECEIVER_SWITCH_STATE = "state";
 
 	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
-
-	public void switchOnOff(MultiSwitch twin, int expectedState) {
-		twin.setExpectedState(expectedState);
-	}
 
 	/**
 	 * Sensor:
@@ -35,42 +32,105 @@ public class MultiSwitchReactor implements TwinReactor {
 		// Only Thing receivers are supported
 		var switchTwin = receiver.<MultiSwitch>getTwin();
 		var payload = imessage.getPayload();
-		boolean boot;
+
+		log.info("MultiSwitch " + switchTwin.getName() + " handle message" + payload);
+
+		boolean sendValue = false;
 
 		if( payload instanceof Switched ) {
 
-			// wweired, but the sensor is connected
+			// weired, but force the sensor to be connected
 			if( !switchTwin.isConnected() ) {
 				log.warn("Multiswitch state change, but is not connected. Force connected to true");
 				switchTwin.setConnected(1);
 			}
 
 			var switched = (Switched)payload;
-			switchTwin.setState(switched.getState());
-			switchTwin.setExpectedState(switched.getState());
 
-			boot = false;
+			switch(switched.getState()) {
+			case ON:
 
-		} else if( payload instanceof ConnectionState ) {
+				if( switchTwin.getState() != 1) {
+					log.info("Multiswitch was Switched ON");
+					switchTwin.setExpectedState(1);
+					switchTwin.setState(1);
+					sendValue = true;
+				} else
+					log.warn("Multiswitch was alredy Switched ON");
+				break;
 
-			var connectionState = (ConnectionState)payload;
-			if( connectionState.getRemind() == 1 && switchTwin.isConnected() == connectionState.isConnected()) return;
+			case OFF:
 
-			boot = connectionState.getCause() == ConnectionState.CAUSE_NTW_JOIN;
-			switchTwin.setConnected(connectionState.getConnected());
+				if( switchTwin.getState() != 0) {
+					log.info("Multiswitch was Switched OFF");
+					switchTwin.setExpectedState(0);
+					switchTwin.setState(0);
+					sendValue = true;
+				} else
+					log.warn("Multiswitch was alredy Switched OFF");
 
-			if( switchTwin.isConnected() && switchTwin.getStateWhenConnect().isPresent()) {
 
-				// If isOffWhenDisconnected and connected, restore switch the switch to on to restore the excpected state
-				var newState = switchTwin.getStateWhenConnect().get();
-				ReactContext.addOrder(new MultiSwitchOrder(newState));
-	
-				switchTwin.setState(newState);
-				switchTwin.setExpectedState(newState);
+				break;
 			}
-		} else
-			return;
 
-		ReactContext.addTelemetry(new MultiSwitchValue(switchTwin.getState(), switchTwin.getExpectedState(), switchTwin.isConnected(), boot));
+			// If the state is not wath it should be, change the switch status
+			// Happen after STAGE_JOINING when the sensor just reboot.
+			if( switchTwin.isConnected() && switchTwin.getState() != switchTwin.getExpectedState() ) {
+				log.info("Multiswitch state forced to " + switchTwin.getExpectedState());
+				ReactContext.addOrder(new MultiSwitchOrder(switchTwin.getExpectedState()));
+			}
+
+		} else if( payload instanceof ConnectionState) {
+
+			var ctxState = (ConnectionState)payload;
+			switchTwin.setConnected(ctxState.getConnected().get());
+
+		} else if( payload instanceof ConnectionStage) {
+			var ctxStage = (ConnectionStage)payload;
+
+			switch( ctxStage.getStage() ) {
+			case ConnectionStage.JOINING:
+
+				// Join start, reset the sensor state if needed
+				if(switchTwin.getStateWhenConnect().isPresent()) {
+					var newState = switchTwin.getStateWhenConnect().get();
+					if( switchTwin.getState() != newState) {
+						switchTwin.setState(switchTwin.getStateWhenConnect().get());
+						sendValue = true;
+					}
+				}
+
+				if(switchTwin.isConnected()) {
+					switchTwin.setConnected(0);
+					ReactContext.addTelemetry(ConnectionState.disconnected());
+				}
+				break;
+
+			case ConnectionStage.JOINED:
+
+				// These sensor lots the state when the power is on
+				log.info("Multiswitch Joined now");
+				if(switchTwin.getStateWhenConnect().isPresent()) {
+					var newState = switchTwin.getStateWhenConnect().get();
+					if( switchTwin.getState() != newState) {
+						switchTwin.setState(switchTwin.getStateWhenConnect().get());
+						sendValue = true;
+					}
+				}
+
+				if( ! switchTwin.isConnected()) {
+					switchTwin.setConnected(1);
+					ReactContext.addTelemetry(ConnectionState.connected());
+				}
+
+				break;
+
+			default:
+				return;
+			}
+		}
+
+		if(sendValue)
+			ReactContext.addTelemetry(new MultiSwitchValue(switchTwin.getState(), switchTwin.getExpectedState(), switchTwin.isConnected()));
 	}
 }

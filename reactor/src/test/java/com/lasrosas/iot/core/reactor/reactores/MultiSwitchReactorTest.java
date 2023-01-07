@@ -1,8 +1,6 @@
 package com.lasrosas.iot.core.reactor.reactores;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
@@ -18,12 +16,7 @@ import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiverFromThing;
 import com.lasrosas.iot.core.database.twins.MultiSwitch;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
-import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
-import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
-import com.lasrosas.iot.core.shared.telemetry.MultiSwitchValue;
 import com.lasrosas.iot.core.shared.telemetry.Order;
-import com.lasrosas.iot.core.shared.telemetry.StateMessage;
-import com.lasrosas.iot.core.shared.telemetry.Switched;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class MultiSwitchReactorTest {
@@ -47,7 +40,7 @@ public class MultiSwitchReactorTest {
 		multiSwitch.getReceivers().add(receiver);
 
 
-		// Set the initial state: not connected, expected ON
+/*		// Set the initial state: not connected, expected ON
 		var payloadNotConnected = new ConnectionState(0, ConnectionState.CAUSE_NTW_TIMEOUT);
 
 		testReact(receiver, payloadNotConnected);
@@ -69,7 +62,7 @@ public class MultiSwitchReactorTest {
 		assertEquals(MultiSwitch.ON, multiSwitch.getState());
 
 		// Do switch off
-		var payloadSwitchOff = new Switched(MultiSwitch.OFF);
+		var payloadSwitchOff = new Switched(Switched.State.OFF);
 		testReact(receiver, payloadSwitchOff);
 
 		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true, false));
@@ -79,7 +72,7 @@ public class MultiSwitchReactorTest {
 		assertEquals(MultiSwitch.OFF, multiSwitch.getState());
 
 		// Do switch on
-		var payloadSwitchOn = new Switched(MultiSwitch.ON);
+		var payloadSwitchOn = new Switched(Switched.State.ON);
 		testReact(receiver, payloadSwitchOn);
 
 		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, false));
@@ -87,18 +80,13 @@ public class MultiSwitchReactorTest {
 
 		assertTrue(multiSwitch.isConnected());
 		assertEquals(MultiSwitch.ON, multiSwitch.getState());
-}
+		*/
+		throw new RuntimeException("Must be fixed");
+	}
 
 	private void testReact(TwinReactorReceiver receiver,  Telemetry inboundTelemetry) {
 		ReactContext.clearAndPop();
 		Message<Telemetry> telemetryConnected = MessageBuilder.withPayload(inboundTelemetry).build();
-
-		reactor.react(receiver, telemetryConnected);
-	}
-
-	private void testReact(TwinReactorReceiver receiver,  StateMessage inboundTelemetry) {
-		ReactContext.clearAndPop();
-		Message<StateMessage> telemetryConnected = MessageBuilder.withPayload(inboundTelemetry).build();
 
 		reactor.react(receiver, telemetryConnected);
 	}

@@ -76,15 +76,6 @@ public class ReactorServiceImpl implements ReactorService {
 							.build());
 				}
 
-				for(var stateMessage: context.getStateMessages()) {
-					result.add(
-							MessageBuilder.withPayload(stateMessage)
-							.copyHeaders(imessage.getHeaders())
-							.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
-							.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())
-							.build());
-				}
-
 				for(var order: context.getOrders()) {
 					var builder = MessageBuilder.withPayload(order)
 						.copyHeaders(imessage.getHeaders())

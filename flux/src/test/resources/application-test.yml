@@ -4,12 +4,12 @@ hibernate:
 influxdb:
    server: localhost
    org: las-rosas.es
-   token: xtv9IIwRzk2L9JYYDFHWGILJHmP2cuhc1IOqVfHe4-JuWMEyt2Sgx71sXkPoPtqikBmJrxi17FVbpiWlelImGg==
-   bucket: lasrosasiot
+   token: NaZPmascxgVUBf7b7reg1IERj-JhJdlSr_TkppSOJQB8AmOeV3ffDAEmSe3Nmy72EFdmKx9kxq7jfK2bklXNeg==
+   bucket: lasrosasiot-test
 rak7249:
   mqtt:
-     clientId: lasRosasFluxRak7249Dev
-     persistFolder: target/mqtt-rak7249
+     clientId: lasrosasiot-test
+     persistFolder: target/mqtt-lasrosasiot-test
   connect:
      serverURIs:
        - tcp://@localhost:1883

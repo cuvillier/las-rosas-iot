@@ -64,7 +64,7 @@ public class WriteSQLImpl implements WriteSQL {
 		return point;
 	}
 
-	// public for testing, not in interface 
+	// public for testing, not in interface
 	public void updateProxy(TimeSeriePoint point) {
 		var thing = point.getTimeSerie().getThing();
 
@@ -73,7 +73,6 @@ public class WriteSQLImpl implements WriteSQL {
 		var proxy = thing.getCreateProxy(em);
 
 		// Merge the proxy values
-		proxy.setLastSeen(point.getTime());
 
 		var proxyJsonValue = proxy.getValues();
 		var proxyValue = gson.fromJson(proxyJsonValue, JsonObject.class);

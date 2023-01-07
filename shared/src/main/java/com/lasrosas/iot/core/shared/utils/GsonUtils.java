@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,8 +16,11 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.LongSerializationPolicy;
 
 import io.goodforgod.gson.configuration.GsonConfiguration;
+import io.goodforgod.gson.configuration.GsonFactory;
 import io.goodforgod.gson.configuration.deserializer.LocalDateTimeDeserializer;
+import io.goodforgod.gson.configuration.serializer.LocalDateTimeSerializer;
 
+@ContextConfiguration(classes=UtilsConfig.class)
 public class GsonUtils {
 	public static final Logger log = LoggerFactory.getLogger(GsonUtils.class);
 
@@ -27,6 +31,7 @@ public class GsonUtils {
 	}
 
 	private static boolean debug = true;
+
 	public synchronized static GsonBuilder gsonBuilder() {
 
 		if(gsonBuilder == null) {
@@ -45,6 +50,7 @@ public class GsonUtils {
 
 			gsonBuilder = configuration.builder();
 			gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
+			gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
 		}
 
 		return gsonBuilder;
@@ -88,5 +94,4 @@ public class GsonUtils {
 
 		return changes;
 	}
-
 }

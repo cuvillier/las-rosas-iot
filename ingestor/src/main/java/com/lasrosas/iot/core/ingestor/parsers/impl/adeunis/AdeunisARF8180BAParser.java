@@ -32,8 +32,8 @@ public class AdeunisARF8180BAParser implements PayloadParser {
 
 
 	@Override
-	public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
-		var result = new ArrayList<Message<Telemetry>>();
+	public List<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+		var result = new ArrayList<Message<? extends Telemetry>>();
 		var message = imessage.getPayload();
 
 		if(message instanceof UplinkFrame0x30x43 ) {

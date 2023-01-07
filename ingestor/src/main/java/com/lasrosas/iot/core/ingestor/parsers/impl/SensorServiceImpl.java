@@ -56,7 +56,9 @@ public class SensorServiceImpl implements SensorService {
 		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
 		var uplink = parser.decodeUplink(imessage);
 
-		log.info("Decoded message: " + gson.toJson(uplink));
+		log.info("------------------------------------- UPLINK " + LasRosasHeaders.thingNaturalId(uplink).get());
+		log.info("Class = " + imessage.getPayload().getClass().getSimpleName());
+		log.info(gson.toJson(imessage.getPayload()));
 
 		return uplink;
 	}
@@ -96,7 +98,7 @@ public class SensorServiceImpl implements SensorService {
 */
 	@Override
 	@Transactional
-	public Collection<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+	public Collection<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 
 		var thingId = LasRosasHeaders.thingid(imessage).get();
 		var thing = thgRepo.getOne(thingId);
@@ -116,6 +118,7 @@ public class SensorServiceImpl implements SensorService {
 	}
 
 	@Override
+	@Transactional
 	public byte[] encodeOrder(Message<? extends Order> imessage) {
 		var thingId = imessage.getHeaders().get(LasRosasHeaders.THING_ID, Long.class);
 		var thing = thgRepo.getOne(thingId);
@@ -123,5 +126,11 @@ public class SensorServiceImpl implements SensorService {
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 		if(parser == null) throw new NotFoundException("Parser for sensor manufacturer=" + thing.getType().getManufacturer() + ", model="+ thing.getType().getModel());
 		return parser.encodeOrder(imessage.getPayload());
+	}
+
+	@Override
+	public boolean isNotifyJoin(String manufacturer, String model) {
+		var parser = getParser(manufacturer, model);
+		return parser.notifyJoin();
 	}
 }

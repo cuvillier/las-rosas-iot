@@ -14,12 +14,16 @@ import com.lasrosas.iot.core.ingestor.parsers.impl.mfc88.MFC88LW13IOParser;
 
 @ConfigurationProperties
 public class SensorConfig {
-	
+
 	@Bean
 	public AdeunisARF8170BAParser AdeunisARF8170BAParser() {
 		return new AdeunisARF8170BAParser();
 	}
 
+	@Bean
+	public AdeunisARF8180BAParser AdeunisARF8180BAParser() {
+		return new AdeunisARF8180BAParser();
+	}
 
 	@Bean
 	public ElsysErsParser ElsysErsParser() {

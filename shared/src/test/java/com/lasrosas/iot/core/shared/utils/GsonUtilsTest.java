@@ -3,12 +3,23 @@ package com.lasrosas.iot.core.shared.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.lasrosas.iot.core.shared.utils.GsonUtils;
 
+@SpringBootTest
+@ContextConfiguration(classes=UtilsConfig.class)
 public class GsonUtilsTest {
+	private static final Logger log = LoggerFactory.getLogger(GsonUtilsTest.class);
 
 	@Test
 	public void mergeEmpty() {
@@ -80,11 +91,34 @@ public class GsonUtilsTest {
 
 		var changes = GsonUtils.mergeJsonObjects(json1, json2, null);
 		assertEquals(3, changes);
-		
+
 		assertEquals(3, json2.entrySet().size());
 		assertEquals(1, json2.get("int").getAsInt());
 		assertEquals("s", json2.get("string").getAsString());
 		assertNotNull(json2.get("sub"));
 		assertEquals("sub", json2.get("sub").getAsJsonObject().get("name").getAsString());
+	}
+
+	public static class WithLocalDateTime {
+		private LocalDateTime time = LocalDateTime.now();
+		private LocalDate date = LocalDate.now();
+
+		public LocalDateTime getTime() {
+			return time;
+		}
+
+		public void setTime(LocalDateTime time) {
+			this.time = time;
+		}
+	}
+	
+	@Autowired
+	private Gson gson;
+
+	@Test
+	public void convertDateTimeThrowException() {
+		var o = new WithLocalDateTime();
+		var json = gson.toJson(o);
+		gson.fromJson(json, WithLocalDateTime.class);
 	}
 }

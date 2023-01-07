@@ -42,3 +42,4 @@ logging:
     org.springframework.transaction: INFO
     org.hibernate.engine.transaction.internal.TransactionImpl: INFO
     com.lasrosas.iot: DEBUG
+    org.eclipse.paho.client: DEBUG

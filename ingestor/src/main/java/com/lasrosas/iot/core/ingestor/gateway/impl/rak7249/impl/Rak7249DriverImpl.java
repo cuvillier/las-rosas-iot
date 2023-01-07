@@ -1,7 +1,9 @@
 package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,18 +63,30 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 	@Override
 	public Rak7249Message fromJson(String topic, String json) {
 		Rak7249Message message;
-		if(topic.endsWith("/join")) 
-			message = gson.fromJson(json, Rak7249MessageJoin.class);
 
-		else if(topic.endsWith("/rx")) 
-			message = gson.fromJson(json, Rak7249MessageRx.class);
+		if(topic.endsWith("/join")) {
+			var join= gson.fromJson(json, Rak7249MessageJoin.class);
+			message = join;
+
+		} else if(topic.endsWith("/rx")) {
+			var rx = gson.fromJson(json, Rak7249MessageRx.class);
+			if(rx.getDevEUI() == null)
+				log.info("null deveui");
+			message = rx;
+
+		} else if(topic.endsWith("/ack")) {
+			var ack = gson.fromJson(json, Rak7249MessageAck.class);
+			if(ack.getDevEUI() == null)
+				log.info("null deveui");
+			message = ack;
+
+		} else {
+			log.warn("Message ignored because this is an unknown topic " + topic);
+			log.warn(json);
+
+			return null;
+		}
 		
-		else if(topic.endsWith("/ack")) 
-			message = gson.fromJson(json, Rak7249MessageAck.class);
-
-		else
-			throw new RuntimeException("Unkknown topic " + topic + ". Fix the code here.");
-
 		return message;
 	}
 
@@ -115,7 +129,7 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 		return MessageBuilder.withPayload(payload)
 				.copyHeaders(imessage.getHeaders())
 				.setHeader(LasRosasHeaders.TIME_RECEIVED, time)
-				.build();		
+				.build();
 	}
 
 	@Override
@@ -135,12 +149,20 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 			loraMessage.setModel(deviceInfo.getModel());
 		}
 
+		log.info("------------------------------------- JOIN " + joinMessage.getDevEUI());
+		log.info("Class = " + joinMessage.getClass().getSimpleName());
+		log.info(gson.toJson(joinMessage));
+
 		return buildMessage(loraMessage, imessage);
 	}
 
 	@Override
 	public Message<LoraMessageAck> convertAckToLoraMessage(Message<Rak7249MessageAck> imessage) {
 		var ackMessage = imessage.getPayload();
+
+		log.info("------------------------------------- ACK " + ackMessage.getDevEUI());
+		log.info("Class = " + ackMessage.getClass().getSimpleName());
+		log.info(gson.toJson(ackMessage));
 
 		var loraMessage = new LoraMessageAck();
 
@@ -160,8 +182,8 @@ public class Rak7249DriverImpl implements Rak7249Driver {
 
 	@Override
 	public String encodeDownlink(byte[] data) {
-		var hexData = javax.xml.bind.DatatypeConverter.printHexBinary(data);
-		return "{\"confirmed\": true, \"fPort\": 1, \"data\": \""+ hexData +"\"}";
+		var encoded = Base64.getEncoder().encodeToString(data);
+		return "{\"confirmed\": true, \"fPort\": 6, \"data\": \""+ encoded +"\"}";
 	}
 
 	@Override

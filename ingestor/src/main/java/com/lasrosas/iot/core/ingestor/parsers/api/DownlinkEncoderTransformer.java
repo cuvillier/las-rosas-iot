@@ -3,6 +3,7 @@ package com.lasrosas.iot.core.ingestor.parsers.api;
 import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.shared.telemetry.Order;

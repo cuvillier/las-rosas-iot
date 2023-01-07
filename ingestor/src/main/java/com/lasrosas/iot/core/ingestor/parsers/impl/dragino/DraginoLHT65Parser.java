@@ -8,7 +8,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.PayloadParser;
@@ -43,8 +42,8 @@ public class DraginoLHT65Parser implements PayloadParser {
 		}
 
 		@Override
-		public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
-			var result = new ArrayList<Message<Telemetry>>();
+		public List<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+			var result = new ArrayList<Message<? extends Telemetry>>();
 
 			var payload = imessage.getPayload();
 			if( payload instanceof UplinkTempHumRequest) {

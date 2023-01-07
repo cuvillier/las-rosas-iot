@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,17 +55,15 @@ public class Rak7249MessageRx extends Rak7249Message {
 		private String gatewayID;
 		private Float loRaSNR;
 		private Integer rssi;
-		private LocalDateTime time;
 
 		public RxInfo() {
 		}
 
-		public RxInfo(String gatewayID, Float loRaSNR, Integer rssi, LocalDateTime time) {
+		public RxInfo(String gatewayID, Float loRaSNR, Integer rssi) {
 			super();
 			this.gatewayID = gatewayID;
 			this.loRaSNR = loRaSNR;
 			this.rssi = rssi;
-			this.time = time;
 		}
 
 		public String getGatewayID() {
@@ -84,12 +83,6 @@ public class Rak7249MessageRx extends Rak7249Message {
 		}
 		public void setRssi(Integer rssi) {
 			this.rssi = rssi;
-		}
-		public LocalDateTime getTime() {
-			return time;
-		}
-		public void setTime(LocalDateTime time) {
-			this.time = time;
 		}
 	}
 

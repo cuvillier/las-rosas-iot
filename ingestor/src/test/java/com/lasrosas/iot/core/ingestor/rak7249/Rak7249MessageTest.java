@@ -1,15 +1,22 @@
 package com.lasrosas.iot.core.ingestor.rak7249;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
+import com.google.gson.Gson;
+import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageJoin;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249MessageRx;
-import com.lasrosas.iot.core.shared.utils.GsonUtils;
 import com.lasrosas.iot.core.shared.utils.UtilsConfig;
 
+@SpringBootTest
 @ContextConfiguration(classes = {UtilsConfig.class})
 public class Rak7249MessageTest {
+
+	@Autowired
+	private Gson gson;
 
 	@Test
 	public void jsonToRX() {
@@ -44,13 +51,11 @@ public class Rak7249MessageTest {
 			+ "			}\n"
 			+ "		}";
 
-		var  gson = GsonUtils.gson();
-//		Gson gson = new GsonBuilder().create();
-
 		var message = gson.fromJson(json, Rak7249MessageRx.class);
 
 		Assert.notNull(message, "message is null");
 		System.out.println(gson.toJson(message));
 		Assert.notNull(message.getDevEUI(), "devEUI is null");
 	}
+	
 }

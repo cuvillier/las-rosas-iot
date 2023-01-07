@@ -11,15 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.messaging.PollableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
 import com.lasrosas.iot.core.database.entities.SampleData;
 import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
 import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
-import com.lasrosas.iot.core.flux.WaterTankTestConfig.TelemetryGateway;
+import com.lasrosas.iot.core.flux.DigitalTwinTestConfig.TelemetryGateway;
+import com.lasrosas.iot.core.ingestor.parsers.api.SensorConfig;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.telemetry.WaterTankFilling;
@@ -27,10 +30,10 @@ import com.lasrosas.iot.core.shared.telemetry.WaterTankStatus;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 @EnableIntegration
-@ContextConfiguration(classes = { WaterTankTestConfig.class})
-@IntegrationComponentScan("com.lasrosas.iot.core")
-public class WaterTankTest extends BaseDatabaseTest {
-	public static Logger log = LoggerFactory.getLogger(WaterTankTest.class);
+@ContextConfiguration(classes = { DigitalTwinTestConfig.class, SensorConfig.class})
+@IntegrationComponentScan(basePackages = "com.lasrosas.iot.core.flux")
+public class DigitalTwinTest extends BaseDatabaseTest {
+	public static Logger log = LoggerFactory.getLogger(DigitalTwinTest.class);
 
 	@Autowired
 	private ThingLoraRepo thingRepo;
@@ -40,6 +43,18 @@ public class WaterTankTest extends BaseDatabaseTest {
 
 	@Autowired
 	private PublishSubscribeChannel telemetryChannel;
+
+	@Autowired
+	private PollableChannel orderChannel;
+
+	@Autowired
+	private PollableChannel downlinkChannel;
+
+	@Autowired
+	private PollableChannel errorChannel;
+
+	@Autowired
+	private Gson gson;
 
 	@Test
 	@DirtiesContext
@@ -86,6 +101,41 @@ public class WaterTankTest extends BaseDatabaseTest {
 		}
 
 		assertEquals(i[0], expectedValues.length);
+	}
+
+	@Test
+	@DirtiesContext
+	@Transactional
+	public void test_MultiSwitch() throws Exception {
+
+		var multiswitchSensor = thingRepo.getByDeveui(SampleData.MULTISWITCH_SENSOR_DEVEUI).get();
+		var sensorTechid = multiswitchSensor.getTechid();
+		var time = LocalDateTime.now();
+
+		// JOIN
+/*
+		var imessage = MessageBuilder.withPayload((StateMessage)connectionState)
+					.setHeader(LasRosasHeaders.THING_ID, sensorTechid)
+					.setHeader(LasRosasHeaders.TIME_RECEIVED, time)
+					.build();
+		telemetryGateway.sendTelemetry(imessage);
+
+		Thread.sleep(1000);
+
+		var errorMessage = errorChannel.receive(200);
+		assertNull(errorMessage);
+
+		var orderMessage = orderChannel.receive(1000);
+		assertNull(orderMessage);
+
+		var downlinkMessage = downlinkChannel.receive(1000);
+
+		assertNotNull(downlinkMessage);
+		log.info(gson.toJson(downlinkMessage.getPayload()));
+		assertTrue(downlinkMessage.getPayload() instanceof String);
+		var download = (String)downlinkMessage.getPayload();
+		assertEquals("{\"confirmed\": true, \"fPort\": 1, \"data\": \"04000100000000000000\"}", download);
+*/
 	}
 }
 

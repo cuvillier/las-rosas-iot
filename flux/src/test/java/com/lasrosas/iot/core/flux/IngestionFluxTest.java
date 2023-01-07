@@ -26,8 +26,6 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.shared.telemetry.AirEnvironment;
 import com.lasrosas.iot.core.shared.telemetry.DistanceMeasurement;
-import com.lasrosas.iot.core.shared.telemetry.StateMessage;
-import com.lasrosas.iot.core.shared.telemetry.StillAlive;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
@@ -86,10 +84,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				new LoraMetricMessage[] {
 						loraMetric
 				},
-				loraMetricComp,
-				new StateMessage[] {
-						new StillAlive()
-				});
+				loraMetricComp);
 	}
 
 	@Test
@@ -124,10 +119,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				new LoraMetricMessage[] {
 						loraMetric
 				},
-				loraMetricComp,
-				new StateMessage[] {
-						new StillAlive()
-				});
+				loraMetricComp);
 	}
 
 
@@ -162,10 +154,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				new LoraMetricMessage[] {
 						loraMetric
 				},
-				loraMetricComp,
-				new StateMessage[] {
-						new StillAlive()
-				});
+				loraMetricComp);
 	}
 
 	@Test
@@ -197,10 +186,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				new LoraMetricMessage[] {
 						loraMetric
 				},
-				loraMetricComp,
-				new StateMessage[] {
-						new StillAlive()
-				});
+				loraMetricComp);
 	}
 
 	private static Comparator<LoraMetricMessage> loraMetricComp = new Comparator<LoraMetricMessage>() {
@@ -249,8 +235,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 			Telemetry[] telemetries,
 			Comparator<Telemetry> telemetryComp,
 			LoraMetricMessage[] loraMetricMessages,
-			Comparator<LoraMetricMessage> loraMetricComp,
-			StateMessage[] stateMessages) {
+			Comparator<LoraMetricMessage> loraMetricComp) {
 		try {
 
 			var imessage = MessageBuilder.withPayload(message)
@@ -298,22 +283,6 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				var receivedPayload = (LoraMetricMessage)received.getPayload();
 				assertEquals(1, loraMetricComp.compare(expected, receivedPayload));
 				log.info("Received loraMetric" + receivedPayload.getClass().getSimpleName());
-			}
-
-			for (var expected : stateMessages) {
-				var received = stateChannel.receive(500);
-				assertNotNull(received);
-
-				var receivedPayload = received.getPayload();
-				assertEquals(expected.getClass(), receivedPayload.getClass());
-				log.info("Received stateMessage" + receivedPayload.getClass().getSimpleName());
-			}
-
-			if ((shouldBeNull = stateChannel.receive(100)) != null) {
-				var payload = shouldBeNull.getPayload();
-				log.error("Unexpected message " + payload.getClass().getSimpleName());
-				gson.toJson(payload);
-				throw new RuntimeException("Too many messages from stateChannel");
 			}
 
 		} catch (RuntimeException e) {

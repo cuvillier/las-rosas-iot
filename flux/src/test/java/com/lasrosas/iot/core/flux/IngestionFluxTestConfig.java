@@ -15,6 +15,7 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
+import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 
 @Configuration
 @Import(SensorsConfig.class)
@@ -66,8 +67,8 @@ public class IngestionFluxTestConfig {
 	}
 
 	@Bean
-	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service) {
-		return delegate().handleLoraMessages(loraChannel, service);
+	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service, ConnectionStateService ctxStateService) {
+		return delegate().handleLoraMessages(loraChannel, service, ctxStateService);
 	}
 
 	@Bean

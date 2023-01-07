@@ -13,6 +13,7 @@ public interface PayloadParser {
 	String getManufacturer();
 	String getModel();
 	Message<? extends ThingDataMessage> decodeUplink(Message<ThingEncodedMessage> imessage);
-	List<Message<Telemetry>> telemetries(Message<ThingDataMessage> message);
+	List<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> message);
 	byte[] encodeOrder(Order order);
+	default boolean notifyJoin() {return false;}
 }

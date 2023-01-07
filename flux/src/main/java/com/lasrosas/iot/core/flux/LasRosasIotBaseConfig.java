@@ -11,6 +11,7 @@ import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
@@ -20,6 +21,7 @@ import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl.Rak7249DriverImpl;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
+import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
@@ -38,7 +40,6 @@ public class LasRosasIotBaseConfig {
 	public static final String rak7249ChannelName = "rak7249Channel";
 	public static final String loraChannelName = "loraChannel";
 	public static final String errorChannelName = "errorChannel";
-	public static final String stateChannelName = "stateChannel";
 	public static final String mixedLoraChannelName = "mixedLoraChannel";
 	public static final String loraMetricChannelName = "loraMetricChannel";
 	public static final String thingEncodedDataChannelName = "thingEncodedDataChannel";
@@ -48,7 +49,7 @@ public class LasRosasIotBaseConfig {
 	public static final String alarmChannelName = "alarmChannel";
 	public static final String publishMqttChannelName = "publishMqttChannel";
 	public static final String twinOutputChannelName = "twinOutputChannel";
-	public static final String orderChannelName = "downlinkChannel";
+	public static final String orderChannelName = "orderChannel";
 	public static final String downlinkChannelName = "downlinkChannel";
 
 	@Autowired
@@ -109,11 +110,6 @@ public class LasRosasIotBaseConfig {
 
 	@Bean
 	public MessageChannel downlinkChannel() {
-		return MessageChannels.direct().get();
-	}
-
-	@Bean
-	public MessageChannel stateChannel() {
 		return MessageChannels.direct().get();
 	}
 

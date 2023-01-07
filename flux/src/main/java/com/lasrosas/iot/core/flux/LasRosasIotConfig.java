@@ -33,9 +33,8 @@ import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
-import com.lasrosas.iot.core.ingestor.statemgt.api.StateMgtService;
-import com.lasrosas.iot.core.ingestor.statemgt.impl.StateMgtServiceImpl;
-import com.lasrosas.iot.core.ingestor.statemgt.impl.TimeoutThingTask;
+import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
+import com.lasrosas.iot.core.ingestor.statemgt.impl.ConnectionStateServiceImpl;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
@@ -55,11 +54,6 @@ public class LasRosasIotConfig {
 		return Pollers.fixedRate(10 * 1000).get();
 	}
 
-	@Bean
-	public TimeoutThingTask timeoutThingTask(LasRosasGateway gateway) {
-		return delegate.timeoutThingTask(gateway);
-	}
-
 	/*
 	 * Services & Config
 	 */
@@ -72,14 +66,20 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@ConfigurationProperties(prefix = "rak7249.mqtt")
-	public MqttConfig rak7249MqttConfig(MqttConnectOptions rak7249MqttConnectOptopns) {
-		return delegate.rak7249MqttConfig(rak7249MqttConnectOptopns);
+	public MqttConfig rak7249MqttConfig(MqttConnectOptions rak7249MqttConnectOptions) {
+		return delegate.rak7249MqttConfig(rak7249MqttConnectOptions);
 	}
 
 	// To connect to the RAK7249 mqtt broker
 	@Bean
 	private MqttPahoClientFactory rak7249MqttClientFactory(MqttConfig rak7249MqttConfig) {
 		return delegate.rak7249MqttClientFactory(rak7249MqttConfig);
+	}
+
+	@Bean
+	@ConfigurationProperties(prefix = "publish.connect")
+	public MqttConnectOptions publishMqttConnectOptopns() {
+		return delegate.publishMqttConnectOptopns();
 	}
 
 	@Bean
@@ -110,8 +110,8 @@ public class LasRosasIotConfig {
 	}
 
 	@Bean
-	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service) {
-		return delegate.handleLoraMessages(loraChannel, service);
+	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service, ConnectionStateService ctxStateService) {
+		return delegate.handleLoraMessages(loraChannel, service, ctxStateService);
 	}
 
 	@Bean
@@ -124,12 +124,6 @@ public class LasRosasIotConfig {
 			SensorService service, WriteInfluxDB influxDB, WriteSQL sql) {
 
 		return delegate.handleThingMessage(thingEncodedDataChannel, telemetryChannel, service, influxDB, sql);
-	}
-
-	@Bean
-	@Transformer(inputChannel = LasRosasIotBaseConfig.stateChannelName, outputChannel = LasRosasIotBaseConfig.telemetryChannelName)
-	public AbstractTransformer handleStateMessage(StateMgtService service) {
-		return delegate.handleStateMessage(service);
 	}
 
 	@Bean
@@ -193,10 +187,11 @@ public class LasRosasIotConfig {
 		};
 
 		messageHandler.setAsync(false);
-		// topic header is set in the jsontransformer
+		// topic header is set in jsontransformer
 		messageHandler.setTopicExpressionString("headers['topic']");
 		return messageHandler;
 	}
+
 	/*
 	 * Scheduler
 	 */
@@ -205,13 +200,18 @@ public class LasRosasIotConfig {
 
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(3);
-		threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+		threadPoolTaskScheduler.setThreadNamePrefix("LasRosasThread");
 		return threadPoolTaskScheduler;
 	}
 
 	@Bean
-	public StateMgtService stateMgtService() {
-		return new StateMgtServiceImpl();
-	}
+	private ScheduledTaks scheduledTaks() {
 
+		// Create the bean to start the scheduler
+		return new ScheduledTaks();
+	}
+	@Bean
+	public ConnectionStateService stateService() {
+		return new ConnectionStateServiceImpl();
+	}
 }

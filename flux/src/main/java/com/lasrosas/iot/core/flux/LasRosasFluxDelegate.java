@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.annotation.Order;
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.config.AbstractSimpleMessageHandlerFactoryBean;
@@ -41,15 +40,13 @@ import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.api.TelemetrySpliter;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.statemgt.api.StateMgtService;
-import com.lasrosas.iot.core.ingestor.statemgt.impl.TimeoutThingTask;
+import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.api.ReactorSpliter;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
-import com.lasrosas.iot.core.shared.telemetry.StateMessage;
-import com.lasrosas.iot.core.shared.telemetry.StillAlive;
+import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
@@ -167,6 +164,7 @@ public class LasRosasFluxDelegate {
 
 		var adapter = ConfigUtils.mqttChannelAdapter("rak7249MqttInputAdapter", "application/+/device/+/+",
 				rak7249MqttConfig, rak7249MqttClientFactory);
+		adapter.setQos(1);
 
 		return IntegrationFlows.from(adapter).channel(rak7249UplinkChannel).handle((imessage) -> {
 			messagesLog.info("=============> Received message from RAK7249");
@@ -175,6 +173,8 @@ public class LasRosasFluxDelegate {
 			var json = (String) imessage.getPayload();
 			var topic = (String) imessage.getHeaders().get("mqtt_receivedTopic");
 			var rakMessage = rak7249Driver.fromJson(topic, json);
+			if(rakMessage == null ) return;
+
 			var message = MessageBuilder.withPayload(rakMessage).copyHeaders(imessage.getHeaders()).build();
 
 			try {
@@ -238,20 +238,18 @@ public class LasRosasFluxDelegate {
 	 * Each message is routed to specific channels:
 	 * 		thingEncodedDataChannelName
 	 * 		loraMetricChannelName
-	 * 		stateChannelName
 	 * 		errorChannelName
 	 * 
 	 * @param loraChannel
 	 * @param service
 	 * @return
 	 */
-	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service) {
+	public IntegrationFlow handleLoraMessages(MessageChannel loraChannel, LoraService service, ConnectionStateService ctxStateService) {
 
 		var router = new PayloadTypeRouter();
 		router.setChannelMapping(ThingEncodedMessage.class.getName(), LasRosasIotBaseConfig.thingEncodedDataChannelName);
 		router.setChannelMapping(LoraMetricMessage.class.getName(), LasRosasIotBaseConfig.loraMetricChannelName);
-		router.setChannelMapping(ConnectionState.class.getName(), LasRosasIotBaseConfig.stateChannelName);
-		router.setChannelMapping(StillAlive.class.getName(), LasRosasIotBaseConfig.stateChannelName);
+		router.setChannelMapping(Telemetry.class.getName(), LasRosasIotBaseConfig.telemetryChannelName);
 		router.setDefaultOutputChannelName(LasRosasIotBaseConfig.errorChannelName);
 
 		return IntegrationFlows.from(loraChannel).split(Message.class, imessage -> service.splitMessage(imessage))
@@ -320,29 +318,6 @@ public class LasRosasFluxDelegate {
 	}
 
 	/**
-	 * Handle the StateMessage, update the sensor connection state and related Alarms.
-	 * Consume the incoming message, do no produce any other one.
-	 * 
-	 * @param service
-	 * @return
-	 */
-	// @Bean
-	// @Transformer(inputChannel = stateChannelName, outputChannel = telemetryChannelName)
-	public AbstractTransformer handleStateMessage(StateMgtService service) {
-
-		var handler = new AbstractTransformer() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			protected Object doTransform(Message<?> imessage) {
-				return service.handleStateMessage((Message<StateMessage>) imessage);
-			}
-		};
-
-		return handler;
-	}
-
-	/**
 	 * Write the Telemetry message the MySql and InfluxDB.
 	 * @param influxDB
 	 * @param sql
@@ -376,6 +351,7 @@ public class LasRosasFluxDelegate {
 	// @DependsOn({ "writeTelemetry" })
 	public AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter> reactOnMessage(ReactorService service,
 			MessageChannel twinOutputChannel) {
+
 		return new AbstractSimpleMessageHandlerFactoryBean<AbstractMessageSplitter>() {
 
 			@Override
@@ -398,14 +374,7 @@ public class LasRosasFluxDelegate {
 	// @Router(inputChannel = twinOutputChannelName)
 	public PayloadTypeRouter twinOutputRouter() {
 
-		var router = new PayloadTypeRouter() {
-
-			@Override
-			protected void handleMessageInternal(Message<?> message) {
-				super.handleMessageInternal(message);
-			}
-
-		};
+		var router = new PayloadTypeRouter();
 
 		router.setChannelMapping(Order.class.getName(), LasRosasIotBaseConfig.orderChannelName);
 		router.setChannelMapping(Telemetry.class.getName(), LasRosasIotBaseConfig.telemetryChannelName);
@@ -441,7 +410,7 @@ public class LasRosasFluxDelegate {
 		var router = new HeaderValueRouter(LasRosasHeaders.GATEWAY_NAURAL_ID);
 
 		// GatewayTechoFinca: Gateway NaturalId from the database.
-		router.setChannelMapping("GatewayTechoFinca", LasRosasIotBaseConfig.rak7249ChannelName);
+		router.setChannelMapping("GatewayFincaLasRosas", LasRosasIotBaseConfig.rak7249ChannelName);
 		router.setResolutionRequired(true);
 		router.setDefaultOutputChannelName(LasRosasIotBaseConfig.errorChannelName);
 
@@ -463,7 +432,7 @@ public class LasRosasFluxDelegate {
 
 		// Chripstack mqtt channel
 		// https://forum.chirpstack.io/t/problem-with-sending-downlink-via-mqtt/4263
-		messageHandler.setTopicExpressionString("'application/1/device/' + headers['ThingNaturalId'] + '/rx'");
+		messageHandler.setTopicExpressionString("'application/1/device/' + headers['ThingNaturalId'] + '/tx'");
 		return messageHandler;
 	}
 
@@ -523,14 +492,6 @@ public class LasRosasFluxDelegate {
 	/*
 	 * Scheduler
 	 */
-
-	public TimeoutThingTask timeoutThingTask(LasRosasGateway gateway) {
-		return new TimeoutThingTask((c) -> {
-			log.info("Start Handling disconnection");
-			gateway.sendTelemetry(c);
-			log.info("Stop Handling disconnection");
-		});
-	}
 
 	// @Bean
 	public ThreadPoolTaskScheduler taskScheduler() {

@@ -227,13 +227,13 @@ public class ElsysGenericParser {
 	    return MessageBuilder.createMessage(frame, imessage.getHeaders());
 	}
 
-	public List<Message<Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
+	public List<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 
 		if( !(imessage.getPayload() instanceof ElsysGenericUplinkFrame) )
 			throw new RuntimeException("Cannot process this type of message : " + imessage.getPayload().getClass());
 
 		var message = (ElsysGenericUplinkFrame)imessage.getPayload();
-		var result = new ArrayList<Message<Telemetry>>();
+		var result = new ArrayList<Message<? extends Telemetry>>();
 
 
 		if(message.getTemperature() != null || message.getHumidity() != null || message.getLight() != null) {
