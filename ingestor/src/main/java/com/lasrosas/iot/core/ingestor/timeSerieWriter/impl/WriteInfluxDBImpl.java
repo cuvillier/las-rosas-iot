@@ -72,6 +72,8 @@ public class WriteInfluxDBImpl implements WriteInfluxDB {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void writePoint(TimeSerie tsr, Message<?>  imessage) {
 
+		if( !tsr.getType().isPersistent() ) return;
+
 		var time = LasRosasHeaders.timeReceived(imessage);
 		var timestamp = TimeUtils.timestamp(time);
 

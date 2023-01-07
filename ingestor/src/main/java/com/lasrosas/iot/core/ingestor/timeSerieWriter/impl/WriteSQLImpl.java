@@ -1,5 +1,7 @@
 package com.lasrosas.iot.core.ingestor.timeSerieWriter.impl;
 
+import java.util.Optional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -58,9 +60,12 @@ public class WriteSQLImpl implements WriteSQL {
 
 	@Override
 	@Transactional
-	public TimeSeriePoint writePoint(Message<?> imessage) {
+	public Optional<TimeSeriePoint> writePoint(Message<?> imessage) {
 		var point = insertPoint(imessage);
-		updateProxy(point);
+
+		if(point.isPresent())
+			updateProxy(point.get());
+
 		return point;
 	}
 
@@ -95,14 +100,17 @@ public class WriteSQLImpl implements WriteSQL {
 			proxy.setValues(gson.toJson(proxyValue));
 	}
 
-	private TimeSeriePoint insertPoint(Message<?> imessage) {
+	private Optional<TimeSeriePoint> insertPoint(Message<?> imessage) {
 		var schema = imessage.getPayload().getClass().getSimpleName();
 
 		var tst = tstRepo.findBySchema(schema);
 		if (tst == null) {
 			tst = new TimeSerieType(schema);
+			tst.setPersistent(true);
 			tstRepo.save(tst);
 		}
+
+		if( !tst.isPersistent() ) return Optional.empty();
 
 		// Get/create TimeSerie
 		TimeSerie tsr;
@@ -137,6 +145,6 @@ public class WriteSQLImpl implements WriteSQL {
 
 		tspRepo.save(tsp);
 
-		return tsp;
+		return Optional.of(tsp);
 	}
 }

@@ -45,7 +45,6 @@ import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.api.ReactorSpliter;
-import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.telemetry.Order;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
@@ -269,7 +268,8 @@ public class LasRosasFluxDelegate {
 
 		return IntegrationFlows.from(loraMetricChannel).handle(imessage -> {
 			var tsp = sql.writePoint(imessage);
-			influxDB.writePoint(tsp.getTimeSerie(), imessage);
+			if(tsp.isPresent())
+				influxDB.writePoint(tsp.get().getTimeSerie(), imessage);
 		}).get();
 	}
 
@@ -308,7 +308,7 @@ public class LasRosasFluxDelegate {
 									var tsp = sql.writePoint(result);
 	
 									// If writeSQL is mocked for testing.
-									if(tsp != null) influxDB.writePoint(tsp.getTimeSerie(), result);
+									if(tsp.isPresent()) influxDB.writePoint(tsp.get().getTimeSerie(), result);
 								}
 
 								return result;
@@ -332,7 +332,8 @@ public class LasRosasFluxDelegate {
 			@Transactional
 			protected void handleMessageInternal(Message<?> imessage) {
 				var tsp = sql.writePoint(imessage);
-				influxDB.writePoint(tsp.getTimeSerie(), imessage);
+				if(tsp.isPresent())
+					influxDB.writePoint(tsp.get().getTimeSerie(), imessage);
 			}
 		};
 	}
