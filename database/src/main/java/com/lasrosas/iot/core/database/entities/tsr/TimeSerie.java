@@ -51,7 +51,7 @@ public class TimeSerie extends BaseEntity {
 	@JoinColumn(name = COL_TWIN_FK)
 	private DigitalTwin twin;
 
-	@OneToMany(mappedBy = TimeSeriePoint.PROP_TIME_SERIE)
+	@OneToMany(mappedBy = TimeSeriePoint.PROP_TIME_SERIE, fetch = FetchType.LAZY)
 	private List<TimeSeriePoint> points;
 
 	@OneToOne

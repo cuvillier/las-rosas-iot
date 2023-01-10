@@ -29,12 +29,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.validation.annotation.Validated;
 
 import com.lasrosas.iot.core.flux.LasRosasFluxDelegate.LasRosasGateway;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
+import com.lasrosas.iot.core.ingestor.connectionState.impl.ConnectionStateServiceImpl;
 import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
-import com.lasrosas.iot.core.ingestor.statemgt.impl.ConnectionStateServiceImpl;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;

@@ -21,8 +21,11 @@ public class FridgeReactor implements TwinReactor {
 	@Override
 	public void react(TwinReactorReceiver receiver, Message<?> imessage) {
 
-		if (!receiver.getType().getRole().equals("temperature"))
-			throw new RuntimeException("Unexpected receiver role " + receiver.getType().getRole());
+		enum ReactChannel {
+			inside_temp,
+			outside_temp
+		};
+		var channel = ReactChannel.valueOf(receiver.getType().getRole());
 
 		var fridge = receiver.<Fridge>getTwin();
 		var payload = imessage.getPayload();
@@ -34,17 +37,19 @@ public class FridgeReactor implements TwinReactor {
 		var humidity = airEnvironment.getHumidity();
 
 		var sensor = LasRosasHeaders.sensor(imessage);
-		if( sensor == null || sensor.equals("INT") ) {
+		if( channel == ReactChannel.inside_temp) {
 
 			if( temp != null) fridge.setInsideTemp(temp);
 
 			if( humidity != null ) fridge.setInsideHumidity(humidity);
 
-		} else if( sensor.equals("EXT") ) {
+		} else if( channel == ReactChannel.outside_temp) {
 			if(temp != null) fridge.setOutsideTemp(temp);
 
-		} else
-			log.warn("Fridge " + fridge.getTechid() + " Receive data with unknown sensor " + sensor);
+		} else {
+			log.error("Fridge " + fridge.getTechid() + " Receive data with unknown sensor " + sensor);
+			return;
+		}
 
 		var telemetry = new FridgeTemperature(fridge.getStatus(), fridge.getInsideTemp(), fridge.getInsideHumidity(), fridge.getOutsideTemp());
 		ReactContext.addTelemetry(telemetry);

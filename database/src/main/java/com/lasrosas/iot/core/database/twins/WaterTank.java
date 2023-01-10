@@ -38,6 +38,8 @@ public class WaterTank extends DigitalTwin {
 	public static final String COL_WATER_FLOW = PREFIX + "water_flow";
 	public static final String COL_MAX_WATER_FLOW = PREFIX + "max_water_flow";
 	public static final String COL_STATUS = PREFIX + "status";
+	public static final String COL_TEMPERATURE = PREFIX + "temperature";
+	public static final String COL_HUMIDITY = PREFIX + "humidity";
 
 	public static final double LEVEL_NORMAL_MAX = 95;
 	public static final double LEVEL_WARNING_MAX = 50;
@@ -71,6 +73,13 @@ public class WaterTank extends DigitalTwin {
 	@Column(name=COL_MAX_WATER_FLOW)
 	private Double maxWaterFlow;
 
+	@Column(name=COL_HUMIDITY)
+	private Double humidity;
+
+	@Column(name=COL_TEMPERATURE)
+	private Double temperature;
+
+	
 	@Column(name=COL_STATUS)
 	@Enumerated(EnumType.STRING)
 	private WaterTankStatus status;
@@ -223,5 +232,21 @@ public class WaterTank extends DigitalTwin {
 
 	public void setMaxWaterFlow(Double maxWaterFlow) {
 		this.maxWaterFlow = maxWaterFlow;
+	}
+
+	public Double getHumidity() {
+		return humidity;
+	}
+
+	public void setHumidity(Double humidity) {
+		this.humidity = humidity;
+	}
+
+	public Double getTemperature() {
+		return temperature;
+	}
+
+	public void setTemperature(Double temperature) {
+		this.temperature = temperature;
 	}
 }

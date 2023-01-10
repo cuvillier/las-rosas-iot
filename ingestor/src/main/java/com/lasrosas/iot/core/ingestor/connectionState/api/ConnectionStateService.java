@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.statemgt.api;
+package com.lasrosas.iot.core.ingestor.connectionState.api;
 
 import java.time.LocalDateTime;
 import java.util.List;

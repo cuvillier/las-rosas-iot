@@ -22,7 +22,6 @@ public class Switched extends Telemetry {
 	}
 
 	public Switched(State state) {
-		super();
 		this.state = state;
 	}
 

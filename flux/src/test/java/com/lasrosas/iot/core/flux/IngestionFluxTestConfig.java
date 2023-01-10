@@ -11,11 +11,11 @@ import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.PollableChannel;
 
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.impl.SensorsConfig;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 
 @Configuration
 @Import(SensorsConfig.class)

@@ -61,7 +61,7 @@ public class DigitalTwinTest extends BaseDatabaseTest {
 	@Transactional
 	public void test_WanterTank() {
 
-		var distanceSensor = thingRepo.getByDeveui(SampleData.WATER_TANK_DISTANCE_SENSOR_DEVEUI).get();
+		var distanceSensor = thingRepo.findByDeveui(SampleData.WATER_TANK_DISTANCE_SENSOR_DEVEUI).get();
 
 		final var expectedValues = new WaterTankFilling[] {
 				new WaterTankFilling(WaterTankStatus.FULL, 3.141592653589793, 100.0),
@@ -108,7 +108,7 @@ public class DigitalTwinTest extends BaseDatabaseTest {
 	@Transactional
 	public void test_MultiSwitch() throws Exception {
 
-		var multiswitchSensor = thingRepo.getByDeveui(SampleData.MULTISWITCH_SENSOR_DEVEUI).get();
+		var multiswitchSensor = thingRepo.findByDeveui(SampleData.MULTISWITCH_SENSOR_DEVEUI).get();
 		var sensorTechid = multiswitchSensor.getTechid();
 		var time = LocalDateTime.now();
 

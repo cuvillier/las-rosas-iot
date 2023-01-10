@@ -9,7 +9,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.lasrosas.iot.core.flux.LasRosasFluxDelegate.LasRosasGateway;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 

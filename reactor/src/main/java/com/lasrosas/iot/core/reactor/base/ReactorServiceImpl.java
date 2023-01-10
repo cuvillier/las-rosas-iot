@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
+import com.lasrosas.iot.core.database.MessageUtils;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
 import com.lasrosas.iot.core.database.repo.TwinReactorReceiverFromThingRepo;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
@@ -40,6 +41,7 @@ public class ReactorServiceImpl implements ReactorService {
 		Long thingId = LasRosasHeaders.thingid(imessage).get();
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
+		var sensor = LasRosasHeaders.sensor(imessage);
 
 		// Find reactors to be triggered
 		for(var receiver: receivers) {
@@ -50,6 +52,12 @@ public class ReactorServiceImpl implements ReactorService {
 
 			if(receiverSchema.isPresent() && !schema.equals(receiverSchema.orElseThrow())) {
 				log.debug("Receiver with different schema: " + receiverType.getSchema() + " != " + schema);
+				continue;
+			}
+
+			var receiverSensor = receiver.getSensor();
+			if(receiverSensor != null && (sensor == null || !receiverSensor.equals(sensor)) ) {
+				log.debug("Receiver with different sensor: " + receiverSensor + " != " + sensor);
 				continue;
 			}
 
@@ -68,12 +76,9 @@ public class ReactorServiceImpl implements ReactorService {
 				var context = ReactContext.peek();
 
 				for(var telemetry: context.getTelemetries()) {
-					result.add(
-							MessageBuilder.withPayload(telemetry)
-							.copyHeaders(imessage.getHeaders())
-							.setHeader(LasRosasHeaders.TWIN_ID, twin.getTechid())
-							.setHeader(LasRosasHeaders.TWIN_NATURAL_ID, twin.getName())
-							.build());
+					result.add(MessageUtils
+								.buildMessage(imessage, twin, telemetry)
+								.build());
 				}
 
 				for(var order: context.getOrders()) {

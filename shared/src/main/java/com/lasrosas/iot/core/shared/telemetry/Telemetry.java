@@ -1,7 +1,6 @@
 package com.lasrosas.iot.core.shared.telemetry;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -9,6 +8,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 public abstract class Telemetry {
+	public Telemetry() {
+	}
 
 	public class RawJsonGsonAdapter extends TypeAdapter<String> {
 

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Message;
@@ -40,7 +41,6 @@ import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.api.TelemetrySpliter;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;

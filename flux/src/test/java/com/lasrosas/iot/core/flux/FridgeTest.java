@@ -48,24 +48,22 @@ public class FridgeTest extends BaseDatabaseTest {
 	@DirtiesContext
 	@Transactional
 	public void test_Fridge() {
-		var twinSensor = thingRepo.getByDeveui(SampleData.FRIDGE_TEMPERATURE_SENSOR_DEVEUI).get();
+		var twinSensor = thingRepo.findByDeveui(SampleData.FRIDGE_TEMPERATURE_SENSOR_DEVEUI).get();
 		var fridge = (Fridge)dtwinRepo.getByName(SampleData.FRIDGE_NAME);
-
-		final var i = new int[] {0};
 
 		telemetryChannel.subscribe((m) -> {
 			log.info("Received-----------------------");
 			log.info(gson.toJson(m.getPayload()));
 		});
 
-		var airEnvironment = new AirEnvironment("INT", 5.0, 50.0, 20.0);
+		var airEnvironment = new AirEnvironment(5.0, 50.0, 20.0);
 		var imessage = MessageBuilder.withPayload((Telemetry)airEnvironment)
 				.setHeader(LasRosasHeaders.THING_ID, twinSensor.getTechid()).build();
 
 		telemetryGateway.sendTelemetry(imessage);
 
 		// Send an alarm
-		airEnvironment = new AirEnvironment("INT", fridge.getInsideTempMax() + 1, 50.0, 20.0);
+		airEnvironment = new AirEnvironment(fridge.getInsideTempMax() + 1, 50.0, 20.0);
 		imessage = MessageBuilder.withPayload((Telemetry)airEnvironment)
 				.setHeader(LasRosasHeaders.THING_ID, twinSensor.getTechid()).build();
 

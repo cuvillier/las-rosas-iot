@@ -4,7 +4,7 @@ hibernate:
 influxdb:
    server: localhost
    org: las-rosas.es
-   token: NaZPmascxgVUBf7b7reg1IERj-JhJdlSr_TkppSOJQB8AmOeV3ffDAEmSe3Nmy72EFdmKx9kxq7jfK2bklXNeg==
+   token: SnamzzlD_Q5mbpoFolwzDt9lQWZ6-8YffmdpiIp9QugMhM0BLB5sHq4qQE2Wvev8IRZcmnXqFbQxO_Nmqg1fGA==
    bucket: lasrosasiot-test
 rak7249:
   mqtt:

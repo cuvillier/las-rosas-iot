@@ -9,13 +9,14 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 
+import com.lasrosas.iot.core.database.MessageUtils;
 import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.database.entities.thg.ThingGateway;
 import com.lasrosas.iot.core.database.entities.thg.ThingLora;
 import com.lasrosas.iot.core.database.repo.GatewayRepo;
 import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
 import com.lasrosas.iot.core.database.repo.ThingTypeRepo;
-import com.lasrosas.iot.core.ingestor.MessageUtils;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageJoin;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraMessageUplink;
@@ -23,7 +24,6 @@ import com.lasrosas.iot.core.ingestor.lora.api.LoraMetricMessage;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionStage;
 import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
@@ -58,7 +58,7 @@ public class LoraServiceImpl implements LoraService {
 		ThingLora thing = null;
 
 		if(payload instanceof LoraMessageUplink ) {
-			thing = thingLoraRepo.getByDeveui(payload.getDeveui()).get();
+			thing = thingLoraRepo.findByDeveui(payload.getDeveui()).get();
 
 			@SuppressWarnings("unchecked")
 			var splitResult = splitUplink((Message<LoraMessageUplink>)imessage);
@@ -84,8 +84,8 @@ public class LoraServiceImpl implements LoraService {
 				result.add(stateIMessage);
 			}
 		} else {
-			if( thingLoraRepo.getByDeveui(payload.getDeveui()).isPresent() ) {
-				thing = thingLoraRepo.getByDeveui(payload.getDeveui()).get();
+			if( thingLoraRepo.findByDeveui(payload.getDeveui()).isPresent() ) {
+				thing = thingLoraRepo.findByDeveui(payload.getDeveui()).get();
 			}
 		}
 
@@ -110,7 +110,7 @@ public class LoraServiceImpl implements LoraService {
 		thingData.setEncodedData(uploadMessage.getData());
 		thingData.setDataEncoding(uploadMessage.getDataEncoding());
 
-		var thing = thingLoraRepo.getByDeveui(uploadMessage.getDeveui()).get();
+		var thing = thingLoraRepo.findByDeveui(uploadMessage.getDeveui()).get();
 
 		return new HandleUplinkResult(
 			MessageUtils.buildMessage(imessage, thing, thingData).build(),
@@ -121,7 +121,7 @@ public class LoraServiceImpl implements LoraService {
 	public ThingLora autoCreateThing(Message<LoraMessageJoin> imessage) {
 		var joinMessage = imessage.getPayload();
 
-		var thing = thingLoraRepo.getByDeveui(joinMessage.getDeveui()).orElse(null);
+		var thing = thingLoraRepo.findByDeveui(joinMessage.getDeveui()).orElse(null);
 		if(thing == null) {
 
 			/*

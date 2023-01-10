@@ -1,10 +1,13 @@
 package com.lasrosas.iot.core.ingestor.timeSerieWriter.impl;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import com.lasrosas.iot.core.shared.utils.GsonUtils;
 import com.lasrosas.iot.core.shared.utils.LasRosasHeaders;
 
 public class WriteSQLImpl implements WriteSQL {
+	public static final Logger log = LoggerFactory.getLogger(WriteSQLImpl.class);
 
 	@Autowired
 	public Gson gson;
@@ -103,12 +107,15 @@ public class WriteSQLImpl implements WriteSQL {
 	private Optional<TimeSeriePoint> insertPoint(Message<?> imessage) {
 		var schema = imessage.getPayload().getClass().getSimpleName();
 
-		var tst = tstRepo.findBySchema(schema);
-		if (tst == null) {
+		var otst = tstRepo.findBySchema(schema);
+		TimeSerieType tst;
+
+		if (otst.isEmpty()) {
 			tst = new TimeSerieType(schema);
 			tst.setPersistent(true);
 			tstRepo.save(tst);
-		}
+		} else
+			tst = otst.get();
 
 		if( !tst.isPersistent() ) return Optional.empty();
 
@@ -135,15 +142,20 @@ public class WriteSQLImpl implements WriteSQL {
 			}
 		}
 
-
 		String json = gson.toJson(imessage.getPayload());
 
 		var time = LasRosasHeaders.timeReceived(imessage);
-		var tsp = new TimeSeriePoint(tsr, time, json);
+		TimeSeriePoint tsp;
 
-		tsr.setCurrentValue(tsp);
-
-		tspRepo.save(tsp);
+		var otsp = tspRepo.getByTimeAndTimeSerie(time, tsr);
+		if(otsp.isPresent()) {
+			tsp = otsp.get();
+			tsp.setValue(json);
+		} else {
+			tsp = new TimeSeriePoint(tsr, time, json);
+			em.persist(tsp);
+			tsr.setCurrentValue(tsp);
+		}
 
 		return Optional.of(tsp);
 	}

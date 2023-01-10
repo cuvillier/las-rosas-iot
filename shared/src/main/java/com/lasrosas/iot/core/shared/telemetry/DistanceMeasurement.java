@@ -6,12 +6,10 @@ public class DistanceMeasurement extends Telemetry {
 	private Double distance;
 
 	public DistanceMeasurement(Double distance) {
-		super();
 		this.distance = distance;
 	}
 
 	public DistanceMeasurement() {
-		super();
 	}
 
 	public Double getDistance() {

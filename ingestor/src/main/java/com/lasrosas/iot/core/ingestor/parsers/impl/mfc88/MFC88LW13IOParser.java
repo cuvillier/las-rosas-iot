@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.core.ingestor.MessageUtils;
+import com.lasrosas.iot.core.database.MessageUtils;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingDataMessage;
 import com.lasrosas.iot.core.ingestor.parsers.api.ThingEncodedMessage;
 import com.lasrosas.iot.core.ingestor.parsers.impl.PayloadParser;
@@ -47,13 +47,13 @@ public class MFC88LW13IOParser implements PayloadParser {
 
 				var uplinkIO = (UplinkIO)payload;
 				var switched = uplinkIO.getOutputs() != 0? Switched.on(): Switched.off();
-				result.add(MessageUtils.buildMessage(imessage, null, switched).build());
+				result.add(MessageUtils.buildMessage(imessage, switched).build());
 
 			} else if( payload instanceof UplinkTimeSyncRequest) {
 
 				var timeSyncRequest = (UplinkTimeSyncRequest)payload;
 				if(timeSyncRequest.getOption() == UplinkTimeSyncRequestOption.AFTER_BOOT) {
-					result.add(MessageUtils.buildMessage(imessage, null, ConnectionStage.joined()).build());
+					result.add(MessageUtils.buildMessage(imessage, ConnectionStage.joined()).build());
 				}
 			}
 

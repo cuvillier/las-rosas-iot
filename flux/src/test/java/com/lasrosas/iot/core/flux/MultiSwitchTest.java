@@ -46,7 +46,7 @@ public class MultiSwitchTest extends BaseDatabaseTest {
 	@Transactional
 	public void test_WanterTank() {
 
-		var distanceSensor = thingRepo.getByDeveui(SampleData.WATER_TANK_DISTANCE_SENSOR_DEVEUI).get();
+		var distanceSensor = thingRepo.findByDeveui(SampleData.WATER_TANK_DISTANCE_SENSOR_DEVEUI).get();
 
 		final var expectedValues = new WaterTankFilling[] {
 				new WaterTankFilling(WaterTankStatus.FULL, 3.141592653589793, 100.0),

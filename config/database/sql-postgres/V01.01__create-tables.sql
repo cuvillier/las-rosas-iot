@@ -48,6 +48,8 @@ CREATE TABLE t_dtw_water_tank
     wat_percentage real,
     wat_water_flow real,
     wat_max_water_flow real,
+    wat_temperature real,
+    wat_humidity real,
     wat_status character varying(32) DEFAULT 'UNKNOWN',
     wat_update_time timestamp(6) DEFAULT NULL,
     CONSTRAINT t_dtw_water_tank_pkey PRIMARY KEY (twi_techid),
@@ -178,6 +180,7 @@ CREATE TABLE t_tsr_time_serie
 	tsr_techid SERIAL,
 	tsr_sensor VARCHAR(16) DEFAULT NULL,
 	tsr_influxdb_measurement VARCHAR(100) DEFAULT NULL,
+	tsr_persistent INTEGER DEFAULT 0,
 	tsr_fk_thg_thing INTEGER DEFAULT NULL,
 	tsr_fk_tst_type INTEGER DEFAULT NULL,
 	tsr_fk_twi_twin INTEGER DEFAULT NULL,
@@ -243,10 +246,12 @@ CREATE TABLE t_dtw_reactor_receiver
 );
 
 /*--------------- ALARM --------------*/
+
 CREATE TABLE t_alr_alarm_type
 (
 	alt_techid SERIAL,
-	alt_name VARCHAR(50) DEFAULT NULL,
+	alt_cause VARCHAR(50) NOT NULL,
+	alt_data_type VARCHAR(50) NOT NULL,
 
 	PRIMARY KEY (alt_techid)
 );
@@ -255,15 +260,15 @@ CREATE TABLE t_alr_alarm
 (
 	alr_techid SERIAL,
 	alr_discriminator VARCHAR(3) NOT NULL,
-	alr_name VARCHAR(50),
-	alr_state VARCHAR(10),
+	alr_state VARCHAR(32),
 	alr_opened_time timestamp DEFAULT NULL,
 	alr_closed_time timestamp DEFAULT NULL,
+	alr_ack_time timestamp DEFAULT NULL,
 	alr_fk_alt_type INTEGER NOT NULL,
-	tha_fk_thg_thing INTEGER DEFAULT NULL,
-	twa_fk_twi_twin INTEGER DEFAULT NULL,
+	ath_fk_thg_thing INTEGER DEFAULT NULL,
+	tth_fk_twi_twin INTEGER DEFAULT NULL,
 	PRIMARY KEY (alr_techid),
 	CONSTRAINT fk_alr_fk_alt_type FOREIGN KEY (alr_fk_alt_type) REFERENCES t_alr_alarm_type(alt_techid),
-	CONSTRAINT fk_tha_fk_thg_thing FOREIGN KEY (tha_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
-	CONSTRAINT fk_twa_fk_twi_twin FOREIGN KEY (twa_fk_twi_twin) REFERENCES t_dtw_digital_twin(twi_techid)
+	CONSTRAINT fk_ath_fk_thg_thing FOREIGN KEY (ath_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
+	CONSTRAINT fk_tth_fk_twi_twin FOREIGN KEY (tth_fk_twi_twin) REFERENCES t_dtw_digital_twin(twi_techid)
 );

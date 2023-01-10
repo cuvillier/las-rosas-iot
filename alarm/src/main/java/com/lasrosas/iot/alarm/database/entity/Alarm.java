@@ -15,7 +15,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.lasrosas.iot.core.database.entities.dtw.DigitalTwinType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
 
 @Entity
@@ -24,47 +26,45 @@ import com.lasrosas.iot.core.database.entities.shared.BaseEntity;
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = Alarm.COL_TECHID), name = BaseEntity.PROP_TECHID)})
 @DiscriminatorColumn(name = Alarm.COL_DISCRIMINATOR)
 public abstract class Alarm extends BaseEntity {
+	public static final Logger log = LoggerFactory.getLogger(Alarm.class);
+
 	public static final String TABLE = "t_alr_alarm";
 	public static final String PREFIX = "alr_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
 
 	public static final String COL_TECHID = PREFIX + "techid";
-	public static final String COL_TIME = PREFIX + "time";
+	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_STATE = PREFIX + "state";
 	public static final String COL_OPENED_TIME = PREFIX + "opened_time";
+	public static final String COL_ACK_TIME = PREFIX + "ack_time";
 	public static final String COL_CLOSED_TIME = PREFIX + "closed_time";
-	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_TYPE_FK = PREFIX_FK + AlarmType.PREFIX + "type";
 
 	public static final String PROP_TYPE = "type";
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = COL_TYPE_FK)
 	private AlarmType type;
 
-	@Column(name=COL_OPENED_TIME)
+	@Column(name = COL_OPENED_TIME)
 	private LocalDateTime openedTime;
 
-	@Column(name=COL_CLOSED_TIME)
+	@Column(name = COL_ACK_TIME)
+	private LocalDateTime ackTime;
+
+	@Column(name = COL_CLOSED_TIME)
 	private LocalDateTime closedTime;
 
-	public enum State {
-		Opened,
-		Closed
-	}
+	@Column(name = COL_STATE)
+	@Enumerated(EnumType.STRING)
+	private AlarmState state;
 
-	@Enumerated(EnumType.STRING)	
-	@Column(name=COL_STATE)
-	private State state;
-
-	public Alarm() {
-	}
-
-	public Alarm(AlarmType type, LocalDateTime time) {
-		super();
+	public Alarm() {}
+	
+	public Alarm(LocalDateTime time, AlarmType type) {
 		this.type = type;
+		this.state = AlarmState.OPENED;
 		this.openedTime = time;
-		this.state = State.Opened;
 	}
 
 	public AlarmType getType() {
@@ -75,6 +75,32 @@ public abstract class Alarm extends BaseEntity {
 		this.type = type;
 	}
 
+	public AlarmState getState() {
+		return state;
+	}
+
+	public void setState(AlarmState state, LocalDateTime time) {
+		this.state = state;
+
+		switch(state) {
+		case OPENED:
+			this.openedTime = time;
+			break;
+		case ACKNOWLEDGE:
+			this.ackTime = time;
+			break;
+		case CLOSED:
+			this.closedTime = time;
+			break;
+		default:
+			throw new RuntimeException("Invalid alarm state " + state + ". Fix the code");
+		}
+	}
+
+	public void setState(AlarmState state) {
+		this.state = state;
+	}
+
 	public LocalDateTime getOpenedTime() {
 		return openedTime;
 	}
@@ -83,24 +109,19 @@ public abstract class Alarm extends BaseEntity {
 		this.openedTime = openedTime;
 	}
 
+	public LocalDateTime getAckTime() {
+		return ackTime;
+	}
+
+	public void setAckTime(LocalDateTime ackTime) {
+		this.ackTime = ackTime;
+	}
+
 	public LocalDateTime getClosedTime() {
 		return closedTime;
 	}
 
 	public void setClosedTime(LocalDateTime closedTime) {
 		this.closedTime = closedTime;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState(State state) {
-		this.state = state;
-	}
-
-	public void close(LocalDateTime time) {
-		this.closedTime = time;
-		this.state = State.Closed;
 	}
 }

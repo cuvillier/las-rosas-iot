@@ -7,11 +7,9 @@ public class FridgeTemperature extends Telemetry {
 	private FridgeStatus status;
 
 	public FridgeTemperature() {
-		super();
 	}
 
 	public FridgeTemperature(FridgeStatus status, Double insideTemp, Double insideHumidity, Double outsideTemp) {
-		super();
 		this.status = status;
 		this.insideHumidity = insideHumidity;
 		this.insideTemp = insideTemp;

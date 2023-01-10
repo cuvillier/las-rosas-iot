@@ -8,5 +8,5 @@ import com.lasrosas.iot.core.database.entities.thg.ThingLora;
 
 @Repository
 public interface ThingLoraRepo extends ThingRepoBase<ThingLora>, ThingLoraRepoCustom {
-	Optional<ThingLora> getByDeveui(String deveui);
+	Optional<ThingLora> findByDeveui(String deveui);
 }

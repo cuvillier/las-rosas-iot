@@ -40,6 +40,9 @@ public class TelemetryTest extends Telemetry {
 
 	private String stringValue = "hello";
 
+	public TelemetryTest() {
+	}
+
 	public ValuesHolder getValuesHolder() {
 		return valuesHolder;
 	}

@@ -15,7 +15,12 @@ public class ReactorConfig {
 	public ForwardReactor ForwardReactor() {
 		return new ForwardReactor();
 	}
-	
+
+	@Bean
+	public FridgeReactor FridgeReactor() {
+		return new FridgeReactor();
+	}
+
 	@Bean
 	public MultiSwitchReactor MultiSwitchReactor() {
 		return new MultiSwitchReactor();

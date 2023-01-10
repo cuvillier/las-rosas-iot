@@ -77,8 +77,8 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 					);
 
 		testLoraMessageUplink(loraMessageUplink, new Telemetry[] {
-					new AirEnvironment(null, 844.8, null, null),
-					new AirEnvironment(null, 0.0, null, null)
+					new AirEnvironment(844.8, null, null),
+					new AirEnvironment(0.0, null, null)
 				},
 				telemetryComp,
 				new LoraMetricMessage[] {
@@ -112,8 +112,8 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 					);
 
 		testLoraMessageUplink(loraMessageUplink, new Telemetry[] {
-					new AirEnvironment(null, 12.41, 86.3, null),
-					new AirEnvironment(null, 11.56, null, null)
+					new AirEnvironment(12.41, 86.3, null),
+					new AirEnvironment(11.56, null, null)
 				},
 				telemetryComp,
 				new LoraMetricMessage[] {
@@ -147,7 +147,7 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 					);
 
 		testLoraMessageUplink(loraMessageUplink, new Telemetry[] {
-					new AirEnvironment(null, 10.2, 97.0, null),
+					new AirEnvironment(10.2, 97.0, null),
 					new DistanceMeasurement(0.3)
 				},
 				telemetryComp,
@@ -212,7 +212,6 @@ public class IngestionFluxTest extends BaseDatabaseTest {
 				var receivedAirEnvironment = (AirEnvironment)received;
 				assertEquals(expectedAirEnvironment.getHumidity(), receivedAirEnvironment.getHumidity());
 				assertEquals(expectedAirEnvironment.getLight(), receivedAirEnvironment.getLight());
-				assertEquals(expectedAirEnvironment.getSensor(), receivedAirEnvironment.getSensor());
 				assertEquals(expectedAirEnvironment.getTemperature(), receivedAirEnvironment.getTemperature());
 				return 1;
 			}

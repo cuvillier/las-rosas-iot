@@ -1,4 +1,4 @@
-package com.lasrosas.iot.core.ingestor.statemgt.impl;
+package com.lasrosas.iot.core.ingestor.connectionState.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.database.repo.ThingRepo;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 
 public class ConnectionStateServiceImpl implements ConnectionStateService {
 	public static final Logger log = LoggerFactory.getLogger(ConnectionStateServiceImpl.class);

@@ -15,13 +15,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
+import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.ingestor.gateway.impl.GatewayServiceImpl;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.impl.Rak7249DriverImpl;
 import com.lasrosas.iot.core.ingestor.lora.api.LoraService;
 import com.lasrosas.iot.core.ingestor.lora.impl.LoraServiceImpl;
-import com.lasrosas.iot.core.ingestor.statemgt.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.InfluxDBConfig;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;

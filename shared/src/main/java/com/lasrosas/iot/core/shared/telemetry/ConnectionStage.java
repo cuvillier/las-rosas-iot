@@ -15,7 +15,6 @@ public class ConnectionStage extends Telemetry {
 	}
 
 	public ConnectionStage(int stage) {
-		super();
 		this.stage = stage;
 	}
 
