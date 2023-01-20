@@ -38,7 +38,7 @@ public class ReactorServiceImpl implements ReactorService {
 		 */
 		if( LasRosasHeaders.twinId(imessage).isPresent()) return result;
 
-		Long thingId = LasRosasHeaders.thingid(imessage).get();
+		Long thingId = LasRosasHeaders.thingId(imessage).get();
 		var thing = thingRepo.findById(thingId).orElseThrow();
 		var receivers = receiverRepo.findByThing(thing);
 		var sensor = LasRosasHeaders.sensor(imessage);

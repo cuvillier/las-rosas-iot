@@ -1,8 +1,8 @@
-package com.lasrosas.iot.alarm.api;
+package com.lasrosas.iot.alarm.service.api;
 
 import org.springframework.context.annotation.Bean;
 
-import com.lasrosas.iot.alarm.impl.AlarmServiceImpl;
+import com.lasrosas.iot.alarm.service.impl.AlarmServiceImpl;
 
 public class AlarmServiceConfig {
 

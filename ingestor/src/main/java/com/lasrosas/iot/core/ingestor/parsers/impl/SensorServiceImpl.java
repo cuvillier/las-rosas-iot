@@ -100,7 +100,7 @@ public class SensorServiceImpl implements SensorService {
 	@Transactional
 	public Collection<Message<? extends Telemetry>> telemetries(Message<ThingDataMessage> imessage) {
 
-		var thingId = LasRosasHeaders.thingid(imessage).get();
+		var thingId = LasRosasHeaders.thingId(imessage).get();
 		var thing = thgRepo.getOne(thingId);
 		var parser = getParser(thing.getType().getManufacturer(), thing.getType().getModel());
 

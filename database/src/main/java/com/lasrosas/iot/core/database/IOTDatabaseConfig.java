@@ -14,8 +14,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "spring.datasource")
 @Validated
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.lasrosas.iot.core.database")
-@EntityScan(basePackages = "com.lasrosas.iot.core")
+@EnableJpaRepositories(basePackages = "com.lasrosas.iot")
+@EntityScan(basePackages = "com.lasrosas.iot")
 public class IOTDatabaseConfig {
 
 	@NotNull

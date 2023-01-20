@@ -247,6 +247,21 @@ CREATE TABLE t_dtw_reactor_receiver
 
 /*--------------- ALARM --------------*/
 
+CREATE TABLE t_alr_watcher
+(
+	wat_techid SERIAL,
+	wat_dataBaseType VARCHAR(32) DEFAULT NULL,
+	wat_dataType VARCHAR(32) DEFAULT NULL,
+	wat_dataNaturalId VARCHAR(32) DEFAULT NULL,
+	wat_schema VARCHAR(32) DEFAULT NULL,
+	wat_triggerField VARCHAR(32) DEFAULT NULL,
+	wat_triggerOperator VARCHAR(32) DEFAULT NULL,
+	wat_triggerValue VARCHAR(32) DEFAULT NULL,
+	wat_gravity VARCHAR(32) DEFAULT NULL,
+
+	PRIMARY KEY (wat_techid)
+);
+
 CREATE TABLE t_alr_alarm_type
 (
 	alt_techid SERIAL,
@@ -261,12 +276,13 @@ CREATE TABLE t_alr_alarm
 	alr_techid SERIAL,
 	alr_discriminator VARCHAR(3) NOT NULL,
 	alr_state VARCHAR(32),
+	alr_gravity VARCHAR(32),
 	alr_opened_time timestamp DEFAULT NULL,
 	alr_closed_time timestamp DEFAULT NULL,
 	alr_ack_time timestamp DEFAULT NULL,
 	alr_fk_alt_type INTEGER NOT NULL,
 	ath_fk_thg_thing INTEGER DEFAULT NULL,
-	tth_fk_twi_twin INTEGER DEFAULT NULL,
+	atw_fk_twi_twin INTEGER DEFAULT NULL,
 	PRIMARY KEY (alr_techid),
 	CONSTRAINT fk_alr_fk_alt_type FOREIGN KEY (alr_fk_alt_type) REFERENCES t_alr_alarm_type(alt_techid),
 	CONSTRAINT fk_ath_fk_thg_thing FOREIGN KEY (ath_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),

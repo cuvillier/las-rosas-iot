@@ -173,13 +173,17 @@ public abstract class Thing extends BaseEntity {
 
 	public boolean needToDisconnect() {
 
-		if(this.connectionTimeout == null) return false;
-		if( !this.proxy.isConnected()) return false;
-		if( this.proxy.getLastSeen() == null ) return proxy.isConnected();
+		// Check if the thing was never connected
+		if(	this.connectionTimeout == null ) return false;
+		if( this.proxy == null ) return false;
+		if( this.proxy.getLastSeen() == null )
+			return this.proxy.isConnected();	// Weired, should be disconnected.
 
 		var lastSeen = this.proxy.getLastSeen();
 		var connectedUpTo = lastSeen.plusSeconds(this.connectionTimeout);
 
-		return connectedUpTo.isBefore(LocalDateTime.now());
+		var shouldBeConnected = connectedUpTo.isBefore(LocalDateTime.now());
+
+		return this.proxy.isConnected() && shouldBeConnected;
 	}
 }

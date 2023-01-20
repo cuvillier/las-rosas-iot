@@ -22,7 +22,7 @@ public class ScheduledTaks {
 	@Autowired
 	private LasRosasGateway gateway;
 
-	@Scheduled(cron = "0 0/5 * * * *")
+	@Scheduled(cron = "0 0/1 * * * *")
 	public void timeoutThingtask() {
 		log.info("=== Starting batch timeoutThings");
 

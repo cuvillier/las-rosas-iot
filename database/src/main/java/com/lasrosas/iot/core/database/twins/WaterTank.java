@@ -41,11 +41,6 @@ public class WaterTank extends DigitalTwin {
 	public static final String COL_TEMPERATURE = PREFIX + "temperature";
 	public static final String COL_HUMIDITY = PREFIX + "humidity";
 
-	public static final double LEVEL_NORMAL_MAX = 95;
-	public static final double LEVEL_WARNING_MAX = 50;
-	public static final double LEVEL_ALARM_MAX = 25;
-	public static final double LEVEL_EMPTY_MAX = 5;
-
 	@Column(name=COL_UPDATE_TIME)
 	private LocalDateTime updateTime;
 
@@ -150,8 +145,6 @@ public class WaterTank extends DigitalTwin {
 		this.percentageFill = computeFillPercent(this.volume);
 		this.level = levelMeasured;
 
-		this.status = computeStatus();
-
 		log.info("WaterTank status=" + this.status +"volume=" + this.volume + ", level=" + this.level + ", fill=" + percentageFill );
 	}
 
@@ -167,21 +160,6 @@ public class WaterTank extends DigitalTwin {
 		log.debug("Compute waterFlow. waterflow=" + waterflow + " time frame=" + seconds + "s");
 
 		return waterflow;
-	}
-
-	public WaterTankStatus computeStatus() {
-		if(this.percentageFill == null) return WaterTankStatus.UNKNOWN;
-
-		if(percentageFill > LEVEL_NORMAL_MAX)
-			return WaterTankStatus.FULL;
-		else if(percentageFill > LEVEL_WARNING_MAX)
-			return  WaterTankStatus.NORMAL;
-		else if(percentageFill > LEVEL_ALARM_MAX)
-			return WaterTankStatus.WARNING;
-		else if(percentageFill > LEVEL_EMPTY_MAX)
-			return WaterTankStatus.ALARM;
-		else
-			return WaterTankStatus.EMPTY;
 	}
 
 	public WaterTankStatus getStatus() {

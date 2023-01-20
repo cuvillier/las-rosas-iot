@@ -8,6 +8,6 @@ import com.lasrosas.iot.core.database.entities.dtw.DigitalTwinType;
 @Entity
 @DiscriminatorValue(FridgeType.DISCRIMINATOR)
 public class FridgeType extends DigitalTwinType {
-	public static final String DISCRIMINATOR = "nev";
+	public static final String DISCRIMINATOR = "fri";
 
 }

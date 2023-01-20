@@ -1,6 +1,7 @@
 package com.lasrosas.iot.core.database;
 
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 
 public class HibernateUtils {
 
@@ -17,6 +18,16 @@ public class HibernateUtils {
 		}
 
 		return entity;
+	}
+
+	public static Class<?> getCleanClass(Object object) {
+	  if (object instanceof HibernateProxy) {
+		    LazyInitializer lazyInitializer =
+		        ((HibernateProxy) object).getHibernateLazyInitializer();
+		    return lazyInitializer.getPersistentClass();
+		  } else {
+		    return object.getClass();
+		  }
 	}
 
 	/**

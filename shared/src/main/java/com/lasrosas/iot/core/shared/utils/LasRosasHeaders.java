@@ -40,7 +40,7 @@ public class LasRosasHeaders {
 		return message.getHeaders().get(TIME_RECEIVED, LocalDateTime.class);
 	}
 
-	public static Optional<Long> thingid(Message<?> message) {
+	public static Optional<Long> thingId(Message<?> message) {
 		return Optional.ofNullable(message.getHeaders().get(THING_ID, Long.class));
 	}
 

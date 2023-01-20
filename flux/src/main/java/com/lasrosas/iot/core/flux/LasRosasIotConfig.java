@@ -13,6 +13,7 @@ import org.springframework.integration.annotation.Splitter;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.config.AbstractSimpleMessageHandlerFactoryBean;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
@@ -24,10 +25,13 @@ import org.springframework.integration.transformer.AbstractTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.gson.Gson;
+import com.lasrosas.iot.alarm.service.api.AlarmService;
 import com.lasrosas.iot.core.flux.LasRosasFluxDelegate.LasRosasGateway;
 import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
 import com.lasrosas.iot.core.ingestor.connectionState.impl.ConnectionStateServiceImpl;
@@ -38,6 +42,7 @@ import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
+import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 @ConfigurationProperties
 @Validated
@@ -48,6 +53,9 @@ public class LasRosasIotConfig {
 
 	@Autowired
 	private LasRosasFluxDelegate delegate;
+
+	@Autowired
+	private Gson gson;
 
 	@Bean(name = PollerMetadata.DEFAULT_POLLER)
 	public PollerMetadata poller() {
@@ -162,7 +170,33 @@ public class LasRosasIotConfig {
 	@Bean
 	@ServiceActivator(inputChannel = LasRosasIotBaseConfig.rak7249ChannelName)
 	public MessageHandler rak7249DownlinkPublisher(MqttPahoClientFactory rak7249MqttClientFactory) {
-		return delegate.rak7249DownlinkPublisher(rak7249MqttClientFactory);	
+		return delegate.rak7249DownlinkPublisher(rak7249MqttClientFactory);
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = LasRosasIotBaseConfig.notifyChannelName)
+	public MessageHandler sendNotification() {
+		return new MessageHandler() {
+
+			@Override
+			public void handleMessage(Message<?> message) throws MessagingException {
+				log.info("NOTIFY !!!!!!!!!!!");
+				log.info(gson.toJson(message));
+			}
+			
+		};
+	}
+
+	@Bean
+	public IntegrationFlow checkAlarm(MessageChannel telemetryChannel, MessageChannel notifyChannel, AlarmService alarmService) {
+
+		return IntegrationFlows
+				.from(telemetryChannel)
+				.split(Message.class, m -> {
+					return alarmService.checkTelemetry(m);
+				})
+				.channel(notifyChannel)
+				.get();
 	}
 
 	@Bean

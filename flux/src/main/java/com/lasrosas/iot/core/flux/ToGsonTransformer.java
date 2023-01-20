@@ -25,7 +25,7 @@ public class ToGsonTransformer extends AbstractTransformer {
 		if( LasRosasHeaders.twinNaturalId(message).isPresent() ) {
 			topic = "twin/" + LasRosasHeaders.twinId(message).get();
 		} else if( LasRosasHeaders.thingNaturalId(message).isPresent() ) {
-			topic = "thing/" + LasRosasHeaders.thingid(message).get();
+			topic = "thing/" + LasRosasHeaders.thingId(message).get();
 		} else
 			throw new RuntimeException("Unknow naruralId for this message");
 

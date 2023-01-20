@@ -35,6 +35,7 @@ public abstract class Alarm extends BaseEntity {
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_STATE = PREFIX + "state";
+	public static final String COL_GRAVITY = PREFIX + "gravity";
 	public static final String COL_OPENED_TIME = PREFIX + "opened_time";
 	public static final String COL_ACK_TIME = PREFIX + "ack_time";
 	public static final String COL_CLOSED_TIME = PREFIX + "closed_time";
@@ -59,11 +60,23 @@ public abstract class Alarm extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private AlarmState state;
 
-	public Alarm() {}
-	
-	public Alarm(LocalDateTime time, AlarmType type) {
-		this.type = type;
+	@Column(name = COL_GRAVITY)
+	@Enumerated(EnumType.STRING)
+	private AlarmGravity gravity;
+
+	public Alarm() {
 		this.state = AlarmState.OPENED;
+		this.gravity = AlarmGravity.HIGH;
+	}
+
+	public Alarm(LocalDateTime time, AlarmType type, AlarmGravity gravity) {
+		this();
+
+		if(gravity == null) gravity = AlarmGravity.HIGH;
+
+		this.type = type;
+
+		if(time == null) time = LocalDateTime.now();
 		this.openedTime = time;
 	}
 
@@ -79,8 +92,18 @@ public abstract class Alarm extends BaseEntity {
 		return state;
 	}
 
+	public AlarmGravity getGravity() {
+		return gravity;
+	}
+
+	public void setGravity(AlarmGravity gravity) {
+		this.gravity = gravity;
+	}
+
 	public void setState(AlarmState state, LocalDateTime time) {
 		this.state = state;
+
+		if(time == null) time = LocalDateTime.now();
 
 		switch(state) {
 		case OPENED:
@@ -124,4 +147,6 @@ public abstract class Alarm extends BaseEntity {
 	public void setClosedTime(LocalDateTime closedTime) {
 		this.closedTime = closedTime;
 	}
+	
+	public abstract String getSourceNaturalId();
 }

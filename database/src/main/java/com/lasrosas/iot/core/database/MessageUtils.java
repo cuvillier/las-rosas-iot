@@ -13,7 +13,7 @@ public class MessageUtils {
 
 	public static <T> MessageBuilder<T> buildMessage(Message<?> imessage, T payload) {
 
-		var builder = MessageBuilder.withPayload(payload);
+		var builder = MessageBuilder.withPayload(payload).copyHeaders(imessage.getHeaders());
 
 		LocalDateTime time = null;
 

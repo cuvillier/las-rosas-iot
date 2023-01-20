@@ -66,15 +66,7 @@ public class LoraServiceImpl implements LoraService {
 			result.add(splitResult.getLoraMetricMessage());
 			result.add(splitResult.getThingEncodedMessage());
 
-			var time = LasRosasHeaders.timeReceived(imessage);
-			if( time == null ) time = LocalDateTime.now();
-
-			if( ctxStateService.alive(time, thing) ) {
-				result.add(MessageUtils.buildMessage(imessage, thing, ConnectionState.connected()).build());
-			}
-
 		} else if(payload instanceof LoraMessageJoin ) {
-			var join = (LoraMessageJoin)payload;
 			thing = autoCreateThing((Message<LoraMessageJoin>)imessage);
 
 			var thingType = thing.getType();
@@ -86,6 +78,13 @@ public class LoraServiceImpl implements LoraService {
 		} else {
 			if( thingLoraRepo.findByDeveui(payload.getDeveui()).isPresent() ) {
 				thing = thingLoraRepo.findByDeveui(payload.getDeveui()).get();
+			}
+		}
+
+		if(thing != null) {
+			var time = LasRosasHeaders.timeReceived(imessage);	
+			if( ctxStateService.alive(time, thing) ) {
+				result.add(MessageUtils.buildMessage(imessage, thing, ConnectionState.connected()).build());
 			}
 		}
 

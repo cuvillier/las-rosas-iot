@@ -11,11 +11,11 @@ import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.gson.Gson;
-import com.lasrosas.iot.core.ingestor.connectionState.api.ConnectionStateService;
+import com.lasrosas.iot.alarm.service.api.AlarmService;
+import com.lasrosas.iot.alarm.service.impl.AlarmServiceImpl;
 import com.lasrosas.iot.core.ingestor.gateway.api.GatewayService;
 import com.lasrosas.iot.core.ingestor.gateway.impl.GatewayServiceImpl;
 import com.lasrosas.iot.core.ingestor.gateway.impl.rak7249.api.Rak7249Driver;
@@ -51,6 +51,7 @@ public class LasRosasIotBaseConfig {
 	public static final String twinOutputChannelName = "twinOutputChannel";
 	public static final String orderChannelName = "orderChannel";
 	public static final String downlinkChannelName = "downlinkChannel";
+	public static final String notifyChannelName = "notifyChannel";
 
 	@Autowired
 	private Gson gson;
@@ -114,6 +115,11 @@ public class LasRosasIotBaseConfig {
 	}
 
 	@Bean
+	public MessageChannel notifyChannel() {
+		return MessageChannels.publishSubscribe().get();
+	}
+
+	@Bean
 	public MessageChannel gatewayTechoFincaChannel() {
 		return MessageChannels.direct().get();
 	}
@@ -166,6 +172,11 @@ public class LasRosasIotBaseConfig {
 	@Bean
 	public LoraService loraService() {
 		return new LoraServiceImpl();
+	}
+
+	@Bean
+	public AlarmService alarmService() {
+		return new AlarmServiceImpl();
 	}
 
 	@Bean

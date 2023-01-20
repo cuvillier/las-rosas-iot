@@ -24,8 +24,8 @@ public class AlarmThing extends Alarm {
 	public AlarmThing() {
 	}
 
-	public AlarmThing(Thing thing, LocalDateTime time, AlarmType type) {
-		super(time, type);
+	public AlarmThing(Thing thing, LocalDateTime time, AlarmType type, AlarmGravity gravity) {
+		super(time, type, gravity);
 		this.thing = thing;
 	}
 
@@ -35,5 +35,10 @@ public class AlarmThing extends Alarm {
 
 	public void setThing(Thing thing) {
 		this.thing = thing;
+	}
+
+	@Override
+	public String getSourceNaturalId() {
+		return thing.getNaturalId();
 	}
 }

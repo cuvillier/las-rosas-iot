@@ -132,7 +132,7 @@ public class WriteSQLImpl implements WriteSQL {
 		} else {
 			var sensor = LasRosasHeaders.sensor(imessage);
 
-			var thingId = LasRosasHeaders.thingid(imessage).get();
+			var thingId = LasRosasHeaders.thingId(imessage).get();
 			var thing = thgRepo.findById(thingId).get();
 
 			tsr = tsrRepo.findByThingAndTypeAndSensor(thing, tst, sensor);
