@@ -24,8 +24,8 @@ public class AlarmTwin extends Alarm {
 	public AlarmTwin() {
 	}
 
-	public AlarmTwin(DigitalTwin twin, LocalDateTime time, AlarmType type, AlarmGravity gravity) {
-		super(time, type, gravity);
+	public AlarmTwin(DigitalTwin twin, LocalDateTime time, String type, String message, AlarmGravity gravity) {
+		super(time, type, message, gravity);
 		this.twin = twin;
 	}
 

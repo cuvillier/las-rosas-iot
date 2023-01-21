@@ -38,7 +38,7 @@ public class MultiSwitch extends DigitalTwin {
 	private int expectedState = OFF;
 
 	@Column(name=COL_CONNECTED)
-	private int connected = 0;
+	private boolean connected = false;
 
 	@Column(name=COL_STATE_WHEN_CONNECT)
 	private Integer stateWhenConnect = OFF;
@@ -60,14 +60,14 @@ public class MultiSwitch extends DigitalTwin {
 	}
 
 	public boolean isConnected() {
-		return connected == 1;
-	}
-
-	public int getConnected() {
 		return connected;
 	}
 
-	public void setConnected(int connected) {
+	public boolean getConnected() {
+		return connected;
+	}
+
+	public void setConnected(boolean connected) {
 		this.connected = connected;
 	}
 

@@ -39,19 +39,22 @@ public abstract class Alarm extends BaseEntity {
 	public static final String COL_OPENED_TIME = PREFIX + "opened_time";
 	public static final String COL_ACK_TIME = PREFIX + "ack_time";
 	public static final String COL_CLOSED_TIME = PREFIX + "closed_time";
-	public static final String COL_TYPE_FK = PREFIX_FK + AlarmType.PREFIX + "type";
+	public static final String COL_TYPE = PREFIX + "type";
+	public static final String COL_MESSAGE = PREFIX + "message";
 
 	public static final String PROP_TYPE = "type";
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = COL_TYPE_FK)
-	private AlarmType type;
 
 	@Column(name = COL_OPENED_TIME)
 	private LocalDateTime openedTime;
 
 	@Column(name = COL_ACK_TIME)
 	private LocalDateTime ackTime;
+
+	@Column(name = COL_TYPE)
+	private String type;
+
+	@Column(name = COL_MESSAGE)
+	private String message;
 
 	@Column(name = COL_CLOSED_TIME)
 	private LocalDateTime closedTime;
@@ -69,23 +72,15 @@ public abstract class Alarm extends BaseEntity {
 		this.gravity = AlarmGravity.HIGH;
 	}
 
-	public Alarm(LocalDateTime time, AlarmType type, AlarmGravity gravity) {
+	public Alarm(LocalDateTime time, String type, String message, AlarmGravity gravity) {
 		this();
 
 		if(gravity == null) gravity = AlarmGravity.HIGH;
 
-		this.type = type;
-
 		if(time == null) time = LocalDateTime.now();
 		this.openedTime = time;
-	}
-
-	public AlarmType getType() {
-		return type;
-	}
-
-	public void setType(AlarmType type) {
 		this.type = type;
+		this.message = message;
 	}
 
 	public AlarmState getState() {
@@ -94,6 +89,22 @@ public abstract class Alarm extends BaseEntity {
 
 	public AlarmGravity getGravity() {
 		return gravity;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public void setGravity(AlarmGravity gravity) {

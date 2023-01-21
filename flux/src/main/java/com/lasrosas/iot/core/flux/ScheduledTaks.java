@@ -32,7 +32,7 @@ public class ScheduledTaks {
 
 		// Notify the connection state change
 		for(var thing: disconnectedThings) {
-			var message = new ConnectionState(ConnectionState.DISCONNECTED);
+			var message = ConnectionState.disconnected();
 			var imessage = MessageBuilder.withPayload(message)
 					.setHeader(LasRosasHeaders.TIME_RECEIVED, LocalDateTime.now())
 					.setHeader(LasRosasHeaders.THING_ID, thing.getTechid())

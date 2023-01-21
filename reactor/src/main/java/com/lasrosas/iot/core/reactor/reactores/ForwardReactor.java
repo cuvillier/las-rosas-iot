@@ -10,7 +10,7 @@ import com.lasrosas.iot.core.reactor.base.TwinReactor;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class ForwardReactor implements TwinReactor {
-	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
+	public static final Logger log = LoggerFactory.getLogger(ForwardReactor.class);
 
 	@Override
 	public void react(TwinReactorReceiver receiver, Message<?> message) {

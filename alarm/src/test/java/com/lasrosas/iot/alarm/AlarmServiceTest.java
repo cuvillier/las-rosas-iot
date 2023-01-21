@@ -15,7 +15,6 @@ import com.lasrosas.iot.alarm.service.api.AlarmService;
 import com.lasrosas.iot.alarm.service.api.AlarmServiceConfig;
 import com.lasrosas.iot.core.database.entities.SampleData;
 import com.lasrosas.iot.core.database.entities.dtw.BaseDatabaseTest;
-import com.lasrosas.iot.core.database.entities.thg.Thing;
 import com.lasrosas.iot.core.database.repo.ThingLoraRepo;
 
 @ContextConfiguration(classes = { AlarmServiceConfig.class})
@@ -30,29 +29,30 @@ public class AlarmServiceTest extends BaseDatabaseTest {
 
 	@Test
 	void testAlarmThing(){
-		var CAUSE = "Test Alarm";
+		var type = "Test Alarm";
+		var message = "temperature > 20";
 		var deveui = SampleData.THING_ELSYS_ERS_DEVEUI;
 
 		var thing = thingLoraRepo.findByDeveui(deveui).get();
 
-		alarmService.clearAlarm(thing, Thing.class, CAUSE);
+		alarmService.clearAlarm(thing, type);
 
 		Alarm alarm;
 
-		alarm = alarmService.openAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE, AlarmGravity.HIGH);
+		alarm = alarmService.openAlarm(LocalDateTime.now(), thing, type, message, AlarmGravity.HIGH);
 		Assertions.assertNotNull(alarm);
 
-		alarm = alarmService.openAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE, AlarmGravity.HIGH);
+		alarm = alarmService.openAlarm(LocalDateTime.now(), thing, type, message, AlarmGravity.HIGH);
 		Assertions.assertNull(alarm);
 
-		alarm = alarmService.ackAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE, AlarmGravity.HIGH);
+		alarm = alarmService.ackAlarm(LocalDateTime.now(), thing, type);
 		Assertions.assertNotNull(alarm);
-		alarm = alarmService.ackAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE, AlarmGravity.HIGH);
+		alarm = alarmService.ackAlarm(LocalDateTime.now(), thing, type);
 		Assertions.assertNull(alarm);
 
-		alarm = alarmService.closeAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE);
+		alarm = alarmService.closeAlarm(LocalDateTime.now(), thing, type);
 		Assertions.assertNotNull(alarm);
-		alarm = alarmService.closeAlarm(LocalDateTime.now(), thing, Thing.class, CAUSE);
+		alarm = alarmService.closeAlarm(LocalDateTime.now(), thing, type);
 		Assertions.assertNull(alarm);
 	}
 }

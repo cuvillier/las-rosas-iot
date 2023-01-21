@@ -29,6 +29,8 @@ import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteInfluxDBImpl;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.impl.WriteSQLImpl;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
 import com.lasrosas.iot.core.reactor.base.ReactorServiceImpl;
+import com.lasrosas.iot.notification.service.api.NotificationService;
+import com.lasrosas.iot.notification.service.impl.NotificationServiceImpl;
 
 @ConfigurationProperties
 @Validated
@@ -177,6 +179,11 @@ public class LasRosasIotBaseConfig {
 	@Bean
 	public AlarmService alarmService() {
 		return new AlarmServiceImpl();
+	}
+
+	@Bean
+	public NotificationService notificationService() {
+		return new NotificationServiceImpl();
 	}
 
 	@Bean

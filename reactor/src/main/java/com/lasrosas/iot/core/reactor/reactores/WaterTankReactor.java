@@ -98,37 +98,46 @@ public class WaterTankReactor implements TwinReactor {
 		}
 
 		WaterTankStatus status;
-		if(percentageFill > LEVEL_NORMAL_MAX)
+		String alarmMessage;
+
+		if(percentageFill > LEVEL_NORMAL_MAX) {
 			status = WaterTankStatus.FULL;
-		else if(percentageFill > LEVEL_WARNING_MAX)
+			alarmMessage = null;
+		} else if(percentageFill > LEVEL_WARNING_MAX) {
 			status =   WaterTankStatus.NORMAL;
-		else if(percentageFill > LEVEL_ALARM_MAX)
+			alarmMessage = null;
+		} else if(percentageFill > LEVEL_ALARM_MAX) {
 			status =  WaterTankStatus.WARNING;
-		else if(percentageFill > LEVEL_EMPTY_MAX)
+			alarmMessage = String.format("Volume %f in [%f,%f]", percentageFill, LEVEL_ALARM_MAX, LEVEL_WARNING_MAX);
+		} else if(percentageFill > LEVEL_EMPTY_MAX) {
 			status =  WaterTankStatus.ALARM;
-		else
+			alarmMessage = String.format("Volume %f in [%f,%f]", percentageFill, LEVEL_EMPTY_MAX, LEVEL_ALARM_MAX);
+		} else {
 			status =  WaterTankStatus.EMPTY;
+			alarmMessage = String.format("Volume %f < %f", percentageFill, LEVEL_EMPTY_MAX);
+		}
 
 		if(status != waterTank.getStatus()) {
+			var alarmType = "WaterTank.level";
+
 			switch(status) {
 				case FULL:
 				case NORMAL:
 				case UNKNOWN:
-					alarmService.clearAlarm(waterTank, WaterTank.class, ALR_WATER_LEVEL);
+					alarmService.clearAlarm(waterTank, alarmType);
 					break;
 
 				case WARNING:
-					alarmService.openAlarm(null, waterTank, getClass(), ALR_WATER_LEVEL, AlarmGravity.LOW);
+					alarmService.openAlarm(null, waterTank, alarmType, alarmMessage, AlarmGravity.LOW);
 					break;
 
 				case ALARM:
-					alarmService.openAlarm(null, waterTank, getClass(), ALR_WATER_LEVEL, AlarmGravity.MEDIUM);
+					alarmService.openAlarm(null, waterTank, alarmType, alarmMessage, AlarmGravity.LOW);
 					break;
 
 				case EMPTY:
-					alarmService.openAlarm(null, waterTank, getClass(), ALR_WATER_LEVEL, AlarmGravity.HIGH);
+					alarmService.openAlarm(null, waterTank, alarmType, alarmMessage, AlarmGravity.LOW);
 					break;
-
 			}
 		}
 

@@ -17,6 +17,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.lasrosas.iot.core</groupId>
+			<artifactId>notification</artifactId>			
+		</dependency>
+		<dependency>
+			<groupId>com.lasrosas.iot.core</groupId>
 			<artifactId>ingestor</artifactId>			
 		</dependency>
 		<dependency>

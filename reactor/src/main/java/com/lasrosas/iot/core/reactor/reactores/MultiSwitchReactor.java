@@ -17,7 +17,7 @@ import com.lasrosas.iot.core.shared.telemetry.Switched;
 public class MultiSwitchReactor implements TwinReactor {
 	public static final String RECEIVER_SWITCH_STATE = "state";
 
-	public static final Logger log = LoggerFactory.getLogger(WaterTankReactor.class);
+	public static final Logger log = LoggerFactory.getLogger(MultiSwitchReactor.class);
 
 	/**
 	 * Sensor:
@@ -42,7 +42,7 @@ public class MultiSwitchReactor implements TwinReactor {
 			// weired, but force the sensor to be connected
 			if( !switchTwin.isConnected() ) {
 				log.warn("Multiswitch state change, but is not connected. Force connected to true");
-				switchTwin.setConnected(1);
+				switchTwin.setConnected(true);
 			}
 
 			var switched = (Switched)payload;
@@ -101,7 +101,7 @@ public class MultiSwitchReactor implements TwinReactor {
 				}
 
 				if(switchTwin.isConnected()) {
-					switchTwin.setConnected(0);
+					switchTwin.setConnected(false);
 					ReactContext.addTelemetry(ConnectionState.disconnected());
 				}
 				break;
@@ -119,7 +119,7 @@ public class MultiSwitchReactor implements TwinReactor {
 				}
 
 				if( ! switchTwin.isConnected()) {
-					switchTwin.setConnected(1);
+					switchTwin.setConnected(true);
 					ReactContext.addTelemetry(ConnectionState.connected());
 				}
 

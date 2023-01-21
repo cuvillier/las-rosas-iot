@@ -3,24 +3,26 @@ package com.lasrosas.iot.core.shared.telemetry;
 import java.util.Optional;
 
 public class ConnectionState extends Telemetry {
-	public static final int CONNECTED = 1;
-	public static final int DISCONNECTED = 0;
 
-	private final Integer connected;
+	private final Optional<Boolean> connected;
 
 	public static ConnectionState connected() {
-		return new ConnectionState(CONNECTED);
+		return new ConnectionState(true);
 	}
 
 	public static ConnectionState disconnected() {
-		return new ConnectionState(DISCONNECTED);
+		return new ConnectionState(false);
 	}
 
-	public ConnectionState(int connected) {
+	public ConnectionState(boolean connected) {
+		this(Optional.of(connected));
+	}
+
+	public ConnectionState(Optional<Boolean> connected) {
 		this.connected = connected;
 	}
 
-	public Optional<Integer> getConnected() {
-		return connected == null? Optional.empty(): Optional.of(connected);
+	public Optional<Boolean> getConnected() {
+		return connected;
 	}
 }

@@ -45,7 +45,6 @@ public class FridgeReactor implements TwinReactor {
 		var temp = airEnvironment.getTemperature();
 		var humidity = airEnvironment.getHumidity();
 
-		var sensor = LasRosasHeaders.sensor(imessage);
 		if( channel == ReactChannel.inside_temp) {
 
 			if( temp != null) fridge.setInsideTemp(temp);
@@ -56,15 +55,17 @@ public class FridgeReactor implements TwinReactor {
 			if(temp != null) fridge.setOutsideTemp(temp);
 
 		} else {
-			log.error("Fridge " + fridge.getTechid() + " Receive data with unknown sensor " + sensor);
+			log.error("Fridge " + fridge.getTechid() + " Receive data with unknown channel " + channel);
 			return;
 		}
 
 		if(status != fridge.getStatus()) {
 			if(fridge.getStatus() == FridgeStatus.NORMAL )
-				alarmService.closeAlarm(null, fridge, getClass(), FridgeStatus.NORMAL.toString());
-			else
-				alarmService.openAlarm(null, fridge, getClass(), fridge.getStatus().toString(), AlarmGravity.HIGH);
+				alarmService.closeAlarm(null, fridge, getAlarmType());
+			else {
+				var message = "Fridge state switch to " + fridge.getStatus().toString();
+				alarmService.openAlarm(null, fridge, getAlarmType(), message, AlarmGravity.HIGH);
+			}
 		}
 
 		var telemetry = new FridgeTemperature(fridge.getStatus(), fridge.getInsideTemp(), fridge.getInsideHumidity(), fridge.getOutsideTemp());

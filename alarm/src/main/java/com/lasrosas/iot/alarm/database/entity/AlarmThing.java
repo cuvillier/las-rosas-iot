@@ -24,8 +24,8 @@ public class AlarmThing extends Alarm {
 	public AlarmThing() {
 	}
 
-	public AlarmThing(Thing thing, LocalDateTime time, AlarmType type, AlarmGravity gravity) {
-		super(time, type, gravity);
+	public AlarmThing(Thing thing, LocalDateTime time, String type, String message, AlarmGravity gravity) {
+		super(time, type, message, gravity);
 		this.thing = thing;
 	}
 

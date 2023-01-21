@@ -1,9 +1,10 @@
 package com.lasrosas.iot.core.reactor.reactores;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,11 @@ import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiverFromThing;
 import com.lasrosas.iot.core.database.twins.MultiSwitch;
 import com.lasrosas.iot.core.reactor.base.ReactContext;
+import com.lasrosas.iot.core.shared.telemetry.ConnectionState;
+import com.lasrosas.iot.core.shared.telemetry.MultiSwitchOrder;
+import com.lasrosas.iot.core.shared.telemetry.MultiSwitchValue;
 import com.lasrosas.iot.core.shared.telemetry.Order;
+import com.lasrosas.iot.core.shared.telemetry.Switched;
 import com.lasrosas.iot.core.shared.telemetry.Telemetry;
 
 public class MultiSwitchReactorTest {
@@ -40,32 +45,32 @@ public class MultiSwitchReactorTest {
 		multiSwitch.getReceivers().add(receiver);
 
 
-/*		// Set the initial state: not connected, expected ON
-		var payloadNotConnected = new ConnectionState(0, ConnectionState.CAUSE_NTW_TIMEOUT);
+		// Set the initial state: not connected, expected ON
+		var payloadNotConnected = ConnectionState.disconnected();
 
 		testReact(receiver, payloadNotConnected);
 
-		assertReactContextTelemetries(new MultiSwitchValue(0, 1, false, false));
+		assertReactContextTelemetries(new MultiSwitchValue(0, 1, false));
 		assertReactContextOrders();
 
 		assertFalse(multiSwitch.isConnected());
 		assertEquals(MultiSwitch.OFF, multiSwitch.getState());
 
 		// Do connect
-		var payloadConnected = new ConnectionState(1, ConnectionState.CAUSE_NTW_JOIN);
+		var payloadConnected = new ConnectionState(true);
 		testReact(receiver, payloadConnected);
 
-		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, true));
+		assertReactContextTelemetries( new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true));
 		assertReactContextOrders( new MultiSwitchOrder(1));
 
-		assertTrue(multiSwitch.isConnected());
+		Assertions.assertTrue(multiSwitch.isConnected());
 		assertEquals(MultiSwitch.ON, multiSwitch.getState());
 
 		// Do switch off
 		var payloadSwitchOff = new Switched(Switched.State.OFF);
 		testReact(receiver, payloadSwitchOff);
 
-		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true, false));
+		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.OFF, MultiSwitch.OFF, true));
 		assertReactContextOrders();
 
 		assertTrue(multiSwitch.isConnected());
@@ -75,12 +80,12 @@ public class MultiSwitchReactorTest {
 		var payloadSwitchOn = new Switched(Switched.State.ON);
 		testReact(receiver, payloadSwitchOn);
 
-		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true, false));
+		assertReactContextTelemetries(new MultiSwitchValue(MultiSwitch.ON, MultiSwitch.ON, true));
 		assertReactContextOrders();
 
 		assertTrue(multiSwitch.isConnected());
 		assertEquals(MultiSwitch.ON, multiSwitch.getState());
-		*/
+		
 		throw new RuntimeException("Must be fixed");
 	}
 

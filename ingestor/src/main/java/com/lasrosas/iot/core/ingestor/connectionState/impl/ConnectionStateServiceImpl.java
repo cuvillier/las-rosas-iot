@@ -30,7 +30,7 @@ public class ConnectionStateServiceImpl implements ConnectionStateService {
 	@Autowired
 	private AlarmService alarmService;
 
-	private static String ALARM_IS_DISCONECTED = "Thing is disconnected";
+	private static String ALARM_TYPE = "Connection state";
 
 	@Transactional
 	public List<Thing> timeoutThing() {
@@ -46,7 +46,7 @@ public class ConnectionStateServiceImpl implements ConnectionStateService {
 				em.persist(thing);
 				result.add(thing);
 
-				alarmService.openAlarm(null, thing, thing.getClass(), ALARM_IS_DISCONECTED, AlarmGravity.MEDIUM);
+				alarmService.openAlarm(null, thing, ALARM_TYPE, "Thing is disconnected", AlarmGravity.MEDIUM);
 				log.info("Thing " + thing.getNaturalId() + " is marked as disconneted");
 
 			} else {
@@ -66,7 +66,7 @@ public class ConnectionStateServiceImpl implements ConnectionStateService {
 
 		if(proxy.getConnected() == 0) {
 			proxy.setConnected(1);
-			alarmService.closeAlarm(null, thing, thing.getClass(), ALARM_IS_DISCONECTED);
+			alarmService.closeAlarm(null, thing, ALARM_TYPE);
 			return true;
 		}
 		

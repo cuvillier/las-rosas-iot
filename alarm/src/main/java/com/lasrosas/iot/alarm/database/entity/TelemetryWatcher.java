@@ -108,7 +108,11 @@ public class TelemetryWatcher extends BaseEntity {
 	public void setGravity(AlarmGravity gravity) {
 		this.gravity = gravity;
 	}
-	public String getCause() {
+	public String getMessage() {
 		return schema + "." + triggerField + " should be " + triggerOperator + " " + triggerValue;
+	}
+
+	public String getType() {
+		return "Watcher " + getTechid();
 	}
 }

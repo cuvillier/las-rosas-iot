@@ -3,14 +3,14 @@ package com.lasrosas.iot.core.shared.telemetry;
 public class MultiSwitchValue extends Telemetry {
 	private int connected = 0;
 	private int state = 0;
-	private int excpectedState = 0;
+	private int expectedState = 0;
 
 	public MultiSwitchValue() {
 	}
 
-	public MultiSwitchValue(int state, int excpectedState, boolean connected) {
+	public MultiSwitchValue(int state, int expectedState, boolean connected) {
 		this.state = state;
-		this.excpectedState = excpectedState;
+		this.expectedState = expectedState;
 		this.connected = connected?1:0;
 	}
 
@@ -28,10 +28,10 @@ public class MultiSwitchValue extends Telemetry {
 	public void setState(int state) {
 		this.state = state;
 	}
-	public int getExcpectedState() {
-		return excpectedState;
+	public int getExpectedState() {
+		return expectedState;
 	}
-	public void setExcpectedState(int excpectedState) {
-		this.excpectedState = excpectedState;
+	public void setExpectedState(int expectedState) {
+		this.expectedState = expectedState;
 	}
 }

@@ -42,7 +42,8 @@ import com.lasrosas.iot.core.ingestor.parsers.api.SensorService;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteInfluxDB;
 import com.lasrosas.iot.core.ingestor.timeSerieWriter.api.WriteSQL;
 import com.lasrosas.iot.core.reactor.api.ReactorService;
-import com.lasrosas.iot.core.shared.telemetry.Telemetry;
+import com.lasrosas.iot.notification.service.api.Notification;
+import com.lasrosas.iot.notification.service.api.NotificationService;
 
 @ConfigurationProperties
 @Validated
@@ -175,15 +176,14 @@ public class LasRosasIotConfig {
 
 	@Bean
 	@ServiceActivator(inputChannel = LasRosasIotBaseConfig.notifyChannelName)
-	public MessageHandler sendNotification() {
+	public MessageHandler sendNotification(NotificationService notificationService) {
 		return new MessageHandler() {
 
 			@Override
 			public void handleMessage(Message<?> message) throws MessagingException {
-				log.info("NOTIFY !!!!!!!!!!!");
-				log.info(gson.toJson(message));
+				var payload = message.getPayload();
+				notificationService.send((Notification)payload);
 			}
-			
 		};
 	}
 

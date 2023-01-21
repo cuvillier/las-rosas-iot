@@ -6,4 +6,7 @@ import com.lasrosas.iot.core.database.entities.dtw.TwinReactorReceiver;
 
 public interface TwinReactor {
 	void react(TwinReactorReceiver receiver, Message<?> message);
+	default String getAlarmType() {
+		return getClass().getSimpleName();
+	}
 }

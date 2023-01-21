@@ -262,29 +262,20 @@ CREATE TABLE t_alr_watcher
 	PRIMARY KEY (wat_techid)
 );
 
-CREATE TABLE t_alr_alarm_type
-(
-	alt_techid SERIAL,
-	alt_cause VARCHAR(50) NOT NULL,
-	alt_data_type VARCHAR(50) NOT NULL,
-
-	PRIMARY KEY (alt_techid)
-);
-
 CREATE TABLE t_alr_alarm
 (
 	alr_techid SERIAL,
 	alr_discriminator VARCHAR(3) NOT NULL,
 	alr_state VARCHAR(32),
+	alr_type VARCHAR(32) NOT NULL,
+	alr_message VARCHAR(64) NOT NULL,
 	alr_gravity VARCHAR(32),
 	alr_opened_time timestamp DEFAULT NULL,
 	alr_closed_time timestamp DEFAULT NULL,
 	alr_ack_time timestamp DEFAULT NULL,
-	alr_fk_alt_type INTEGER NOT NULL,
 	ath_fk_thg_thing INTEGER DEFAULT NULL,
 	atw_fk_twi_twin INTEGER DEFAULT NULL,
 	PRIMARY KEY (alr_techid),
-	CONSTRAINT fk_alr_fk_alt_type FOREIGN KEY (alr_fk_alt_type) REFERENCES t_alr_alarm_type(alt_techid),
 	CONSTRAINT fk_ath_fk_thg_thing FOREIGN KEY (ath_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
-	CONSTRAINT fk_tth_fk_twi_twin FOREIGN KEY (tth_fk_twi_twin) REFERENCES t_dtw_digital_twin(twi_techid)
+	CONSTRAINT fk_atw_fk_twi_twin FOREIGN KEY (atw_fk_twi_twin) REFERENCES t_dtw_digital_twin(twi_techid)
 );

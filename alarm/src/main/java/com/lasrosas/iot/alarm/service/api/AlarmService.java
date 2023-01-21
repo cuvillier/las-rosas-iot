@@ -9,17 +9,18 @@ import com.lasrosas.iot.alarm.database.entity.Alarm;
 import com.lasrosas.iot.alarm.database.entity.AlarmGravity;
 import com.lasrosas.iot.core.database.entities.dtw.DigitalTwin;
 import com.lasrosas.iot.core.database.entities.thg.Thing;
+import com.lasrosas.iot.notification.service.api.Notification;
 
 public interface AlarmService {
-	boolean clearAlarm(Thing thing, Class<?> dataType, String cause);
-	Alarm openAlarm(LocalDateTime time, Thing thing, Class<?> dataType, String cause, AlarmGravity gravity);
-	Alarm ackAlarm(LocalDateTime time, Thing thing, Class<?> dataType, String cause, AlarmGravity gravity);
-	Alarm closeAlarm(LocalDateTime time, Thing thing, Class<?> dataType, String cause);
+	boolean clearAlarm(Thing thing, String type);
+	Alarm openAlarm(LocalDateTime time, Thing thing, String type, String message, AlarmGravity gravity);
+	Alarm ackAlarm(LocalDateTime time, Thing thing, String type);
+	Alarm closeAlarm(LocalDateTime time, Thing thing, String type);
 
-	boolean clearAlarm(DigitalTwin twin, Class<?> dataType, String cause);
-	Alarm openAlarm(LocalDateTime time, DigitalTwin twin, Class<?> dataType, String cause, AlarmGravity gravity);
-	Alarm ackAlarm(LocalDateTime time, DigitalTwin twin, Class<?> dataType, String cause, AlarmGravity gravity);
-	Alarm closeAlarm(LocalDateTime time, DigitalTwin twin, Class<?> dataType, String cause);
+	boolean clearAlarm(DigitalTwin twin, String type);
+	Alarm openAlarm(LocalDateTime time, DigitalTwin twin, String type, String message, AlarmGravity gravity);
+	Alarm ackAlarm(LocalDateTime time, DigitalTwin twin, String type);
+	Alarm closeAlarm(LocalDateTime time, DigitalTwin twin, String type);
 
-	public List<AlarmChange>  checkTelemetry(Message<Object> telemetry);
+	public List<Notification>  checkTelemetry(Message<Object> telemetry);
 }
