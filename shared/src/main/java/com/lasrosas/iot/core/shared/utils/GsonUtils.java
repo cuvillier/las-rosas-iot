@@ -3,6 +3,7 @@ package com.lasrosas.iot.core.shared.utils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.LongSerializationPolicy;
 
 import io.goodforgod.gson.configuration.GsonConfiguration;
-import io.goodforgod.gson.configuration.GsonFactory;
 import io.goodforgod.gson.configuration.deserializer.LocalDateTimeDeserializer;
 import io.goodforgod.gson.configuration.serializer.LocalDateTimeSerializer;
 
@@ -51,6 +51,7 @@ public class GsonUtils {
 			gsonBuilder = configuration.builder();
 			gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
 			gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+			gsonBuilder.registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY);
 		}
 
 		return gsonBuilder;

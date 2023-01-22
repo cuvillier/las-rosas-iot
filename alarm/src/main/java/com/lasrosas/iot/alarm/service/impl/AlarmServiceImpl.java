@@ -53,12 +53,9 @@ public class AlarmServiceImpl implements AlarmService {
 
 	@Autowired
 	private TelemetryWatcherRepo watcherRepo;
-	
+
 	@PersistenceContext
 	private EntityManager em;
-
-	@Autowired
-	private Gson gson;
 
 	@Override
 	public Alarm openAlarm(LocalDateTime time, Thing thing, String type, String message, AlarmGravity gravity) {
@@ -182,22 +179,20 @@ public class AlarmServiceImpl implements AlarmService {
 
 		if(mayBeTwinId.isPresent() ) {
 			var twinId = mayBeTwinId.get();
-			var twin = thingRepo.getReferenceById(twinId);
+			var twin = twinRepo.getReferenceById(twinId);
 			watchers = watcherRepo.findMatchingWatchers(twin, payload);
 
 			for(var watcher: watchers) {
-				Alarm alarm;
-				var type = watcher.getType();
-				var evaluation = evaluate(watcher, payload);
-
+				var value = getFieldValue(watcher, payload);
+				var evaluation = evaluate(watcher, value);
 				if(evaluation == null) continue;
 
+				Alarm alarm;
 				if(evaluation ) {
-					var message = watcher.getMessage();
-					alarm = this.openAlarm(null, twin, type, message, watcher.getGravity());
-					result.add(notifyAlarm(imessage, twin, alarm));
+					alarm = this.openAlarm(null, twin, watcher.getType(), watcher.getAlarmMessage(), watcher.getGravity());
+					result.add(notifyAlarm(imessage, watcher, twin, alarm));
 				} else
-					alarm = this.closeAlarm(null, twin, type);
+					alarm = this.closeAlarm(null, twin, watcher.getType());
 			}
 		} else {
 			var mayBeThingId = LasRosasHeaders.thingId(imessage);
@@ -212,53 +207,66 @@ public class AlarmServiceImpl implements AlarmService {
 			watchers = watcherRepo.findMatchingWatchers(thing, payload);
 
 			for(var watcher: watchers) {
-				Alarm alarm;
-				var type = watcher.getMessage();
-				var evaluation = evaluate(watcher, payload);
+				var value = getFieldValue(watcher, payload);
+				var evaluation = evaluate(watcher, value);
 				if(evaluation == null) continue;
 
+				Alarm alarm;
+
 				if(evaluation ) {
-					var message = watcher.getMessage();
-					alarm = this.openAlarm(null, thing, type, message, watcher.getGravity());
-					result.add(notifyAlarm(imessage, thing, alarm));
+					alarm = this.openAlarm(null, thing, watcher.getType(), watcher.getAlarmMessage(), watcher.getGravity());
+					result.add(notifyAlarm(imessage, watcher, thing, alarm));
 				} else
-					alarm = this.closeAlarm(null, thing, type);
+					alarm = this.closeAlarm(null, thing, watcher.getType());
 			}
 		}
 
 		return result;
 	}
 
-	private Notification notifyAlarm(Message<?> imessage, Thing thing, Alarm alarm) {
-		var title = String.format(
-				"Thing %s of type %s/%s",
-				thing.getNaturalId(),
-				thing.getType().getManufacturer(),
-				thing.getType().getModel());
-		return notifyAlarm(imessage, title, alarm);
-	}
-
-	private Notification notifyAlarm(Message<?> imessage, DigitalTwin twin, Alarm alarm) {
-		var title = String.format(
-					"Twin %s of type %s",
-					twin.getName(),
-					twin.getType().getName());
-		return notifyAlarm(imessage, title, alarm);
-	}
-
-	private Notification notifyAlarm(Message<?> imessage, String title, Alarm alarm) {
+	private Notification notifyAlarm(Message<?> imessage, TelemetryWatcher watcher, DigitalTwin twin, Alarm alarm) {
+		var title = String.format("Twin [%s] %s ", twin.getClass().getSimpleName(), twin.getName(), watcher.getType());
 
 		var time = LasRosasHeaders.timeReceived(imessage);
-	        var formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss");
-			var content = String.format("%s: %s",
-					formatter.format(time),
-					alarm.getMessage()
-				);
+        var formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss");
+        var content = String.format("""
+				Time: %s\n
+				Twin: [%s] %s techid=%d\n
+				AlarmType: %s\n
+				AlarmMessage: %s\n
+				""",
+				formatter.format(time),
+				twin.getClass().getSimpleName(), 
+				twin.getName(),
+				twin.getTechid(),
+				watcher.getAlarmType(),
+				watcher.getAlarmMessage());
 
-		return Notification.create(NotificationPriority.DEFAULT, title, content);
+		return Notification.create(NotificationPriority.DEFAULT, content, title);
 	}
 
-	private Boolean evaluate(TelemetryWatcher watcher, Object payload) {
+	private Notification notifyAlarm(Message<?> imessage, TelemetryWatcher watcher, Thing thing, Alarm alarm) {
+		var title = String.format("Thing [%s] %s ", thing.getClass().getSimpleName(), thing.getReadable(), watcher.getType());
+
+		var time = LasRosasHeaders.timeReceived(imessage);
+        var formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss");
+        var content = String.format("""
+				Time: %s\n
+				Thing: [%s] %s techid=%d\n
+				AlarmType: %s\n
+				AlarmMessage: %s\n
+				""",
+				formatter.format(time),
+				thing.getClass().getSimpleName(), 
+				thing.getReadable(),
+				thing.getTechid(),
+				watcher.getAlarmType(),
+				watcher.getAlarmMessage());
+
+		return Notification.create(NotificationPriority.DEFAULT, content, title);
+	}
+
+	private Double getFieldValue(TelemetryWatcher watcher, Object payload) {
 		var fieldName = watcher.getTriggerField();
 		Field field;
 		try {
@@ -275,23 +283,22 @@ public class AlarmServiceImpl implements AlarmService {
 			if( value == null ) return null;
 			if( !(value instanceof Number)) return null;	// Cannot be evaluated
 
-			var dvalue = ((Number)value).doubleValue();
-
-			switch(watcher.getTriggerOperator()) {
-			case SUPERIOR:
-				return dvalue > watcher.getTriggerValue();
-			case INFERIOR:
-				return dvalue > watcher.getTriggerValue();
-			case EQUALS:
-				return dvalue > watcher.getTriggerValue();
-			case DIFFERENT:
-				return dvalue > watcher.getTriggerValue();
-			default:
-				throw new RuntimeException("Unknown triggerOperator, fix the code.");
-			}
+			return ((Number)value).doubleValue();
 		} catch(Exception e) {
 			log.warn("Watcher evaluation failed : ", e);
-			return false;
-		}
+			return null;
+		}		
+	}
+
+	private Boolean evaluate(TelemetryWatcher watcher, double value) {
+
+		return switch(watcher.getTriggerOperator()) {
+		case SUPERIOR-> { yield value > watcher.getTriggerValue(); }
+		case INFERIOR-> { yield value > watcher.getTriggerValue(); }
+		case EQUALS-> { yield value > watcher.getTriggerValue(); }
+		case DIFFERENT-> { yield value > watcher.getTriggerValue(); }
+		default -> throw new RuntimeException("Unknown triggerOperator, fix the code.");
+		};
+
 	}
 }
