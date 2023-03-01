@@ -11,3 +11,6 @@ Start rewriting the code using Spring Integration to:
 - Improve testability
 - Have fun with Spring Integration....
 
+2023
+- Make my project public
+- Works fine for my private use
