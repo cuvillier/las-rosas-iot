@@ -1,0 +1,8 @@
+ingestor:
+  adatpers:
+    gateways:
+      mqtt:
+        url: "tcp://localhost:1883"
+        topics: [
+                  "thing", "gateway"
+        ]

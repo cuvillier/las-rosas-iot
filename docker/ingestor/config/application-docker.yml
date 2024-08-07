@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://database:5432/lasrosasiot
+    username: lasrosasiot
+    password: lasrosasiot
+ingestor:
+  adapters:
+    gateways:
+      mqtt:
+        url: "tcp://mosquitto:1883"

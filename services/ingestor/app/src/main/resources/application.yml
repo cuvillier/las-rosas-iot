@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/lasrosasiot
+    username: ${DATABASE_USERNAME:lasrosasiot}
+    password: ${DATABASE_PASSWORD:lasrosasiot}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+ingestor:
+  adapters:
+    gateways:
+      mqtt:
+        url: "tcp://${MOSQUITTO_HOST:localhost}:${MOSQUITTO_PORT:1883}"
+        topics: gateway/#, thing/#, dtwin/#

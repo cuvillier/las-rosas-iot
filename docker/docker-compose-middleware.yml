@@ -1,0 +1,69 @@
+name: lasrosasiot-middleware
+
+services:
+
+  database:
+    image: postgres:16.3
+    container_name: lasrosasiot-database
+    shm_size: 128mb
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
+    environment:
+      - POSTGRES_DB=lasrosasiot
+      - POSTGRES_USER=lasrosasiot
+      - POSTGRES_PASSWORD=lasrosasiot
+#      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+#    volumes:
+#      - lasrosasiot-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U lasrosasiot -d lasrosasiot"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - lasrosasiot-network
+  flyway:
+    image: flyway/flyway
+    container_name: lasrosasiot-flyway
+    command: -url=jdbc:postgresql://lasrosasiot-database:5432/lasrosasiot -schemas=lasrosasiot -user=lasrosasiot -password=lasrosasiot -connectRetries=60 migrate
+    volumes:
+      - ./flyway:/flyway/sql
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - lasrosasiot-network
+  mosquitto:
+    image: eclipse-mosquitto
+    hostname: mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    environment:
+      - MOSQUITTO_USER=lasrosasiot
+      - MOSQUITTO_PASSWORD=lasrosasiot
+    volumes:
+      - ./mosquitto:/etc/mosquitto
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_pub -h localhost -t healthcheck -m docker-healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - lasrosasiot-network
+
+networks:
+  lasrosasiot-network:
+    external: true
+volumes:
+  "lasrosas-flyway":
+#  "lasrosasiot-postgres-data":

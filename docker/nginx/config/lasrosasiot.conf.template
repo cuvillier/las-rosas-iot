@@ -1,0 +1,52 @@
+
+server {
+
+  # Logs
+  access_log /var/log/nginx/lasrosasiot-frontend-access.log;
+  error_log /var/log/nginx/lasrosasiot-frontend-error.log;
+
+  server_name ${PLATFORM_HOST_NAME};
+
+  add_header X-XSS-Protection "1; mode=block";
+
+  location /health {
+    add_header Content-Type text/plain;
+    return 200 'healthy';
+  }
+
+  #=============> jclean Server
+
+  # Browser URL
+  location /server/api/ {
+  	try_files false @server;
+  }
+
+  location @server {
+
+    # Use docker container name
+    proxy_pass http://server:8080;
+
+    proxy_redirect     off;
+    proxy_request_buffering off;
+    proxy_set_header Host $http_host;
+    proxy_headers_hash_max_size 1024;
+    proxy_headers_hash_bucket_size 128;
+  }
+
+  #---------------------------------------------------------
+  # Else, handle the request with the frontend
+  #
+  location / {
+      try_files $uri /index.html;
+      root   /etc/nginx/html;
+      index  index.html index.htm;
+    }
+
+  http2 on;
+
+  ssl_certificate     ${PLATFORM_NAME}.crt;
+  ssl_certificate_key ${PLATFORM_NAME}.key;
+
+  listen 443 ssl default_server;
+  listen [::]:443 ssl default_server;
+}

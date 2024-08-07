@@ -1,0 +1,26 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MESSAGES-MQTT" class="ch.qos.logback.core.FileAppender">
+        <file>services/ingestor/adapters/gateways/target/ingestor-mqtt-messages.log</file>
+
+        <encoder>
+            <pattern>%msg,%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ingestor.adapters.gateways.mqtt.messages" level="INFO">
+        <appender-ref ref="MESSAGES-MQTT" />
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
