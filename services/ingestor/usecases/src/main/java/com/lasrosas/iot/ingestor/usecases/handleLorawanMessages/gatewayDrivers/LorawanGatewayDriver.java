@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.gatewayDrivers;
 
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessage;
 
 public interface LorawanGatewayDriver {

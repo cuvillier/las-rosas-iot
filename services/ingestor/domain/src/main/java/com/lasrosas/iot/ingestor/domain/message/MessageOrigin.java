@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.domain.model.message;
+package com.lasrosas.iot.ingestor.domain.message;
 
 import java.time.LocalDateTime;
 

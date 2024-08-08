@@ -1,9 +1,9 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.elsys;
 
-import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
-import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.DistanceMeasurement;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.AirEnvironment;
+import com.lasrosas.iot.ingestor.domain.message.BatteryLevel;
+import com.lasrosas.iot.ingestor.domain.message.DistanceMeasurement;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 
 import java.util.ArrayList;

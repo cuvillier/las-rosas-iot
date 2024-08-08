@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
-import com.lasrosas.iot.ingestor.domain.model.message.MessageOrigin;
+import com.lasrosas.iot.ingestor.domain.message.MessageOrigin;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

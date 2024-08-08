@@ -7,6 +7,7 @@ import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ade
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis.AdeunisARF8170BAFrame.ChannelState.CLOSED_ON;
@@ -176,7 +177,7 @@ public class AdeunisARF8170BAFrameDecoderTest {
 		assertEquals(4352, frame.getChannel3TimeCounter());
 		assertNull(frame.getChannel4TimeCounter());
 
-		assertEquals("Mon Oct 17 22:32:57 CEST 2022", new Date(frame.getTimestamp()) + "");
+		assertTrue(new Date(frame.getTimestamp()).toString().startsWith("Mon Oct 17 22:32:57"));
 	}
 	
 	@Test

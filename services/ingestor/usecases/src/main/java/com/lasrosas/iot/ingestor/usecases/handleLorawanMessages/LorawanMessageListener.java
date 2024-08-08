@@ -1,10 +1,10 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.LorawanRadioMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessageEvent;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessageEvent;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
+import com.lasrosas.iot.ingestor.domain.message.LorawanRadioMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessageEvent;
+import com.lasrosas.iot.ingestor.domain.message.ThingMessageEvent;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.domain.model.thing.Thing;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingGateway;
 import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStoreQuery;

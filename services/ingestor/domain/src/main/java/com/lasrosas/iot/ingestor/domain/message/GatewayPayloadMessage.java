@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.domain.model.message;
+package com.lasrosas.iot.ingestor.domain.message;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

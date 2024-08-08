@@ -1,7 +1,7 @@
 package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
 
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessageEvent;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessageEvent;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

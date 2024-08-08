@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.dragino;
 
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

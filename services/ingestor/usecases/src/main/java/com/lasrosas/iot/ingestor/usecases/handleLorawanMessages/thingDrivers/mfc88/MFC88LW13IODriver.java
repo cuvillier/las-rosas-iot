@@ -1,16 +1,16 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mfc88;
 
 import com.lasrosas.iot.ingestor.shared.exceptions.ImpossibleException;
-import com.lasrosas.iot.ingestor.domain.model.message.ConnectionStage;
-import com.lasrosas.iot.ingestor.domain.model.message.Switched;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.ConnectionStage;
+import com.lasrosas.iot.ingestor.domain.message.Switched;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.lasrosas.iot.ingestor.domain.model.message.ConnectionStage.JOINED;
+import static com.lasrosas.iot.ingestor.domain.message.ConnectionStage.JOINED;
 
 public class MFC88LW13IODriver implements ThingDriver {
 		public static final String MANUFACTURER = "MFC88";
