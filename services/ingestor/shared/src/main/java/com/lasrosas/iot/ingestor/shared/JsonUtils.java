@@ -76,7 +76,7 @@ public class JsonUtils {
             if( fromValue.isObject() ) {
                 var subjson = JsonUtils.objectNode();
                 changes += mergeJsonObjects((ObjectNode)fromValue, subjson, time);
-                tojson.put(fromKey, subjson);
+                tojson.putIfAbsent(fromKey, subjson);
 
                 if(time != null) {
                     tojson.put(fromKey + "-time", stime);
@@ -87,9 +87,9 @@ public class JsonUtils {
 
                 var toValue = tojson.get(fromKey);
 
-                if( toValue == null || !fromValue.equals(toValue) ) {
+                if( !fromValue.equals(toValue) ) {
                     changes++;
-                    tojson.put(fromKey, fromValue);
+                    tojson.putIfAbsent(fromKey, fromValue);
                 }
 
                 if(stime != null) {

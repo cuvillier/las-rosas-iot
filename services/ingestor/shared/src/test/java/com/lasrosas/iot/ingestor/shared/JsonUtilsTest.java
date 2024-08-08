@@ -61,8 +61,8 @@ public class JsonUtilsTest {
         assertEquals(2, changes);
 
         assertEquals(2, json2.size());
-        assertEquals(1, json2.get("int").asInt());
-        assertEquals("s", json2.get("string").asText());
+        assertEquals(1212, json2.get("int").asInt());
+        assertEquals("sasdsd", json2.get("string").asText());
 
         assertEquals(2, json2.size());
     }
@@ -87,8 +87,8 @@ public class JsonUtilsTest {
         assertEquals(4, changes);
 
         assertEquals(4, json2.size());
-        assertEquals(1, json2.get("int").asInt());
-        assertEquals("s", json2.get("string").asText());
+        assertEquals(1212, json2.get("int").asInt());
+        assertEquals("sasdsd", json2.get("string").asText());
         assertEquals(time.toString(), json2.get("int-time").asText());
         assertEquals(time.toString(), json2.get("string-time").asText());
     }
@@ -114,8 +114,8 @@ public class JsonUtilsTest {
         assertEquals(3, changes);
 
         assertEquals(3, json2.size());
-        assertEquals(1, json2.get("int").asInt());
-        assertEquals("s", json2.get("string").asText());
+        assertEquals(1212, json2.get("int").asInt());
+        assertEquals("sasdsd", json2.get("string").asText());
         assertNotNull(json2.get("sub"));
         assertEquals("sub", json2.get("sub").get("name").asText());
     }

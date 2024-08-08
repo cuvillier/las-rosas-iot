@@ -13,10 +13,6 @@
     <dependencies>
         <dependency>
             <groupId>com.lasrosas.iot.ingestor</groupId>
-            <artifactId>ingestor.adapters.persisters</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lasrosas.iot.ingestor</groupId>
             <artifactId>ingestor.adapters.gateways</artifactId>
         </dependency>
         <dependency>

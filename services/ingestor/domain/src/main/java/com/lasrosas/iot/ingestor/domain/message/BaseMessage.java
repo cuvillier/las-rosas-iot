@@ -31,4 +31,8 @@ public abstract class BaseMessage implements MessageOrigin {
     public String getSchema() {
         return getClass().getName();
     }
+
+    public Class<?> getSchemaClass() {
+        return getClass();
+    }
 }

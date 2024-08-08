@@ -28,7 +28,11 @@
 
         <dependency>
             <groupId>com.lasrosas.iot.ingestor</groupId>
-            <artifactId>ingestor.adapters.persisters</artifactId>
+            <artifactId>ingestor.adapters.persisters.influxdb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lasrosas.iot.ingestor</groupId>
+            <artifactId>ingestor.adapters.persisters.jpa</artifactId>
         </dependency>
 
         <dependency>

@@ -15,6 +15,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
@@ -38,6 +39,7 @@ public class MqttPublisherConfig {
 
     @MessagingGateway(defaultRequestChannel = "outputChannel")
     public interface MqttPublisher {
+        @Transactional
         void send(@Header(MqttHeaders.TOPIC) String topic, String message);
     }
 
