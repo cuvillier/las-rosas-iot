@@ -177,7 +177,7 @@ CREATE TABLE t_tsr_time_serie
 	tsr_fk_thg_thing BIGINT DEFAULT NULL,
 	tsr_fk_tst_type BIGINT DEFAULT NULL,
 	tsr_fk_twi_twin BIGINT DEFAULT NULL,
-	tsr_fk_poi_current_value INTEGER DEFAULT NULL,
+	tsr_fk_poi_current_value BIGINT DEFAULT NULL,
 	PRIMARY KEY (tsr_techid),
 	CONSTRAINT fk_tsr_fk_thg_thing FOREIGN KEY (tsr_fk_thg_thing) REFERENCES t_thg_thing(thg_techid),
 	CONSTRAINT fk_tsr_fk_tst_type FOREIGN KEY (tsr_fk_tst_type) REFERENCES t_tsr_time_serie_type(tst_techid),
@@ -188,6 +188,7 @@ CREATE TABLE t_tsr_point
 (
 	poi_techid BIGINT GENERATED ALWAYS AS IDENTITY,
 	poi_fk_tsr_time_serie BIGINT,
+    poi_correlation_id VARCHAR(64) DEFAULT NULL,
 	poi_value VARCHAR(2048) DEFAULT NULL,
 	poi_time  TIMESTAMP(6),
 	PRIMARY KEY (poi_techid),
