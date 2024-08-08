@@ -1,4 +1,6 @@
 package com.lasrosas.iot.ingestor.domain.model.digitalTwin;
 
-public class DigitalTwin {
+import com.lasrosas.iot.ingestor.domain.model.LongDomain;
+
+public class DigitalTwin extends LongDomain {
 }

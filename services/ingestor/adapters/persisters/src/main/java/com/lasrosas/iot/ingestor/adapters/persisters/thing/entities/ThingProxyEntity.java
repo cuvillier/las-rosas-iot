@@ -2,7 +2,9 @@ package com.lasrosas.iot.ingestor.adapters.persisters.thing.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lasrosas.iot.ingestor.adapters.persisters.shared.LongEntity;
+import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -74,5 +76,10 @@ public class ThingProxyEntity extends LongEntity {
 
 	public boolean isConnected() {
 		return connectionState != null && connectionState == ConnectionState.CONNECTED;
+	}
+
+	public ObjectNode getValuesAsObjectNode() {
+		if(values == null) return null;
+		return (ObjectNode)JsonUtils.toObjectNode(values);
 	}
 }

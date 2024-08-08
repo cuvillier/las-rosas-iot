@@ -34,7 +34,7 @@ public class ThingPersister implements ThingStore {
 
     @Override
     public Optional<Thing> getThingByNaturalid(String naturalid) {
-        var optionalEntity = thingRepo.findByNaturalid(naturalid);
+        var optionalEntity = thingRepo.getByNaturalid(naturalid);
         return optionalEntity.map(ThingEntity -> thingMapper.toThing(ThingEntity));
     }
 
@@ -59,7 +59,7 @@ public class ThingPersister implements ThingStore {
     public void saveThing(Thing domain) {
 
         // Update existing entity
-        var entityOpt = thingRepo.findByNaturalid(domain.getNaturalid());
+        var entityOpt = thingRepo.getByNaturalid(domain.getNaturalid());
 
         ThingEntity entity;
         if(entityOpt.isPresent()) {

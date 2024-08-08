@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
 
-import com.lasrosas.iot.ingestor.domain.message.ThingMessageEvent;
+import com.lasrosas.iot.ingestor.domain.message.EventMessage;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
@@ -42,13 +42,13 @@ public class MqttPublisherConfig {
     }
 
     @Bean
-    public ApplicationListener<ThingMessageEvent> publishThingMessages(MqttPublisher mqttPublisher) {
+    public ApplicationListener<EventMessage> publishThingMessages(MqttPublisher mqttPublisher) {
 
-        return new ApplicationListener<ThingMessageEvent>() {
+        return new ApplicationListener<EventMessage>() {
 
             @Override
-            public void onApplicationEvent(ThingMessageEvent event) {
-                var message = event.getPayload();
+            public void onApplicationEvent(EventMessage event) {
+                var message = event.getMessage();
                 var topic = "thing/naturalid/" + event.getThing().getNaturalid();
                 var json = JsonUtils.toJson(message, true);
 

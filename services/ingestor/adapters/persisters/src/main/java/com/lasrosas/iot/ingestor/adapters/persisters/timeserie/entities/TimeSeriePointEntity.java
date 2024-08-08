@@ -1,5 +1,6 @@
 package com.lasrosas.iot.ingestor.adapters.persisters.timeserie.entities;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lasrosas.iot.ingestor.adapters.persisters.shared.LongEntity;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import jakarta.persistence.*;
@@ -44,8 +45,8 @@ public class TimeSeriePointEntity extends LongEntity {
 	@Column(name=COL_VALUE)
 	private String value;
 
-	public JSONObject getJsonValue() {
+	public ObjectNode getValueAsObjectNode() {
 		if(value == null) return null;
-		return JsonUtils.fromJson(JSONObject.class, value);
+		return JsonUtils.toObjectNode(value);
 	}
 }

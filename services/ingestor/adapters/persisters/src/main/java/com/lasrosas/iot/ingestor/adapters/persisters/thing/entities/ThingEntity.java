@@ -69,21 +69,6 @@ public class ThingEntity extends LongEntity {
 	@Builder.Default
 	private AdminState adminState = AdminState.DISCONNECTED;
 
-	public ThingProxyEntity createProxy() {
-		var p = new ThingProxyEntity();
-		p.setThing(this);
-		return p;
-	}
-
-	public ThingProxyEntity getCreateProxy(EntityManager em) {
-		if (this.proxy == null) {
-			this.proxy = createProxy();
-			em.persist(this.proxy);
-		}
-
-		return proxy;
-	}
-
 	public boolean needToDisconnect() {
 
 		// Check if the thing was never connected
