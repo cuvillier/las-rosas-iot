@@ -2,16 +2,18 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
 import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
 import com.lasrosas.iot.ingestor.domain.model.message.LorawanRadioMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessageEvent;
+import com.lasrosas.iot.ingestor.domain.model.message.ThingMessageEvent;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.domain.model.thing.Thing;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingGateway;
-import com.lasrosas.iot.ingestor.domain.ports.eventsources.GatewayMessageListener;
-import com.lasrosas.iot.ingestor.domain.ports.eventsources.IngestorMessagePublisher;
 import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStoreQuery;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.gatewayDrivers.LorawanGatewayDriverManager;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriverManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +21,16 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class LorawanMessageListener implements GatewayMessageListener {
+public class LorawanMessageListener implements ApplicationListener<GatewayPayloadMessageEvent> {
 
     private LorawanGatewayDriverManager gatewayDriverManager;
     private ThingDriverManager thingDriverManager;
-    private IngestorMessagePublisher publisher;
     private ThingStoreQuery thingStore;
+    ApplicationEventPublisher publisher;
 
     @Override
-    public void onMessage(GatewayPayloadMessage message) {
+    public void onApplicationEvent(GatewayPayloadMessageEvent event) {
+        var message = event.getMessage();
 
         // Decode the LoraGateway message
         var gateway = thingStore.getGatewayByNaturalId(message.getGatewayNaturalId()).orElseThrow();
@@ -44,18 +47,18 @@ public class LorawanMessageListener implements GatewayMessageListener {
 
             // Publish the LORAWAN radio indicators like RSSI or SNR
             var lorawanRadio = decodeLorawanRadio(uplink);
-            publisher.send(lorawanRadio);
+            publisher.publishEvent(ThingMessageEvent.of(thing, lorawanRadio));
 
             // Publish the sensor data
             var thingMessages = decodeThingMessage(thing, uplink);
             for (var thingMessage : thingMessages)
-                publisher.send(thingMessage);
-
+                publisher.publishEvent(ThingMessageEvent.of(thing, thingMessage));
 
         } else
             log.info("Lorawan message of type " + lorawanMessage.getClass().getSimpleName() + " ignored.");
 
-        }
+    }
+
 
     private LorawanMessage decodeLorawanMessage(ThingGateway gateway, GatewayPayloadMessage message) {
         var driver = gatewayDriverManager.get(gateway.getDriver());
@@ -86,7 +89,7 @@ public class LorawanMessageListener implements GatewayMessageListener {
         return result;
     }
 
-    private List<ThingMessage> decodeThingMessage(Thing thing, LorawanMessageUplinkRx lorawanMessage) {
+    private List<BaseMessage> decodeThingMessage(Thing thing, LorawanMessageUplinkRx lorawanMessage) {
         var driver = thingDriverManager.get(thing.getType().getManufacturer(), thing.getType().getModel());
 
         var decoded = driver.decodeUplink(lorawanMessage);

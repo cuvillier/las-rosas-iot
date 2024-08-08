@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +19,7 @@ public class AdeunisARF8180BAFrame {
 	@Getter
 	@Setter
 	@SuperBuilder
-	public static class UplinkFrame extends ThingMessage {
+	public static class UplinkFrame extends BaseMessage {
 		private int code;
 		private Status status;
 

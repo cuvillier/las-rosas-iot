@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.shared.ByteParser;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis.AdeunisARF8170BAFrame.*;
@@ -75,7 +75,7 @@ public class AdeunisARF8170BAFrameDecoder {
 		registers.put(number, register);
 	}
 
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 		ByteParser parser = new ByteParser(uplink.decodeData());
 		int code = parser.uint8();
 

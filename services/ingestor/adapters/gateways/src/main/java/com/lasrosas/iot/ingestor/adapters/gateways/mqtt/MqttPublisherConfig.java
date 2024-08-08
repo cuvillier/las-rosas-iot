@@ -1,11 +1,9 @@
 package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lasrosas.iot.ingestor.shared.exceptions.InvalidJsonFormatException;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
-import com.lasrosas.iot.ingestor.domain.ports.eventsources.IngestorMessagePublisher;
+import com.lasrosas.iot.ingestor.domain.model.message.ThingMessageEvent;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MqttGatewayPublisherChannel {
+public class MqttPublisherConfig {
 
 
     @Bean
@@ -44,26 +42,20 @@ public class MqttGatewayPublisherChannel {
     }
 
     @Bean
-    public IngestorMessagePublisher IngestorMessagePublisher(MqttPublisher publisher) {
+    public ApplicationListener<ThingMessageEvent> publishThingMessages(MqttPublisher mqttPublisher) {
 
-        return new IngestorMessagePublisher() {
+        return new ApplicationListener<ThingMessageEvent>() {
 
             @Override
-            public void send(ThingMessage message) {
-
-                var topic = "thing/naturalid/" + message.getThingNaturalid();
+            public void onApplicationEvent(ThingMessageEvent event) {
+                var message = event.getMessage();
+                var topic = "thing/naturalid/" + event.getThing().getNaturalid();
                 var json = JsonUtils.toJson(message, true);
 
-                log.info("Message published to " + topic + ":\n" + json);
+                log.info("MQTT Message published to " + topic + ":\n" + json);
 
-                publisher.send(topic, json);
-            }
-
-            @Override
-            public void send(String topic, String message) {
-                publisher.send(topic, message);
+                mqttPublisher.send(topic, json);
             }
         };
     }
-
 }

@@ -1,17 +1,17 @@
 package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
-import com.lasrosas.iot.ingestor.domain.ports.eventsources.GatewayMessageListener;
+import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessageEvent;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.events.IntegrationEvent;
+import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.Message;
@@ -24,10 +24,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Slf4j
-public class MqttGatewayListenerChannel {
-
-    @Autowired
-    private GatewayMessageListener listener;
+public class MqttListenerConfig {
 
     @Bean
     public MessageChannel gatewayInputChannel() {
@@ -35,12 +32,9 @@ public class MqttGatewayListenerChannel {
     }
 
     @Bean
-    public MessageProducer inbound(MessageChannel gatewayInputChannel) {
+    public MessageProducer inbound(MessageChannel gatewayInputChannel, MqttPahoClientFactory mqttClientFactory) {
 
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-                "tcp://localhost:1883",
-                "ingestor-gateway",
-                "gateway/#");
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("ingestor-gateway", mqttClientFactory, "gateway/#");
 
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
@@ -70,7 +64,7 @@ public class MqttGatewayListenerChannel {
 
     @Bean
     @ServiceActivator(inputChannel = "gatewayInputChannel")
-    public MessageHandler handler() {
+    public MessageHandler handler(ApplicationEventPublisher publisher) {
         return new MessageHandler() {
 
             @Override
@@ -81,7 +75,7 @@ public class MqttGatewayListenerChannel {
 
                     var topic = message.getHeaders().get("mqtt_receivedTopic").toString();
 
-                    MqttConfiguration.logMessage.info("Message received from " + topic + ":\n"+ jsonMessage);
+                    MqttConnectionConfig.logMessage.info("Message received from " + topic + ":\n"+ jsonMessage);
 
                     var gatewayNaturalId = topic.split("/")[1];
                     var id = message.getHeaders().get("id").toString();
@@ -95,7 +89,7 @@ public class MqttGatewayListenerChannel {
                             .build();
 
                     // handle the message with the injected listener from the UseCase ring
-                    listener.onMessage(gatewayMessage);
+                    publisher.publishEvent( new GatewayPayloadMessageEvent(this, gatewayMessage));
 
                 } catch (RuntimeException e) {
                     log.error("Error while processing the message: \n" + jsonMessage, e);
@@ -104,6 +98,10 @@ public class MqttGatewayListenerChannel {
         };
     }
 
+    /**
+     * Display errors.
+     * @return
+     */
     @Bean
     public ApplicationListener<?> eventListener() {
         return new ApplicationListener<IntegrationEvent>() {

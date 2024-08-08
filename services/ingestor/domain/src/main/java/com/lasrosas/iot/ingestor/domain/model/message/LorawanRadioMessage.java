@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class LorawanRadioMessage extends ThingMessage {
+public class LorawanRadioMessage extends BaseMessage {
     private int fCnt;
     private int fPort;
     private Float loRaSNR;

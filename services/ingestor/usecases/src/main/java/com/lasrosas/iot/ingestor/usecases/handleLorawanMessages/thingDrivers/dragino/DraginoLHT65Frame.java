@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.dragino;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ public class DraginoLHT65Frame {
 	@Getter
 	@Setter
 	@SuperBuilder
-	public static class UplinkTempHumRequest extends ThingMessage {
+	public static class UplinkTempHumRequest extends BaseMessage {
 
 		@Getter
 		@AllArgsConstructor

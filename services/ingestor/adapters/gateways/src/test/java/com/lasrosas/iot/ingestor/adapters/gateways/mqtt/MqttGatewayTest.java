@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MqttGatewayTest {
 
     @Autowired
-    private MqttGatewayListenerChannel mqtt;
+    private MqttListenerConfig mqtt;
 
     @Test
     public void sendMessage() {

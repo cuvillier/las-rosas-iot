@@ -1,8 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
 import com.lasrosas.iot.ingestor.domain.model.message.MessageOrigin;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
-import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.dragino.DraginoLHT65Frame;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

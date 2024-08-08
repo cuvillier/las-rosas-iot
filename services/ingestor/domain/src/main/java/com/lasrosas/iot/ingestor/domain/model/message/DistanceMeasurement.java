@@ -7,6 +7,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @SuperBuilder
-public class DistanceMeasurement extends ThingMessage {
+public class DistanceMeasurement extends BaseMessage {
 	private Double distance;
 }

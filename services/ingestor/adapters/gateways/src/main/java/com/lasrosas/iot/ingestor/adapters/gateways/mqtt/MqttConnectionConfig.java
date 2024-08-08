@@ -12,7 +12,7 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 
 @Configuration
 @Slf4j
-public class MqttConfiguration {
+public class MqttConnectionConfig {
 
     // This logger is shared by all the Channels to log incoming / outgoing messages
     public static final Logger logMessage = LoggerFactory.getLogger("ingestor.adapters.gateways.mqtt.messages");

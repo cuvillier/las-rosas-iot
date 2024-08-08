@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public abstract class ThingMessage implements MessageOrigin {
-    private String thingNaturalid;
+public abstract class BaseMessage implements MessageOrigin {
+
+    private String schema;
     private LocalDateTime time;
     private String correlationId;
     private String sensor;
 
     public void setOrigin(MessageOrigin origin) {
-        this.thingNaturalid = origin.getThingNaturalid();
         this.time = origin.getTime();
         this.correlationId = origin.getCorrelationId();
     }
@@ -28,7 +28,7 @@ public abstract class ThingMessage implements MessageOrigin {
      * May be redefined in a sub class.
      * @return the schema
      */
-    public String schema() {
-        return getClass().getSimpleName();
+    public String getSchema() {
+        return getClass().getName();
     }
 }

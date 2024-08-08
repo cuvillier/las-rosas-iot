@@ -1,6 +1,7 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -85,6 +86,7 @@ public class LorawanMessageUplinkRx extends LorawanMessage {
 		private LocalDateTime time;
 	}
 
+	@Builder.Default
 	private List<RxInfo> rxInfo = new ArrayList<>();
 
 	@Getter

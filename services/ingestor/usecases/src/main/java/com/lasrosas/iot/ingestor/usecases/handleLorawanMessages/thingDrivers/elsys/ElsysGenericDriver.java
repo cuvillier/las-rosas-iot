@@ -3,7 +3,7 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.el
 import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
 import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
 import com.lasrosas.iot.ingestor.domain.model.message.DistanceMeasurement;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class ElsysGenericDriver {
 		return num;
 	}
 
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx message)  {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx message)  {
 		var data = message.decodeData();
 	    var frame = ElsysGenericUplinkFrame.builder().build();
 		frame.setOrigin(message);
@@ -224,12 +224,12 @@ public class ElsysGenericDriver {
 		return frame;
 	}
 
-	public List<ThingMessage> normalize(ThingMessage message) {
+	public List<BaseMessage> normalize(BaseMessage message) {
 
 		if( !(message instanceof ElsysGenericUplinkFrame elsysFrame) )
 			throw new RuntimeException("Cannot process this type of message : " + message.getClass());
 
-		ThingMessage normalized = null;
+		BaseMessage normalized = null;
 
 		if(elsysFrame.getTemperature() != null || elsysFrame.getHumidity() != null || elsysFrame.getLight() != null) {
 			normalized = AirEnvironment.builder()
@@ -249,7 +249,7 @@ public class ElsysGenericDriver {
 					.build();
 		}
 
-		var result = new ArrayList<ThingMessage>();
+		var result = new ArrayList<BaseMessage>();
 
 		if(normalized != null) {
 			normalized.setOrigin(message);

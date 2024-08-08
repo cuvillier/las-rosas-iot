@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @SuperBuilder
-public class AirEnvironment extends ThingMessage {
+public class AirEnvironment extends BaseMessage {
 	private Double temperature;
 	private Double humidity;
 	private Double light;

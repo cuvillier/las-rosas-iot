@@ -2,10 +2,9 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.dr
 
 import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
 import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +18,13 @@ public class DraginoLHT65Driver implements ThingDriver {
 		private DraginoLHT65FrameDecoder decoder = new DraginoLHT65FrameDecoder();
 
 		@Override
-		public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+		public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 			return  decoder.decodeUplink(uplink);
 		}
 
 		@Override
-		public List<ThingMessage> normalize(ThingMessage message) {
-			var result = new ArrayList<ThingMessage>();
+		public List<BaseMessage> normalize(BaseMessage message) {
+			var result = new ArrayList<BaseMessage>();
 
 			if( message instanceof DraginoLHT65Frame.UplinkTempHumRequest tempHum) {
 

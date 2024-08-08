@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class ConnectionStage extends ThingMessage {
+public class ConnectionStage extends BaseMessage {
 	public static final int JOINING = 1;
 	public static final int JOINED= 2;
 

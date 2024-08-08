@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class BatteryLevel extends ThingMessage {
+public class BatteryLevel extends BaseMessage {
 	private Double voltage;
 	private Integer percentage;
 	private Boolean alarm;

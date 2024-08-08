@@ -7,6 +7,6 @@ public interface MessageOrigin {
     void setCorrelationId(String correlationId);
     LocalDateTime getTime();
     void setTime(LocalDateTime time);
-    String getThingNaturalid();
-    void setThingNaturalid(String thingId);
+    default String getSensor() { return null; };
+    default void setSensor(String sensor) { };
 }

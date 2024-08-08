@@ -1,10 +1,9 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis;
 import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
 import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +16,14 @@ public class AdeunisARF8180BADriver implements ThingDriver {
 	private AdeunisARF8180BAFrameDecoder decoder = new AdeunisARF8180BAFrameDecoder();
 
 	@Override
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 		return decoder.decodeUplink(uplink);
 	}
 
 
 	@Override
-	public List<ThingMessage> normalize(ThingMessage message) {
-		var result = new ArrayList<ThingMessage>();
+	public List<BaseMessage> normalize(BaseMessage message) {
+		var result = new ArrayList<BaseMessage>();
 
 		if(message instanceof UplinkFrame0x30x43 uplinkFrame0x30x43) {
 			var temp10thdeg = uplinkFrame0x30x43.getValueInternalSensor10thDeg();

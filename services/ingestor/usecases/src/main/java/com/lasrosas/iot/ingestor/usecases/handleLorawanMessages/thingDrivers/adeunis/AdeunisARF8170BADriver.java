@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lasrosas.iot.ingestor.shared.exceptions.InvalidJsonFormatException;
 import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
 import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
@@ -37,13 +37,13 @@ public class AdeunisARF8170BADriver implements ThingDriver {
 	}
 
 	@Override
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 		return decoder.decodeUplink(uplink);
 	}
 
 	@Override
-	public List<ThingMessage> normalize(ThingMessage message) {
-		var result = new ArrayList<ThingMessage>();
+	public List<BaseMessage> normalize(BaseMessage message) {
+		var result = new ArrayList<BaseMessage>();
 
 		if(message instanceof AdeunisARF8180BAFrame.UplinkFrame0x30x43 uplinkFrame0x30x43) {
 

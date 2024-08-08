@@ -1,6 +1,7 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mfc88;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class MFC88LW13IOFrame {
 	@Getter
 	@SuperBuilder
 	@NoArgsConstructor
-	public abstract static class BaseFrame extends ThingMessage {
+	public abstract static class BaseFrame extends BaseMessage {
 		public abstract int getCode();
 	}
 
@@ -82,6 +83,8 @@ public class MFC88LW13IOFrame {
 	@SuperBuilder
 	@NoArgsConstructor
 	public static class UplinkInputCounterType1 extends UplinkDigitalData {
+
+		@Builder.Default
 		private int inputCounters[] = new int[16];
 
 		public void setInputCounters(int[] inputCounters) {
@@ -97,6 +100,8 @@ public class MFC88LW13IOFrame {
 	public static class UplinkLengthError extends UplinkFrame {
 		public static final int CODE = 0xEE;
 		private int type;
+
+		@Builder.Default
 		private byte[] data = new byte[9];
 
 		public int getCode() { return CODE;}

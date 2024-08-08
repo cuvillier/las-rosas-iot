@@ -23,6 +23,27 @@ services:
     restart: unless-stopped
     networks:
       - lasrosasiot-network
+  integrator:
+    image: localhost:5000/lasrosasiot/integrator:1.0.0-SNAPSHOT
+    container_name: lasrosasiot-integrator
+    shm_size: 128mb
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_HOST: database
+      DATABASE_SCHEMA: lasrosasiot
+      DATABASE_USERNAME: lasrosasiot
+      DATABASE_PASSWORD: lasrosasiot
+      MOSQUITTO_HOST: mosquitto
+      MOSQUITTO_USERNAME: lasrosasiot
+      MOSQUITTO_PASSWORD: lasrosasiot
+    restart: unless-stopped
+    networks:
+      - lasrosasiot-network
 networks:
   lasrosasiot-network:
     external: true

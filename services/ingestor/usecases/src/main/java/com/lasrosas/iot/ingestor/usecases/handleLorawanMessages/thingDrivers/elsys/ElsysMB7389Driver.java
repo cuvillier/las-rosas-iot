@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.elsys;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
 
@@ -15,12 +15,12 @@ public class ElsysMB7389Driver implements ThingDriver {
 	}
 
 	@Override
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 		return parser.decodeUplink(uplink);
 	}
 
 	@Override
-	public List<ThingMessage> normalize(ThingMessage message) {
+	public List<BaseMessage> normalize(BaseMessage message) {
 		return parser.normalize(message);
 	}
 

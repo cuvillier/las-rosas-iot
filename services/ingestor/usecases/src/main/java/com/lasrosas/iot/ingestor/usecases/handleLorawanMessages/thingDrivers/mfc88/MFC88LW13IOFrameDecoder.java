@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mfc88;
 
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.shared.ByteParser;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 public class MFC88LW13IOFrameDecoder {
 
-	public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+	public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 		ByteParser parser = new ByteParser(uplink.decodeData());
 
 		int code = parser.uint8();

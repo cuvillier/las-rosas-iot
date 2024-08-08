@@ -3,7 +3,7 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mf
 import com.lasrosas.iot.ingestor.shared.exceptions.ImpossibleException;
 import com.lasrosas.iot.ingestor.domain.model.message.ConnectionStage;
 import com.lasrosas.iot.ingestor.domain.model.message.Switched;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessage;
+import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
 
@@ -19,15 +19,15 @@ public class MFC88LW13IODriver implements ThingDriver {
 		private MFC88LW13IOFrameDecoder decoder = new MFC88LW13IOFrameDecoder();
 
 		@Override
-		public ThingMessage decodeUplink(LorawanMessageUplinkRx uplink) {
+		public BaseMessage decodeUplink(LorawanMessageUplinkRx uplink) {
 			return decoder.decodeUplink(uplink);
 		}
 
 		@Override
-		public List<ThingMessage> normalize(ThingMessage message) {
-			var result = new ArrayList<ThingMessage>();
+		public List<BaseMessage> normalize(BaseMessage message) {
+			var result = new ArrayList<BaseMessage>();
 
-			ThingMessage normalized =
+			BaseMessage normalized =
 				switch(message) {
 					case MFC88LW13IOFrame.UplinkIO uplinkIO ->
 						Switched.builder()
@@ -40,7 +40,7 @@ public class MFC88LW13IODriver implements ThingDriver {
 
 			normalized.setOrigin(message);
 
-			result = new ArrayList<ThingMessage>();
+			result = new ArrayList<BaseMessage>();
 			result.add(normalized);
 
 			return result;
