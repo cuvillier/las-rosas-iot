@@ -20,10 +20,10 @@ import javax.transaction.Transactional;
 
 import static org.hibernate.query.sqm.tree.SqmNode.log;
 
-@Component
+@Component("jpaTimeSerieStore")
 @Transactional
 @AllArgsConstructor
-public class TimeSeriePersister implements TimeSerieStore {
+public class TimeSeriePersisterJPA implements TimeSerieStore {
     private ThingEntityRepository thingRepo;
     private TimeSerieTypeEntityRepository typeRepo;
     private TimeSerieEntityRepository timeSerieRepo;
@@ -106,7 +106,7 @@ public class TimeSeriePersister implements TimeSerieStore {
                         .thing(thing)
                         .type(timeSerieType)
                         .sensor(sensor)
-                        .influxdbMeasurement(createInfluxdbMeasurment(event))
+                        .influxdbMeasurement(event.getMeasurement())
                         .build();
 
                 timeSerieRepo.save(tsr);
@@ -134,26 +134,5 @@ public class TimeSeriePersister implements TimeSerieStore {
         point.setValue(json);
         timeSerie.setCurrentValue(point);
         updateProxy(point);
-    }
-
-    private String createInfluxdbMeasurment(EventMessage event) {
-        var twin = event.getDigitalTwin();
-        var thing = event.getThing();
-
-        var schema = event.getMessage().getSchemaClass().getSimpleName();
-
-        String naturalId;
-        String sensor = null;
-        if (twin != null)
-            naturalId = "TWI_" + twin.getNaturalid();
-        else {
-            naturalId = "THG_" + thing.getNaturalid();
-            sensor = event.getMessage().getSensor();
-        }
-
-        if (sensor == null)
-            return (naturalId + "_" + schema).replaceAll("\\.", "_");
-        else
-            return (naturalId + "_" + sensor + "_" + schema).replaceAll("\\.", "_");
     }
 }

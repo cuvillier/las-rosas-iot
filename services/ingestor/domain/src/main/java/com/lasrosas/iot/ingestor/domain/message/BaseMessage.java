@@ -1,5 +1,6 @@
 package com.lasrosas.iot.ingestor.domain.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,9 +14,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public abstract class BaseMessage implements MessageOrigin {
 
+    @JsonIgnore
     private String schema;
+
+    @JsonIgnore
     private LocalDateTime time;
+
+    @JsonIgnore
     private String correlationId;
+
+    @JsonIgnore
     private String sensor;
 
     public void setOrigin(MessageOrigin origin) {

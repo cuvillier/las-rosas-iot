@@ -109,7 +109,7 @@ INSERT INTO t_thg_thing (thg_fk_gtw_gateway,thg_fk_tty_type, thg_readable, thg_n
 		),
 		'Sonda temp camara fria',
 		
-		'a8404111118446ee');
+		'a84041ecf18446ee');
 
 /* Digital Twin deposito de agua */
 

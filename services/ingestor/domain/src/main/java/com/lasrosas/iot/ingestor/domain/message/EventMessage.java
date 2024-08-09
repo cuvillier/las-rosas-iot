@@ -50,6 +50,27 @@ public class EventMessage extends ApplicationEvent {
         var thing = getThing();
         return thing == null ? null: thing.getTechid();
     }
+
+    public String getMeasurement() {
+        var twin = this.getDigitalTwin();
+        var thing = this.getThing();
+
+        var schema = this.message.getSchemaClass().getSimpleName();
+
+        String naturalId;
+        String sensor = null;
+        if (twin != null)
+            naturalId = "TWI_" + twin.getNaturalid();
+        else {
+            naturalId = "THG_" + thing.getNaturalid();
+            sensor = this.message.getSensor();
+        }
+
+        if (sensor == null)
+            return (naturalId + "_" + schema).replaceAll("\\.", "_");
+        else
+            return (naturalId + "_" + sensor + "_" + schema).replaceAll("\\.", "_");
+    }
 /*
     public <X extends BaseMessage> X getAs(Class<X> c) {
 

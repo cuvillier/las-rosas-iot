@@ -2,11 +2,10 @@ package com.lasrosas.iot.ingestor.adapters.persisters.influxdb;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
-import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.lasrosas.iot.ingestor.domain.message.EventMessage;
-import com.lasrosas.iot.ingestor.domain.model.timeserie.TimeSerie;
+import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,12 +19,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Component
+@Component("influxdbTimeSerieStore")
 @Slf4j
-public class InfluxdbPersister {
+public class TimeSeriePersisterInfluxDB implements TimeSerieStore {
     private InfluxDBClient influxDB;
 
-    @Value("${ingestor.adapters.persisters.influxdb.bucket:\"http://127.0.0.1:8086\"}")
+    @Value("${ingestor.adapters.persisters.influxdb.url:\"http://localhost:8086/\"}")
     private String url;
 
     @Value("${ingestor.adapters.persisters.influxdb.token}")
@@ -44,29 +43,26 @@ public class InfluxdbPersister {
 
     private InfluxDBClient influxDB() {
         if (influxDB == null)
-            influxDB = InfluxDBClientFactory.create("http://localhost:8086", token.toCharArray(), organization, bucket);
+            influxDB = InfluxDBClientFactory.create(url, token.toCharArray(), organization, bucket);
 
         return influxDB;
     }
 
-    public void writePoint(TimeSerie timeSerie, EventMessage event) {
+    @Override
+    public void insertPoint(EventMessage event) {
 
+        String measurement = event.getMeasurement();
         var time = event.getMessage().getTime();
         var timestamp = Timestamp.valueOf(time).getTime();
 
-        var measurment = timeSerie.getInfluxdbMeasurement();
-
-        var influxdbPoint = Point.measurement(measurment).time(timestamp, WritePrecision.MS);
+        var influxdbPoint = Point.measurement(measurement).time(timestamp, WritePrecision.MS);
 
         var fields = new HashMap<String, Object>();
         addFields(fields, event.getMessage(), null);
         influxdbPoint.addFields(fields);
 
-        var influxDB = influxDB();
-        try (WriteApi writeApi = influxDB.getWriteApi()) {
-            log.debug("Write Point to InfluxDB " + time.toString() + ", " + measurment + ",  " + JsonUtils.toJson(fields));
-            writeApi.writePoint(influxdbPoint);
-        }
+        log.debug("Write Point to InfluxDB " + time.toString() + ", " + measurement + ",  " + JsonUtils.toJson(fields));
+        influxDB().getWriteApiBlocking().writePoint(influxdbPoint);
     }
 
     void addFields(Map<String, Object> fields, Object values, String prefix) {

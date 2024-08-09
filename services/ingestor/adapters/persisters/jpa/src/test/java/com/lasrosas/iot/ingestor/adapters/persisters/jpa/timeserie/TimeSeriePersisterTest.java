@@ -25,7 +25,7 @@ public class TimeSeriePersisterTest {
     private EntityManager em;
 
     @InjectMocks
-    private TimeSeriePersister persister;
+    private TimeSeriePersisterJPA persister;
 
     @Autowired
     private TimeSeriePointEntityMapper mapper;

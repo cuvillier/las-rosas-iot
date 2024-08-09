@@ -3,9 +3,11 @@ package com.lasrosas.iot.ingestor.usecases.storeTimeSeries;
 import com.lasrosas.iot.ingestor.domain.message.EventMessage;
 import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -14,14 +16,18 @@ import javax.transaction.Transactional;
 @Component
 @Slf4j
 @AllArgsConstructor
-public class StoreTimeSerieListener implements ApplicationListener<EventMessage>, Ordered {
-    private TimeSerieStore store;
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class StoreTimeSerieToJpaListener implements ApplicationListener<EventMessage>, Ordered {
+
+    // Use Autowired because of the Qualifier annotation with lombock
+    @Autowired
+    private TimeSerieStore jpaTimeSerieStore;
 
     @Transactional
     @Override
     public void onApplicationEvent(EventMessage event) {
-        log.info(String.format("Save message %s to the database", event.getMessage().getSchema()));
-        store.insertPoint(event);
+        log.info(String.format("Save message %s to JPA", event.getMessage().getSchema()));
+        jpaTimeSerieStore.insertPoint(event);
     }
 
     /**

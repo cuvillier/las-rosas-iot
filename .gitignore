@@ -9,6 +9,8 @@ target/
 *.iml
 *.ipr
 
+**/volumes
+
 ### Eclipse ###
 .apt_generated
 .classpath
