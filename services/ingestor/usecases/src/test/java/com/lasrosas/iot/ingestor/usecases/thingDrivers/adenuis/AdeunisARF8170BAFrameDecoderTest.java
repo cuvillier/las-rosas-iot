@@ -178,8 +178,8 @@ public class AdeunisARF8170BAFrameDecoderTest {
 		assertNull(frame.getChannel2TimeCounter());
 		assertEquals(4352, frame.getChannel3TimeCounter());
 		assertNull(frame.getChannel4TimeCounter());
-log.info("TIMESTAMP: " + new Date(frame.getTimestamp()).toString());
-		assertTrue(new Date(frame.getTimestamp()).toString().startsWith("Mon Oct 17 22:32:57"));
+
+		assertEquals(frame.getTimestamp(), 1666038777000L);
 	}
 	
 	@Test
