@@ -84,8 +84,6 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
             result.setFrequency(message.getTxInfo().getFrequency());
         }
 
-        result.setOrigin(message);
-
         return result;
     }
 
@@ -93,7 +91,6 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
         var driver = thingDriverManager.get(thing.getType().getManufacturer(), thing.getType().getModel());
 
         var decoded = driver.decodeUplink(lorawanMessage);
-        decoded.setOrigin(lorawanMessage);
 
         var normalized = driver.normalize(decoded);
         normalized.forEach(m -> m.setOrigin(lorawanMessage));

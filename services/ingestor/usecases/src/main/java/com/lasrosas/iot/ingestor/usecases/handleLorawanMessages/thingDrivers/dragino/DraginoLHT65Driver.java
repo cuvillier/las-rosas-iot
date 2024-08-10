@@ -34,7 +34,7 @@ public class DraginoLHT65Driver implements ThingDriver {
 								.temperature(tempHum.getTemperatureINT())
 								.humidity(tempHum.getHumidityINT())
 						.build();
-				airEnvInt.setOrigin(message);
+
 				result.add(airEnvInt);
 
 				// External temp & hum sensor
@@ -42,7 +42,7 @@ public class DraginoLHT65Driver implements ThingDriver {
 						.sensor(SENSOR_EXT)
 						.temperature(tempHum.getTemperatureEXT())
 						.build();
-				airEnvExt.setOrigin(message);
+
 				result.add(airEnvExt);
 
 				// Battery Level

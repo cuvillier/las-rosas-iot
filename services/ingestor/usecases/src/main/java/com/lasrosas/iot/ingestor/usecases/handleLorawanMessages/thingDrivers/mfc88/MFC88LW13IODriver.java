@@ -38,8 +38,6 @@ public class MFC88LW13IODriver implements ThingDriver {
 					default -> throw new ImpossibleException();
 				};
 
-			normalized.setOrigin(message);
-
 			result = new ArrayList<BaseMessage>();
 			result.add(normalized);
 

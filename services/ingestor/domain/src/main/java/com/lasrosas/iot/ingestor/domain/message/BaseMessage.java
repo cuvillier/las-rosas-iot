@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.beans.Transient;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,16 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public abstract class BaseMessage implements MessageOrigin {
 
-    @JsonIgnore
     private String schema;
 
-    @JsonIgnore
     private LocalDateTime time;
 
-    @JsonIgnore
     private String correlationId;
 
-    @JsonIgnore
     private String sensor;
 
     public void setOrigin(MessageOrigin origin) {
@@ -40,6 +37,8 @@ public abstract class BaseMessage implements MessageOrigin {
         return getClass().getName();
     }
 
+    // Do not persist in Json
+    @Transient
     public Class<?> getSchemaClass() {
         return getClass();
     }

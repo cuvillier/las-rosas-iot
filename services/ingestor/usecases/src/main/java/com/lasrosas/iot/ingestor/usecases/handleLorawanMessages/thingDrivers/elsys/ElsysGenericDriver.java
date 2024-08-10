@@ -57,7 +57,6 @@ public class ElsysGenericDriver {
 	public BaseMessage decodeUplink(LorawanMessageUplinkRx message)  {
 		var data = message.decodeData();
 	    var frame = ElsysGenericUplinkFrame.builder().build();
-		frame.setOrigin(message);
 
 	    for (int i = 0; i < data.length; i++) {
 
@@ -252,7 +251,6 @@ public class ElsysGenericDriver {
 		var result = new ArrayList<BaseMessage>();
 
 		if(normalized != null) {
-			normalized.setOrigin(message);
 			result.add(message);
 		}
 

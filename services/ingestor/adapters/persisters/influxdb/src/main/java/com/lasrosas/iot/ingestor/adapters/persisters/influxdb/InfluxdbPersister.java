@@ -2,9 +2,12 @@ package com.lasrosas.iot.ingestor.adapters.persisters.influxdb;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.model.timeserie.TimeSerie;
+import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStoreQuery;
 import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +24,7 @@ import java.util.Set;
 
 @Component("influxdbTimeSerieStore")
 @Slf4j
-public class TimeSeriePersisterInfluxDB implements TimeSerieStore {
+public class InfluxdbPersister implements TimeSerieStore {
     private InfluxDBClient influxDB;
 
     @Value("${ingestor.adapters.persisters.influxdb.url:\"http://localhost:8086/\"}")
@@ -74,6 +77,12 @@ public class TimeSeriePersisterInfluxDB implements TimeSerieStore {
                 if (!classInitited) initedClasses.add(theClass);
 
                 for (var field : theClass.getDeclaredFields()) {
+
+                    // These values are already stored in the timeserie
+                    if(     field.getName().equals("time") ||
+                            field.getName().equals("schema") ||
+                            field.getName().equals("sensor"))
+                        continue;
 
                     // Skip static fields
                     if (Modifier.isStatic(field.getModifiers())) continue;

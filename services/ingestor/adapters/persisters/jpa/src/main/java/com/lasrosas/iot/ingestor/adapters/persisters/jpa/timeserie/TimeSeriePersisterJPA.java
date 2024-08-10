@@ -68,22 +68,23 @@ public class TimeSeriePersisterJPA implements TimeSerieStore {
     }
 
     public void insertPoint(EventMessage event) {
-        var message = event.getMessage();
-        var schema = message.getSchema();
+        try {
+            var message = event.getMessage();
+            var schema = message.getSchema();
 
-        // Get the TimeSerieType, or create it the first time
-        TimeSerieTypeEntity timeSerieType = typeRepo.getBySchema(schema).orElseGet(() -> {
+            // Get the TimeSerieType, or create it the first time
+            TimeSerieTypeEntity timeSerieType = typeRepo.getBySchema(schema).orElseGet(() -> {
 
-            var newTst = TimeSerieTypeEntity.builder()
-                    .schema(schema)
-                    .build();
+                var newTst = TimeSerieTypeEntity.builder()
+                        .schema(schema)
+                        .build();
 
-            typeRepo.save(newTst);
-            return newTst;
-        });
+                typeRepo.save(newTst);
+                return newTst;
+            });
 
-        // Get TimeSerie or create it the first time
-        TimeSerieEntity timeSerie;
+            // Get TimeSerie or create it the first time
+            TimeSerieEntity timeSerie;
 /*
         var twinId = event.getDigitalTwinId();
         if( twinId != null) {
@@ -95,12 +96,12 @@ public class TimeSeriePersisterJPA implements TimeSerieStore {
             }
         } else {
 */
-        var sensor = message.getSensor();
+            var sensor = message.getSensor();
 
-        var thingId = event.getThingId();
-        var thing = thingRepo.findById(thingId).orElseThrow();
+            var thingId = event.getThingId();
+            var thing = thingRepo.findById(thingId).orElseThrow();
 
-        timeSerie = timeSerieRepo.getByThingAndTypeAndSensor(thing, timeSerieType, sensor).orElseGet( () -> {
+            timeSerie = timeSerieRepo.getByThingAndTypeAndSensor(thing, timeSerieType, sensor).orElseGet(() -> {
 
                 var tsr = TimeSerieEntity.builder()
                         .thing(thing)
@@ -111,28 +112,41 @@ public class TimeSeriePersisterJPA implements TimeSerieStore {
 
                 timeSerieRepo.save(tsr);
                 return tsr;
-        });
+            });
 
-        // Create point or update it
-        var time = message.getTime();
-        String json = JsonUtils.toJson(message);
-        var optPoint = pointRepo.getByTimeAndTimeSerie(time, timeSerie);
+            // Create point or update it
+            var time = message.getTime();
 
-        if(optPoint.isPresent()) {
-            log.warn(String.format("Duplicated point for %s ", timeSerie.getTechid() + " time= " + time + ". Skiped value=" + json));
-            return;
+            // Remove the fields already written in the TimeSerie and TimeSerieType
+            var objectNode = JsonUtils.toObjectNode(event.getMessage());
+            objectNode.remove("time");
+            objectNode.remove("schema");
+            objectNode.remove("correlationId");
+            objectNode.remove("sensor");
+            var json = JsonUtils.toJson(objectNode);
+
+            var optPoint = pointRepo.getByTimeAndTimeSerie(time, timeSerie);
+
+            if (optPoint.isPresent()) {
+                log.warn(String.format("Duplicated point for %s ", timeSerie.getTechid() + " time= " + time + ". Skiped value=" + json));
+                return;
+            }
+
+            var point = TimeSeriePointEntity.builder()
+                    .timeSerie(timeSerie)
+                    .time(time)
+                    .correlationId(message.getCorrelationId())
+                    .build();
+
+            em.persist(point);
+
+            point.setValue(json);
+            timeSerie.setCurrentValue(point);
+            updateProxy(point);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        var point = TimeSeriePointEntity.builder()
-                .timeSerie(timeSerie)
-                .time(time)
-                .correlationId(message.getCorrelationId())
-                .build();
-
-        em.persist(point);
-
-        point.setValue(json);
-        timeSerie.setCurrentValue(point);
-        updateProxy(point);
     }
 }

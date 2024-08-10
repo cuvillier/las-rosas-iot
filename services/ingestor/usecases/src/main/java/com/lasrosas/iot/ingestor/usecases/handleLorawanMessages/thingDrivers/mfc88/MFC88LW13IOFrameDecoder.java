@@ -29,7 +29,6 @@ public class MFC88LW13IOFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		frame.setOrigin(uplink);
 		return frame;
 	}
 

@@ -62,6 +62,10 @@ public class JsonUtils {
         }
     }
 
+    public static ObjectNode toObjectNode(Object object) {
+        return (ObjectNode)mapper().convertValue(object, ObjectNode.class);
+    }
+
     public static int mergeJsonObjects(ObjectNode fromjson, ObjectNode tojson, LocalDateTime time) {
         int changes = 0;
 

@@ -79,8 +79,7 @@ public class AdeunisARF8170BAFrameDecoder {
 		ByteParser parser = new ByteParser(uplink.decodeData());
 		int code = parser.uint8();
 
-		AdeunisARF8170BAFrame.BaseFrame frame =
-			switch(code) {
+		return switch(code) {
 				case 0x10 -> parseUplinkFrame0x10(parser);
 				case 0x20 -> parseUplinkFrame0x20(parser);
 				case 0x2F -> parseUplinkFrame0x2F(parser);
@@ -95,10 +94,6 @@ public class AdeunisARF8170BAFrameDecoder {
 				case 0x59 -> parseUplinkFrame0x59(parser);
 				default -> throw new RuntimeException("Unknown frame code: " + code);
 			};
-
-		frame.setOrigin(uplink);
-
-		return frame;
 	}
 
 	public long parseEpoch2013(ByteParser parser) {
