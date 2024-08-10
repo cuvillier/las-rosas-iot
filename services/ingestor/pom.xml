@@ -21,6 +21,7 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <byte-buddy.version>1.14.18</byte-buddy.version>
         <easy-random.version>5.0.0</easy-random.version>
+        <influxdb-java-client>7.1.0</influxdb-java-client>
 
         <!-- Plugins -->
         <maven.compiler.version>3.13.0</maven.compiler.version>
@@ -66,7 +67,12 @@
             </dependency>
             <dependency>
                 <groupId>com.lasrosas.iot.ingestor</groupId>
-                <artifactId>ingestor.adapters.persisters</artifactId>
+                <artifactId>ingestor.adapters.persisters.jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lasrosas.iot.ingestor</groupId>
+                <artifactId>ingestor.adapters.persisters.influxdb</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -84,7 +90,11 @@
                 <artifactId>ingestor.shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.influxdb</groupId>
+                <artifactId>influxdb-client-java</artifactId>
+                <version>${influxdb-java-client}</version>
+            </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>

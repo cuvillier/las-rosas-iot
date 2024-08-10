@@ -1,8 +1,8 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.dragino;
 
-import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
-import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.AirEnvironment;
+import com.lasrosas.iot.ingestor.domain.message.BatteryLevel;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;
 
@@ -34,7 +34,7 @@ public class DraginoLHT65Driver implements ThingDriver {
 								.temperature(tempHum.getTemperatureINT())
 								.humidity(tempHum.getHumidityINT())
 						.build();
-				airEnvInt.setOrigin(message);
+
 				result.add(airEnvInt);
 
 				// External temp & hum sensor
@@ -42,7 +42,7 @@ public class DraginoLHT65Driver implements ThingDriver {
 						.sensor(SENSOR_EXT)
 						.temperature(tempHum.getTemperatureEXT())
 						.build();
-				airEnvExt.setOrigin(message);
+
 				result.add(airEnvExt);
 
 				// Battery Level

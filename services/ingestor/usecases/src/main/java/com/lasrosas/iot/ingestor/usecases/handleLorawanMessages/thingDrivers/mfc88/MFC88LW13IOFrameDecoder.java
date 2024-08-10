@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mfc88;
 
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.shared.ByteParser;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import lombok.Getter;
@@ -29,7 +29,6 @@ public class MFC88LW13IOFrameDecoder {
 			throw new RuntimeException("Unknown frame code: " + code);
 		}
 
-		frame.setOrigin(uplink);
 		return frame;
 	}
 

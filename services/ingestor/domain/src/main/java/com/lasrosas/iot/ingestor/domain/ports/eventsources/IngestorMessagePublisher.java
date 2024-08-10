@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.domain.ports.eventsources;
 
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 
 public interface IngestorMessagePublisher {
     void send(BaseMessage message);

@@ -1,20 +1,14 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.gatewayDrivers.rak;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageAck;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageJoin;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.gatewayDrivers.LorawanGatewayDriver;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.stereotype.Component;
 
 @SuperBuilder
 public class RAKGatewayDriver implements LorawanGatewayDriver {

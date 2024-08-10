@@ -14,4 +14,10 @@ ingestor:
     gateways:
       mqtt:
         url: "tcp://${MOSQUITTO_HOST:localhost}:${MOSQUITTO_PORT:1883}"
-        topics: gateway/#, thing/#, dtwin/#
+    persisters:
+      influxdb:
+        # Defined in docker/influxdb/config/influxdb2-admin-token
+        url: http://localhost:8086/
+        bucket: lasrosasiot
+        organization: lasrosasiot
+        token: MyInitialAdminToken0==

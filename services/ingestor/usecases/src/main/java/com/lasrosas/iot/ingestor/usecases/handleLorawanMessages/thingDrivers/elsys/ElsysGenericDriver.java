@@ -1,9 +1,9 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.elsys;
 
-import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
-import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.DistanceMeasurement;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.AirEnvironment;
+import com.lasrosas.iot.ingestor.domain.message.BatteryLevel;
+import com.lasrosas.iot.ingestor.domain.message.DistanceMeasurement;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 
 import java.util.ArrayList;
@@ -57,7 +57,6 @@ public class ElsysGenericDriver {
 	public BaseMessage decodeUplink(LorawanMessageUplinkRx message)  {
 		var data = message.decodeData();
 	    var frame = ElsysGenericUplinkFrame.builder().build();
-		frame.setOrigin(message);
 
 	    for (int i = 0; i < data.length; i++) {
 
@@ -252,7 +251,6 @@ public class ElsysGenericDriver {
 		var result = new ArrayList<BaseMessage>();
 
 		if(normalized != null) {
-			normalized.setOrigin(message);
 			result.add(message);
 		}
 

@@ -1,10 +1,10 @@
 package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.LorawanRadioMessage;
-import com.lasrosas.iot.ingestor.domain.model.message.GatewayPayloadMessageEvent;
-import com.lasrosas.iot.ingestor.domain.model.message.ThingMessageEvent;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
+import com.lasrosas.iot.ingestor.domain.message.LorawanRadioMessage;
+import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessageEvent;
+import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.domain.model.thing.Thing;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingGateway;
 import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStoreQuery;
@@ -47,12 +47,12 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
 
             // Publish the LORAWAN radio indicators like RSSI or SNR
             var lorawanRadio = decodeLorawanRadio(uplink);
-            publisher.publishEvent(ThingMessageEvent.of(thing, lorawanRadio));
+            publisher.publishEvent(EventMessage.of(thing, lorawanRadio));
 
             // Publish the sensor data
             var thingMessages = decodeThingMessage(thing, uplink);
             for (var thingMessage : thingMessages)
-                publisher.publishEvent(ThingMessageEvent.of(thing, thingMessage));
+                publisher.publishEvent(EventMessage.of(thing, thingMessage));
 
         } else
             log.info("Lorawan message of type " + lorawanMessage.getClass().getSimpleName() + " ignored.");
@@ -84,8 +84,6 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
             result.setFrequency(message.getTxInfo().getFrequency());
         }
 
-        result.setOrigin(message);
-
         return result;
     }
 
@@ -93,7 +91,6 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
         var driver = thingDriverManager.get(thing.getType().getManufacturer(), thing.getType().getModel());
 
         var decoded = driver.decodeUplink(lorawanMessage);
-        decoded.setOrigin(lorawanMessage);
 
         var normalized = driver.normalize(decoded);
         normalized.forEach(m -> m.setOrigin(lorawanMessage));

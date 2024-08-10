@@ -6,7 +6,7 @@ fi
 # Java
 if [ -z "$JAVA_HOME" ];
 then
-  export JAVA_HOME="/devel/java/jdk-17"
+  export JAVA_HOME="/devel/java/jdk-21"
 fi
 
 if [ ! -d "$JAVA_HOME" ]; then

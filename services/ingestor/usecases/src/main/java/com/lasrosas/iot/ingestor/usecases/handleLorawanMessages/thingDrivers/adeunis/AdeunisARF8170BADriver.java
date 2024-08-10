@@ -2,9 +2,9 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ad
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lasrosas.iot.ingestor.shared.exceptions.InvalidJsonFormatException;
-import com.lasrosas.iot.ingestor.domain.model.message.AirEnvironment;
-import com.lasrosas.iot.ingestor.domain.model.message.BatteryLevel;
-import com.lasrosas.iot.ingestor.domain.model.message.BaseMessage;
+import com.lasrosas.iot.ingestor.domain.message.AirEnvironment;
+import com.lasrosas.iot.ingestor.domain.message.BatteryLevel;
+import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.ThingDriver;

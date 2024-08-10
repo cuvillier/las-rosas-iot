@@ -34,7 +34,7 @@ public class DraginoLHT65FrameDecoder {
 			tempEXT = (((b7 & 0xff) << 8) | (b8 & 0xff)) / 100.0;
 		}
 
-		var result = DraginoLHT65Frame.UplinkTempHumRequest.builder()
+        return DraginoLHT65Frame.UplinkTempHumRequest.builder()
 				.batteryStatus(batteryStatus)
 				.batteryVoltage(batteryVoltage)
 				.temperatureEXT(tempEXT)
@@ -42,8 +42,6 @@ public class DraginoLHT65FrameDecoder {
 				.humidityINT(humeINT)
 				.sensorExt(extSensor)
 				.build();
-		result.setOrigin(message);
-		return result;
 	}
 
 	void bin(byte b) {
