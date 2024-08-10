@@ -4,6 +4,7 @@ import com.lasrosas.iot.ingestor.shared.ByteParser;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.LorawanMessageUplinkRx;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis.AdeunisARF8170BAFrame;
 import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis.AdeunisARF8170BAFrameDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import static com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDriv
 import static com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.adeunis.AdeunisARF8170BAFrame.ChannelState.OPEN_OFF;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 public class AdeunisARF8170BAFrameDecoderTest {
 	private AdeunisARF8170BAFrameDecoder decoder = new AdeunisARF8170BAFrameDecoder();
 
@@ -176,7 +178,7 @@ public class AdeunisARF8170BAFrameDecoderTest {
 		assertNull(frame.getChannel2TimeCounter());
 		assertEquals(4352, frame.getChannel3TimeCounter());
 		assertNull(frame.getChannel4TimeCounter());
-
+log.info("TIMESTAMP: " + new Date(frame.getTimestamp()).toString());
 		assertTrue(new Date(frame.getTimestamp()).toString().startsWith("Mon Oct 17 22:32:57"));
 	}
 	
