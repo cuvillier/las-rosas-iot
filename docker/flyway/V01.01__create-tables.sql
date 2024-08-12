@@ -109,7 +109,7 @@ CREATE TABLE t_thg_thing_type
 	tty_max_hours_invisible REAL DEFAULT NULL,
 	tty_battery_min_percentage REAL DEFAULT 25,
 	tty_volatile_state INT DEFAULT 0,
-	tty_ha_type_prefix VARCHAR(32);
+	tty_ha_type_prefix VARCHAR(32),
 	tty_ha_domain VARCHAR(32);
 	bty_rssi_1_meter INTEGER,
 
