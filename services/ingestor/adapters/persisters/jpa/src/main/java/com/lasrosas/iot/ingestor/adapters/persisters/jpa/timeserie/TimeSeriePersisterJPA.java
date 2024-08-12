@@ -9,7 +9,9 @@ import com.lasrosas.iot.ingestor.adapters.persisters.jpa.timeserie.entities.Time
 import com.lasrosas.iot.ingestor.adapters.persisters.jpa.timeserie.entities.TimeSerieTypeEntity;
 import com.lasrosas.iot.ingestor.adapters.persisters.jpa.timeserie.repositories.TimeSerieEntityRepository;
 import com.lasrosas.iot.ingestor.adapters.persisters.jpa.timeserie.repositories.TimeSerieTypeEntityRepository;
-import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.message.ThingEventMessage;
+import com.lasrosas.iot.ingestor.domain.model.thing.ThingType;
+import com.lasrosas.iot.ingestor.domain.ports.stores.ThingTypeSchema;
 import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import jakarta.persistence.EntityManager;
@@ -17,6 +19,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+
+import java.util.List;
 
 import static org.hibernate.query.sqm.tree.SqmNode.log;
 
@@ -67,7 +71,7 @@ public class TimeSeriePersisterJPA implements TimeSerieStore {
         }
     }
 
-    public void insertPoint(EventMessage event) {
+    public void insertPoint(ThingEventMessage event) {
         try {
             var message = event.getMessage();
             var schema = message.getSchema();
@@ -149,4 +153,5 @@ public class TimeSeriePersisterJPA implements TimeSerieStore {
             throw new RuntimeException(e);
         }
     }
+
 }

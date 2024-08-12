@@ -12,4 +12,9 @@ public interface ThingStoreQuery {
     Optional<ThingType> getThingTypeByManufacturerAndModel(String manufacturer, String model);
     Optional<ThingGateway> getGatewayByNaturalId(String naturalId);
     List<Thing> getThings();
+
+    List<ThingType> getThingTypes();
+
+    List<Thing> getThingsByType(ThingType type);
+    List<ThingTypeSchema> getPayloadSchemasForThingType(ThingType type);
 }

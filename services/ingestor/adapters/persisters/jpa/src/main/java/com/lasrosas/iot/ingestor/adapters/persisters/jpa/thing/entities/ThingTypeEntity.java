@@ -31,6 +31,8 @@ public class ThingTypeEntity extends LongEntity {
 	public static final String COL_READABLE = PREFIX + "readable";
 	public static final String COL_MODEL = PREFIX + "model";
 	public static final String COL_BATTERY_MIN_PERCENTAGE = PREFIX + "battery_min_percentage";
+	public static final String COL_HA_DOMAIN = PREFIX + "ha_domain";
+	public static final String COL_HA_TYPE_PREFIX = PREFIX + "ha_type_prefix";
 	public static final String COL_MANUFACTURER = PREFIX + "manufacturer";
 
 	@Column(name = COL_MANUFACTURER)
@@ -44,6 +46,12 @@ public class ThingTypeEntity extends LongEntity {
 
 	@Column(name = COL_BATTERY_MIN_PERCENTAGE)
 	private Double batteryMinPercentage;
+
+	@Column(name = COL_HA_TYPE_PREFIX)
+	private String homeAssistantTypePrefix;
+
+	@Column(name = COL_HA_DOMAIN)
+	private String homeAssistantDomain;
 
 	@OneToMany(mappedBy = ThingEntity.PROP_TYPE, fetch = FetchType.LAZY)
 	@Builder.Default

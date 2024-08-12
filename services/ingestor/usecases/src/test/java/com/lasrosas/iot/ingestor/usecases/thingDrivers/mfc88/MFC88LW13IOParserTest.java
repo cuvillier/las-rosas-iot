@@ -8,7 +8,6 @@ import com.lasrosas.iot.ingestor.usecases.handleLorawanMessages.thingDrivers.mfc
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.time.Month;
 import java.util.Base64;

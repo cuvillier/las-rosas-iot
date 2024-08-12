@@ -26,8 +26,9 @@ public class ThingEntity extends LongEntity {
 	public static final String PREFIX_FK = PREFIX + "fk_";
 
 	public static final String COL_TECHID = PREFIX + "techid";
-	public static final String COL_NATURALID  = PREFIX + "naturalid";
 	public static final String COL_READABLE = PREFIX + "readable";
+	public static final String COL_NATURALID  = PREFIX + "naturalid";
+	public static final String COL_DISCOVERABLE = PREFIX + "discoverable";
 	public static final String COL_MODE = PREFIX + "admin_state";
 	public static final String COL_CONNECTION_TIMEOUT = PREFIX + "connection_timeout";
 	public static final String COL_TYPE_FK = PREFIX_FK + ThingTypeEntity.PREFIX + "type";
@@ -53,6 +54,10 @@ public class ThingEntity extends LongEntity {
 
 	@Column(name = COL_CONNECTION_TIMEOUT)
 	private Integer connectionTimeout;
+
+	@Column(name = COL_DISCOVERABLE, nullable = false)
+	@Builder.Default
+	private boolean discoverable = false;
 
 	@OneToOne(mappedBy = ThingProxyEntity.PROP_THING, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ThingProxyEntity proxy;

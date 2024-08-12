@@ -16,4 +16,5 @@ public class ThingTypeResource extends LongResource {
 	private String model;
 	private String readable;
 	private Double batteryMinPercentage;
-}
+	private String homeAssistantTypePrefix;
+	private String homeAssistantDomain;}

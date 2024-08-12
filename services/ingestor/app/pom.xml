@@ -23,7 +23,11 @@
 
         <dependency>
             <groupId>com.lasrosas.iot.ingestor</groupId>
-            <artifactId>ingestor.adapters.gateways</artifactId>
+            <artifactId>ingestor.adapters.gateways.mqtt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lasrosas.iot.ingestor</groupId>
+            <artifactId>ingestor.adapters.gateways.homeassistant</artifactId>
         </dependency>
 
         <dependency>

@@ -1,0 +1,39 @@
+{
+  "com.lasrosas.iot.ingestor.domain.message.AirEnvironment": [
+    {
+      "name": "${UNIQ_ID}.temperature",
+      "unique_id": "${UNIQ_ID}",
+      "unit_of_measurement": "C",
+      "state_topic": "stat/AirEnvironment/temperature",
+      "device": {
+        "name": "${DEVICE.NAME}",
+        "identifiers": "${DEVICE.IDENTIFIER}",
+        "manufacturer": "${DEVICE.MANUFACTURER}",
+        "model": "${DEVICE.MODEL}"
+      }
+    },
+    {
+      "name": "humidity",
+      "unique_id": "${UNIQ_ID}",
+      "unit_of_measurement": "%",
+      "state_topic": "stat/AirEnvironment/humidity",
+      "device": {
+        "name": "${DEVICE.NAME}",
+        "identifiers": "${DEVICE.IDENTIFIER}",
+        "manufacturer": "${DEVICE.MANUFACTURER}",
+        "model": "${DEVICE.MODEL}"
+      }
+    },
+    {
+      "name": "light",
+      "unique_id": "${UNIQ_ID}",
+      "state_topic": "stat/AirEnvironment/light",
+      "device": {
+        "name": "${DEVICE.NAME}",
+        "identifiers": "${DEVICE.IDENTIFIER}",
+        "manufacturer": "${DEVICE.MANUFACTURER}",
+        "model": "${DEVICE.MODEL}"
+      }
+    }
+  ]
+}

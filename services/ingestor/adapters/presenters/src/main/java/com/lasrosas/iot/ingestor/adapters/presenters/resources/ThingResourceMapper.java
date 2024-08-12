@@ -6,7 +6,7 @@ import org.mapstruct.SubclassExhaustiveStrategy;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(subclassExhaustiveStrategy = SubclassExhaustiveStrategy.RUNTIME_EXCEPTION)
+@Mapper
 public interface ThingResourceMapper {
     ThingResourceMapper MAPPER = Mappers.getMapper(ThingResourceMapper.class);
 

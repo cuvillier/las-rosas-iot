@@ -2,12 +2,9 @@ package com.lasrosas.iot.ingestor.adapters.persisters.influxdb;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
-import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
-import com.lasrosas.iot.ingestor.domain.message.EventMessage;
-import com.lasrosas.iot.ingestor.domain.model.timeserie.TimeSerie;
-import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStoreQuery;
+import com.lasrosas.iot.ingestor.domain.message.ThingEventMessage;
 import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +49,7 @@ public class InfluxdbPersister implements TimeSerieStore {
     }
 
     @Override
-    public void insertPoint(EventMessage event) {
+    public void insertPoint(ThingEventMessage event) {
 
         String measurement = event.getMeasurement();
         var time = event.getMessage().getTime();

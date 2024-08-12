@@ -29,4 +29,5 @@ public class ThingResource extends LongResource {
 	}
 
 	private AdminState adminState;
+	private boolean discoverable;
 }

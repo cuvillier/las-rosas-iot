@@ -17,4 +17,6 @@ public class ThingType extends LongDomain {
 	private String model;
 	private String readable;
 	private Double batteryMinPercentage;
+	private String homeAssistantTypePrefix;
+	private String homeAssistantDomain;
 }

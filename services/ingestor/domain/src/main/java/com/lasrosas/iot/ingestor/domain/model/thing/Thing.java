@@ -1,6 +1,7 @@
 package com.lasrosas.iot.ingestor.domain.model.thing;
 
 import com.lasrosas.iot.ingestor.domain.model.LongDomain;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,4 +31,7 @@ public class Thing extends LongDomain {
 	}
 
 	private AdminState adminState;
+
+	@Builder.Default
+	private boolean discoverable = false;
 }

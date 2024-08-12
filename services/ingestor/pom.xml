@@ -77,7 +77,12 @@
             </dependency>
             <dependency>
                 <groupId>com.lasrosas.iot.ingestor</groupId>
-                <artifactId>ingestor.adapters.gateways</artifactId>
+                <artifactId>ingestor.adapters.gateways.mqtt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lasrosas.iot.ingestor</groupId>
+                    <artifactId>ingestor.adapters.gateways.homeassistant</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

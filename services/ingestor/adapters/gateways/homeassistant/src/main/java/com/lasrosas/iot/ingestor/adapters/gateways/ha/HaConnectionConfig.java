@@ -1,4 +1,4 @@
-package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
+package com.lasrosas.iot.ingestor.adapters.gateways.ha;
 
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -12,22 +12,22 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 
 @Configuration
 @Slf4j
-public class MqttConnectionConfig {
+public class HaConnectionConfig {
 
     // This logger is shared by all the Channels to log incoming / outgoing messages
-    public static final Logger logMessage = LoggerFactory.getLogger("ingestor.adapters.gateways.mqtt.messages");
+    public static final Logger logMessage = LoggerFactory.getLogger("ingestor.adapters.gateways.ha.messages");
 
-    @Value("${ingestor.adapters.gateways.mqtt.url:tcp://localhost:1883}")
+    @Value("${ingestor.adapters.gateways.ha.url:tcp://localhost:1883}")
     private String url;
 
-    @Value("${ingestor.adapters.gateways.mqtt.username:lasrosasiot}")
+    @Value("${ingestor.adapters.gateways.ha.username:lasrosasiot}")
     private String username;
 
-    @Value("${ingestor.adapters.gateways.mqtt.password:lasrosasiot}")
+    @Value("${ingestor.adapters.gateways.ha.password:lasrosasiot}")
     private String password;
 
     @Bean
-    public MqttPahoClientFactory mqttClientFactory() {
+    public MqttPahoClientFactory haClientFactory() {
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);

@@ -12,6 +12,7 @@ import com.lasrosas.iot.ingestor.domain.model.thing.Thing;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingGateway;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingType;
 import com.lasrosas.iot.ingestor.domain.ports.stores.ThingStore;
+import com.lasrosas.iot.ingestor.domain.ports.stores.ThingTypeSchema;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,21 @@ public class ThingPersister implements ThingStore {
     @Override
     public List<Thing> getThings() {
         return thingRepo.findAll().stream().map(entity -> thingMapper.toThing(entity)).toList();
+    }
+
+    @Override
+    public List<ThingType> getThingTypes() {
+        return List.of();
+    }
+
+    @Override
+    public List<Thing> getThingsByType(ThingType type) {
+        return List.of();
+    }
+
+    @Override
+    public List<ThingTypeSchema> getPayloadSchemasForThingType(ThingType type) {
+        return List.of();
     }
 
     @Override

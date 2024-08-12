@@ -6,29 +6,29 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class EventMessage extends ApplicationEvent {
+public class ThingEventMessage extends ApplicationEvent {
     private BaseMessage message;
 
     private record Source(Thing thing, DigitalTwin digitalTwin) {}
 
-    public static EventMessage of(Thing thing, BaseMessage payload) {
-        return new EventMessage(null, thing, payload);
+    public static ThingEventMessage of(Thing thing, BaseMessage payload) {
+        return new ThingEventMessage(null, thing, payload);
     }
 
-    public static EventMessage of(DigitalTwin digitalTwin, Thing thing, BaseMessage payload) {
-        return new EventMessage(digitalTwin, thing, payload);
+    public static ThingEventMessage of(DigitalTwin digitalTwin, Thing thing, BaseMessage payload) {
+        return new ThingEventMessage(digitalTwin, thing, payload);
     }
 
-    public static EventMessage of(DigitalTwin digitalTwin, BaseMessage payload) {
-        return new EventMessage(digitalTwin, null, payload);
+    public static ThingEventMessage of(DigitalTwin digitalTwin, BaseMessage payload) {
+        return new ThingEventMessage(digitalTwin, null, payload);
     }
 
-    public static EventMessage of(EventMessage origin, BaseMessage payload) {
+    public static ThingEventMessage of(ThingEventMessage origin, BaseMessage payload) {
         payload.setOrigin(origin.getMessage());
-        return EventMessage.of(origin.getDigitalTwin(), payload);
+        return ThingEventMessage.of(origin.getDigitalTwin(), payload);
     }
 
-    public EventMessage(DigitalTwin digitalTwin, Thing thing, BaseMessage message) {
+    public ThingEventMessage(DigitalTwin digitalTwin, Thing thing, BaseMessage message) {
         super(new Source(thing, digitalTwin));
         this.message = message;
     }
@@ -57,14 +57,8 @@ public class EventMessage extends ApplicationEvent {
 
         var schema = this.message.getSchemaClass().getSimpleName();
 
-        String naturalId;
-        String sensor = null;
-        if (twin != null)
-            naturalId = "TWI_" + twin.getNaturalid();
-        else {
-            naturalId = "THG_" + thing.getNaturalid();
-            sensor = this.message.getSensor();
-        }
+        String naturalId = "THG_" + thing.getNaturalid();
+        String sensor = this.message.getSensor();
 
         if (sensor == null)
             return (naturalId + "_" + schema).replaceAll("\\.", "_");

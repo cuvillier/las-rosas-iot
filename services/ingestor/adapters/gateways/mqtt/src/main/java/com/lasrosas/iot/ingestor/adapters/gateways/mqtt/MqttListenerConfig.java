@@ -99,16 +99,4 @@ public class MqttListenerConfig {
 
     }
 
-
-    @Bean
-    @ServiceActivator(inputChannel = "gatewayInputChannel")
-    public MessageHandler handler(ApplicationEventPublisher publisher) {
-        return new MessageHandler() {
-
-            @Override
-            public void handleMessage(Message<?> message) throws MessagingException {
-            }
-        };
-    }
-
 }

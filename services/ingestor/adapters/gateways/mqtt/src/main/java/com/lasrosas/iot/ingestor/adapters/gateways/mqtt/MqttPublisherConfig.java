@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.adapters.gateways.mqtt;
 
-import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.message.ThingEventMessage;
 import com.lasrosas.iot.ingestor.shared.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
@@ -23,33 +23,33 @@ public class MqttPublisherConfig {
 
 
     @Bean
-    public MessageChannel outputChannel(MqttPahoClientFactory mqttClientFactory, MessageHandler outbound) {
+    public MessageChannel mqttOutputChannel(MqttPahoClientFactory mqttClientFactory, MessageHandler mqttOutbound) {
         var channel = new DirectChannel();
-        channel.subscribe(outbound);
+        channel.subscribe(mqttOutbound);
         return channel;
     }
 
     @Bean
-    @ServiceActivator(inputChannel = "outputChannel")
-    public MessageHandler outbound(MqttPahoClientFactory mqttClientFactory) {
+    @ServiceActivator(inputChannel = "mqttOutputChannel")
+    public MessageHandler mqttOutbound(MqttPahoClientFactory mqttClientFactory) {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("ingestor", mqttClientFactory);
         messageHandler.setAsync(true);
         return messageHandler;
     }
 
-    @MessagingGateway(defaultRequestChannel = "outputChannel")
+    @MessagingGateway(defaultRequestChannel = "mqttOutputChannel")
     public interface MqttPublisher {
         @Transactional
         void send(@Header(MqttHeaders.TOPIC) String topic, String message);
     }
 
     @Bean
-    public ApplicationListener<EventMessage> publishThingMessages(MqttPublisher mqttPublisher) {
+    public ApplicationListener<ThingEventMessage> publishThingMessages(MqttPublisher mqttPublisher) {
 
-        return new ApplicationListener<EventMessage>() {
+        return new ApplicationListener<ThingEventMessage>() {
 
             @Override
-            public void onApplicationEvent(EventMessage event) {
+            public void onApplicationEvent(ThingEventMessage event) {
                 var message = event.getMessage();
                 var topic = "thing/naturalid/" + event.getThing().getNaturalid();
                 var json = JsonUtils.toJson(message, true);

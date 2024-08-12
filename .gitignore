@@ -10,6 +10,7 @@ target/
 *.ipr
 
 **/volumes
+docker/homeassistant/config
 
 ### Eclipse ###
 .apt_generated

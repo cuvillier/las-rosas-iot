@@ -1,6 +1,6 @@
 package com.lasrosas.iot.ingestor.usecases.storeTimeSeries;
 
-import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.message.ThingEventMessage;
 import com.lasrosas.iot.ingestor.domain.ports.stores.TimeSerieStore;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 @Slf4j
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StoreTimeSerieToInfluxdbListener implements ApplicationListener<EventMessage>, Ordered {
+public class StoreTimeSerieToInfluxdbListener implements ApplicationListener<ThingEventMessage>, Ordered {
 
     // Use Autowired because of the Qualifier annotation with lombock
     @Autowired
@@ -24,7 +24,7 @@ public class StoreTimeSerieToInfluxdbListener implements ApplicationListener<Eve
 
     @Transactional
     @Override
-    public void onApplicationEvent(EventMessage event) {
+    public void onApplicationEvent(ThingEventMessage event) {
         log.info(String.format("Save message %s to INFLUXDB", event.getMessage().getSchema()));
         influxdbTimeSerieStore.insertPoint(event);
     }

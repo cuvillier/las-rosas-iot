@@ -105,7 +105,7 @@ public class JsonUtilsTest {
         var sub = mapper.createObjectNode();
         sub.put("name", "sub");
 
-        json1.put("sub", sub);
+        json1.putIfAbsent("sub", sub);
 
         json2.put("int", 1212);
         json2.put("string", "sasdsd");

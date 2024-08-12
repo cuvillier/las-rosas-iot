@@ -3,7 +3,7 @@ package com.lasrosas.iot.ingestor.usecases.handleLorawanMessages;
 import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessage;
 import com.lasrosas.iot.ingestor.domain.message.LorawanRadioMessage;
 import com.lasrosas.iot.ingestor.domain.message.GatewayPayloadMessageEvent;
-import com.lasrosas.iot.ingestor.domain.message.EventMessage;
+import com.lasrosas.iot.ingestor.domain.message.ThingEventMessage;
 import com.lasrosas.iot.ingestor.domain.message.BaseMessage;
 import com.lasrosas.iot.ingestor.domain.model.thing.Thing;
 import com.lasrosas.iot.ingestor.domain.model.thing.ThingGateway;
@@ -26,7 +26,7 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
     private LorawanGatewayDriverManager gatewayDriverManager;
     private ThingDriverManager thingDriverManager;
     private ThingStoreQuery thingStore;
-    ApplicationEventPublisher publisher;
+    private ApplicationEventPublisher publisher;
 
     @Override
     public void onApplicationEvent(GatewayPayloadMessageEvent event) {
@@ -47,12 +47,12 @@ public class LorawanMessageListener implements ApplicationListener<GatewayPayloa
 
             // Publish the LORAWAN radio indicators like RSSI or SNR
             var lorawanRadio = decodeLorawanRadio(uplink);
-            publisher.publishEvent(EventMessage.of(thing, lorawanRadio));
+            publisher.publishEvent(ThingEventMessage.of(thing, lorawanRadio));
 
             // Publish the sensor data
             var thingMessages = decodeThingMessage(thing, uplink);
             for (var thingMessage : thingMessages)
-                publisher.publishEvent(EventMessage.of(thing, thingMessage));
+                publisher.publishEvent(ThingEventMessage.of(thing, thingMessage));
 
         } else
             log.info("Lorawan message of type " + lorawanMessage.getClass().getSimpleName() + " ignored.");

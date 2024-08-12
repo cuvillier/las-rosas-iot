@@ -11,15 +11,9 @@ CREATE TABLE t_dtw_digital_twin_type
 (
 	twt_techid BIGINT GENERATED ALWAYS AS IDENTITY,
 	twt_name VARCHAR(50) NOT NULL UNIQUE,
-	twt_discriminator VARCHAR(3) NOT NULL,
-	twt_may_have_children BIT DEFAULT 0::bit NOT NULL,
 	twt_fk_spa_space BIGINT NOT NULL,
-	dtt_fk_dtt_super_type BIGINT DEFAULT NULL,
-	dtt_concrete BIT DEFAULT 1::bit NOT NULL,
-	mst_max_state INTEGER NOT NULL DEFAULT 2,
 
 	PRIMARY KEY (twt_techid),
-	CONSTRAINT fk_dtt_fk_dtt_super_type FOREIGN KEY (dtt_fk_dtt_super_type) REFERENCES t_dtw_digital_twin_type (twt_techid),
 	CONSTRAINT fk_twt_fk_spa_space FOREIGN KEY (twt_fk_spa_space) REFERENCES t_dtw_space (spa_techid)
 );
 
@@ -115,6 +109,8 @@ CREATE TABLE t_thg_thing_type
 	tty_max_hours_invisible REAL DEFAULT NULL,
 	tty_battery_min_percentage REAL DEFAULT 25,
 	tty_volatile_state INT DEFAULT 0,
+	tty_ha_type_prefix VARCHAR(32);
+	tty_ha_domain VARCHAR(32);
 	bty_rssi_1_meter INTEGER,
 
 	PRIMARY KEY (tty_techid)
@@ -126,6 +122,7 @@ CREATE TABLE t_thg_thing
 	thg_naturalid VARCHAR(32) DEFAULT NULL UNIQUE,
 	thg_readable VARCHAR(64) DEFAULT NULL UNIQUE,
 	thg_connection_timeout integer DEFAULT NULL,
+	thg_discoverable BOOLEAN DEFAULT FALSE,
 	thg_fk_tty_type BIGINT NOT NULL,
 	thg_fk_gtw_gateway BIGINT NOT NULL,
 	thg_admin_state VARCHAR(32) DEFAULT 'CONNECTED' NOT NULL,
