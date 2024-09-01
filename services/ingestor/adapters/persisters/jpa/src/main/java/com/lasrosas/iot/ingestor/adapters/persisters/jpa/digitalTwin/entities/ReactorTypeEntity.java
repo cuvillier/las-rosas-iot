@@ -22,7 +22,6 @@ public class ReactorTypeEntity extends LongEntity {
 	public static final String PREFIX_FK = PREFIX + "fk_";
 
 	public static final String COL_TECHID = PREFIX + "techid";
-	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_BEAN = PREFIX + "bean";
 
 	@Column(name=COL_BEAN)

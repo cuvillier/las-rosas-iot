@@ -17,7 +17,4 @@ public class ReactorReceiverType extends LongDomain {
 	private String schema;
 
 	private ReactorType reactorType;
-
-	@Builder.Default
-	private List<ReactorReceiver> receivers = new ArrayList<>();
 }

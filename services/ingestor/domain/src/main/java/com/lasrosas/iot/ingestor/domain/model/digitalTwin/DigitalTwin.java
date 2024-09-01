@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public abstract class DigitalTwin extends LongDomain {
+public /* mapstruts abstract */ class DigitalTwin extends LongDomain {
 	private DigitalTwinType type;
 
 	@Builder.Default

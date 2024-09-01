@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public abstract class DigitalTwinTypeEntity extends LongEntity {
+public /* mapstruct abstract */ class DigitalTwinTypeEntity extends LongEntity {
 	public static final String TABLE = "t_dtw_digital_twin_type";
 	public static final String PREFIX = "twt_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
@@ -26,9 +26,6 @@ public abstract class DigitalTwinTypeEntity extends LongEntity {
 
 	public static final String COL_TECHID = PREFIX + "techid";
 	public static final String COL_NAME = PREFIX + "name";
-	public static final String COL_PUBLISH_ONTHOLOGY = PREFIX + "publish_onthology";
-	
-	public static final String COL_MAY_HAVE_CHILDREN = PREFIX + "may_have_children";
 	public static final String COL_SPACE_FK = PREFIX_FK + DigitalSpaceEntity.PREFIX + "space";
 
 	public static final String PROP_SPACE = "space";

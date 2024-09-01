@@ -12,11 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public abstract class DigitalTwinType extends LongDomain {
+public /* cannot be abstract for mapstruct abstract */ class DigitalTwinType extends LongDomain {
 	private DigitalSpace space;
-
-	@Builder.Default
-	private List<DigitalTwin> twins = new ArrayList<>();
-
 	private String name;
 }

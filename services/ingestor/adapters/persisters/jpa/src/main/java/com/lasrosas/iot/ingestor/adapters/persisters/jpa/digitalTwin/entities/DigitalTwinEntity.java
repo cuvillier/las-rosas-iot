@@ -14,18 +14,18 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = DigitalTwinEntity.TABLE)
 @AttributeOverrides({ @AttributeOverride(column = @Column(name = DigitalTwinEntity.COL_TECHID), name = LongEntity.PROP_TECHID)})
-@DiscriminatorColumn(name= DigitalTwinEntity.COL_DESCRIMINATOR)
+@DiscriminatorColumn(name= DigitalTwinEntity.COL_DISCRIMINATOR)
 @Getter
 @Setter
 @SuperBuilder
-public abstract class DigitalTwinEntity extends LongEntity {
+public /* mapstructs abstract */ class DigitalTwinEntity extends LongEntity {
 
 	public static final String TABLE = "t_dtw_digital_twin";
 	public static final String PREFIX = "twi_";
 	public static final String PREFIX_FK = PREFIX + "fk_";
 
 	public static final String COL_TECHID = PREFIX + "techid";
-	public static final String COL_DESCRIMINATOR = PREFIX + "discriminator";
+	public static final String COL_DISCRIMINATOR = PREFIX + "discriminator";
 	public static final String COL_NAME = PREFIX + "name";
 	public static final String COL_PROPERTIES = PREFIX + "properties";
 	public static final String COL_TYPE_FK = PREFIX_FK + DigitalTwinTypeEntity.PREFIX + "type";
@@ -36,7 +36,7 @@ public abstract class DigitalTwinEntity extends LongEntity {
 	@JoinColumn(name = COL_TYPE_FK)
 	private DigitalTwinTypeEntity type;
 
-	@OneToMany(mappedBy = ReactorReceiverEntity.PROP_TWIN)
+	@OneToMany(mappedBy = ReactorReceiverEntity.PROP_SOURCE_TWIN)
 	@Builder.Default
 	private List<ReactorReceiverEntity> receivers = new ArrayList<>();
 
